@@ -1,7 +1,7 @@
 
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { CloudUpload, Download, Plus, UserRound, FileText, FileChartColumn, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu } from "lucide-react";
+import { CloudUpload, Download, Plus, UserRound, FileText, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu } from "lucide-react";
 import { createRecordId } from "@/lib/record-id";
 import { Button } from "@/components/ui/button";
 import {
