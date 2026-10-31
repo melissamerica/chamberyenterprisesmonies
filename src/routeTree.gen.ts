@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestRouteImport } from './routes/test'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
 import { Route as ApiExecutiveProfilesRouteImport } from './routes/api.executive-profiles'
@@ -32,6 +33,11 @@ import { Route as ApiExpenseApprovalsReviewSplatRouteImport } from './routes/api
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
@@ -131,6 +137,7 @@ const ApiExpenseApprovalsReviewSplatRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -152,6 +159,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -174,6 +182,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -261,6 +273,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TestRoute: typeof TestRoute
   ApiBillingCodesRoute: typeof ApiBillingCodesRouteWithChildren
   ApiCustomTemplatesRoute: typeof ApiCustomTemplatesRoute
   ApiExecutiveProfilesRoute: typeof ApiExecutiveProfilesRoute
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/billing-codes': {
@@ -471,6 +491,7 @@ const ApiUploadsRouteWithChildren = ApiUploadsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TestRoute: TestRoute,
   ApiBillingCodesRoute: ApiBillingCodesRouteWithChildren,
   ApiCustomTemplatesRoute: ApiCustomTemplatesRoute,
   ApiExecutiveProfilesRoute: ApiExecutiveProfilesRoute,
