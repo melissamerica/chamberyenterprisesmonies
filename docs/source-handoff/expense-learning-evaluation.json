@@ -1,0 +1,51 @@
+{
+  "dataset": "Small fictional regression fixture; not a production accuracy or efficiency estimate",
+  "split": "All September feedback precedes every October holdout; no later outcomes are used as training input",
+  "baseline": "Reuse the most recent expense category for the same executive and city",
+  "learned": {
+    "cases": 5,
+    "suggestions": 3,
+    "correctSuggestions": 3,
+    "incorrectSuggestions": 0,
+    "abstentions": 2
+  },
+  "baselineResult": {
+    "cases": 5,
+    "suggestions": 4,
+    "correctSuggestions": 1,
+    "incorrectSuggestions": 3,
+    "abstentions": 1
+  },
+  "results": [
+    {
+      "case": 1,
+      "expected": "Transportation",
+      "learned": "Transportation",
+      "baseline": "Parking"
+    },
+    {
+      "case": 2,
+      "expected": "Meals",
+      "learned": "Meals",
+      "baseline": "Parking"
+    },
+    {
+      "case": 3,
+      "expected": "Parking",
+      "learned": "Parking",
+      "baseline": "Parking"
+    },
+    {
+      "case": 4,
+      "expected": null,
+      "learned": null,
+      "baseline": "Parking"
+    },
+    {
+      "case": 5,
+      "expected": null,
+      "learned": null,
+      "baseline": null
+    }
+  ]
+}

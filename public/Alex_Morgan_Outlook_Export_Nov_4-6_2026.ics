@@ -1,0 +1,771 @@
+BEGIN:VCALENDAR
+PRODID:-//Microsoft Corporation//Outlook 16.0 MIMEDIR//EN
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Alex Morgan - MOCK Denver sales conference
+X-WR-TIMEZONE:America/Denver
+BEGIN:VTIMEZONE
+TZID:Mountain Standard Time
+BEGIN:STANDARD
+DTSTART:16011104T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0700
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010311T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0600
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VTIMEZONE
+TZID:Eastern Standard Time
+BEGIN:STANDARD
+DTSTART:16011104T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010311T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:alex-denver-test-01@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Eastern Standard Time":20261104T061500
+DTEND;TZID="Eastern Standard Time":20261104T070000
+SUMMARY:Uber hold - home to MIA
+LOCATION:Miami home pickup to Miami International Airport\, Miami\, FL
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Tentative transportation hold\, not a
+  confirmed Uber reservation. Pickup: 6:15 AM Eastern\; arrive MIA about 7:
+ 00 AM Eastern. No rental car. Request ride on the day. Allow time for chec
+ ked luggage.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:TENTATIVE
+X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-02@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Eastern Standard Time":20261104T071500
+DTEND;TZID="Eastern Standard Time":20261104T083000
+SUMMARY:Airport check-in and security
+LOCATION:Miami International Airport\, Miami\, FL
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Check bag\; clear security\; review g
+ ate in airline app. Flight UA 1189 departs 9:05 AM Eastern.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-03@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Eastern Standard Time":20261104T090500
+DTEND;TZID="Mountain Standard Time":20261104T112800
+SUMMARY:UA 1189 - MIA to DEN
+LOCATION:Miami International Airport to Denver International Airport\, Den
+ ver\, CO
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Mock calendar copy of the existing tr
+ ip booking. Departure 9:05 AM Eastern\; arrival 11:28 AM Mountain. Economy
+  Plus. Confirmation C9RP4M. Flight details are test data.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-04@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T120000
+DTEND;TZID="Mountain Standard Time":20261104T130000
+SUMMARY:Uber hold - DEN to hotel
+LOCATION:Denver International Airport to The Rally Hotel\, Denver\, CO
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Tentative hold\, not a confirmed ride
+ . Request Uber after collecting luggage\; follow airport rideshare signs. 
+ Destination: The Rally Hotel\, 1600 20th Street. Leave bags if room is not
+  ready.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:TENTATIVE
+X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-05@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T131500
+DTEND;TZID="Mountain Standard Time":20261104T141500
+SUMMARY:Arrival lunch - conference welcome desk
+LOCATION:Union Conference Center cafe\, 1800 Wynkoop Street\, Denver\, CO
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Casual lunch and early badge pickup. 
+ Meet the conference coordinator. Optional early-arrival networking. Fictio
+ nal venue and event.
+CATEGORIES:Conference
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-06@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T150000
+DTEND;TZID="Mountain Standard Time":20261104T153000
+SUMMARY:Remote inbox and admin catch-up
+LOCATION:Teams / remote
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Low-priority admin block. Email\, voi
+ cemail and internal follow-up. No physical destination-city appointment. L
+ eave out of printed itinerary unless useful.
+CATEGORIES:Remote
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-07@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T160000
+DTEND;TZID="Mountain Standard Time":20261104T163000
+SUMMARY:The Rally Hotel
+LOCATION:The Rally Hotel\, 1600 20th Street\, Denver\, CO 80202
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Check-in. Existing sample booking: co
+ nfirmation RH73310\; two nights\, November 4-6. Room and actual booking de
+ tails are for testing only.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-08@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T164500
+DTEND;TZID="Mountain Standard Time":20261104T171500
+SUMMARY:Reminder - review website subscription
+LOCATION:Online
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Personal administrative reminder. Not
+  conference related\; remote/online. Used to test that optional items are 
+ not automatically checked.
+CATEGORIES:Remote
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-09@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261104T183000
+DTEND;TZID="Mountain Standard Time":20261104T200000
+SUMMARY:Dinner with Morgan Reed - personal
+LOCATION:Aspen & Oak Bistro\, 1840 Blake Street\, Denver\, CO 80202 (mock 
+ restaurant)
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Personal dinner with Morgan Reed\, an
+  old college friend\; unrelated to the sales conference. Reservation: 6:30
+  PM Mountain\, table for 2\, under Alex Morgan. Confirmation DIN-ALEX-1104
+ . Contact: Morgan Reed\, 303-555-0146. Restaurant test number: 303-555-017
+ 2. Smart casual. Meet at the host stand. Vegetarian option requested for M
+ organ. Allow about 15 minutes on foot from the hotel\; use Uber if needed.
+  All venue\, contact and reservation details are fictional.
+CATEGORIES:Personal
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-10@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T080000
+DTEND;TZID="Mountain Standard Time":20261105T090000
+SUMMARY:Conference registration and breakfast
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Summit Sales Forum\, day 1. Badge pic
+ kup in lobby\; breakfast in Birch Hall. Bring laptop\, charger and busines
+ s cards. Mock event.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-11@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T090000
+DTEND;TZID="Mountain Standard Time":20261105T100000
+SUMMARY:Opening keynote - modern sales leadership
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Aspen Ballroom
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Speaker: Jordan Ellis. Opening keynot
+ e and sales outlook. Doors open 8:50 AM.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-12@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261022T100000
+DTEND;TZID="Mountain Standard Time":20261022T103000
+SUMMARY:Biweekly meeting with Winnie the Pooh
+LOCATION:Microsoft Teams / remote
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Recurring every two weeks on Thursday
+  at 10:00 AM Mountain. Travel-day occurrence: November 5. Internal check-i
+ n with Winnie the Pooh during the conference break\; no flight or airport-
+ transfer conflict. Demo joining link: https://teams.example.test/alex-winn
+ ie. Agenda: pipeline updates and next actions. Fictional appointment\; no 
+ invitation has been sent.
+CATEGORIES:Remote
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=TH;COUNT=4
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-13@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T104500
+DTEND;TZID="Mountain Standard Time":20261105T114500
+SUMMARY:Class - discovery conversations
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Room 201
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Instructor: Casey Grant. Hands-on que
+ stioning\, qualification and discovery exercises. Bring laptop.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-14@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T120000
+DTEND;TZID="Mountain Standard Time":20261105T130000
+SUMMARY:Conference lunch - regional sales leaders
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Birch Hall
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Hosted lunch with peer sales leaders.
+  Table 7\, Western Region discussion. Vegetarian and gluten-free options a
+ vailable.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-15@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T131500
+DTEND;TZID="Mountain Standard Time":20261105T141500
+SUMMARY:Workshop - practical pipeline forecasting
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Room 204
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Facilitator: Taylor Brooks. Forecast 
+ hygiene\, stage definitions and next-step planning. Worksheet provided.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-16@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T143000
+DTEND;TZID="Mountain Standard Time":20261105T150000
+SUMMARY:Expo coffee and vendor browse
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Exhibit Hall
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Low-priority optional block to browse
+  sales tools and have coffee. No reserved meeting\; easy to leave off the 
+ printed itinerary.
+CATEGORIES:Conference
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-17@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T151500
+DTEND;TZID="Mountain Standard Time":20261105T161500
+SUMMARY:Breakout - better product demonstrations
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Room 202
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Small-group practice: adapting demos 
+ to decision makers. Host: Avery Lane.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-18@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T163000
+DTEND;TZID="Mountain Standard Time":20261105T170000
+SUMMARY:Phone call - routine expense admin
+LOCATION:Phone call / remote
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Optional routine call with the home-o
+ ffice admin team. No physical Denver meeting\; not conference related.
+CATEGORIES:Remote
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-19@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261105T171500
+DTEND;TZID="Mountain Standard Time":20261105T181500
+SUMMARY:Conference networking reception
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Rooftop Lounge
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Casual reception with conference atte
+ ndees. Light refreshments. Optional but physically in Denver.
+CATEGORIES:Conference
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-20@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T071500
+DTEND;TZID="Mountain Standard Time":20261106T074500
+SUMMARY:Express hotel checkout
+LOCATION:The Rally Hotel\, 1600 20th Street\, Denver\, CO 80202
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Check out before the conference\; lea
+ ve bags with the front desk. Confirmation RH73310. Collect bags before the
+  airport Uber hold. Hotel checkout deadline in original booking: 11:00 AM.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-21@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T080000
+DTEND;TZID="Mountain Standard Time":20261106T090000
+SUMMARY:Conference breakfast - partner roundtable
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Birch Hall
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Day 2 breakfast and partner discussio
+ n. Table 4.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-22@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T090000
+DTEND;TZID="Mountain Standard Time":20261106T101500
+SUMMARY:Lab - account-based sales planning
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Room 201
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Instructor: Cameron Lee. Build an acc
+ ount map and a 30-day outreach plan.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-23@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T103000
+DTEND;TZID="Mountain Standard Time":20261106T113000
+SUMMARY:Class - negotiation without discounting
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Room 204
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Role-play exercises with Quinn Harper
+ . Bring notes from day 1.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-24@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T120000
+DTEND;TZID="Mountain Standard Time":20261106T130000
+SUMMARY:Conference lunch - peer networking
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Birch Hall
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Open seating and peer networking. Opt
+ ional informal lunch.
+CATEGORIES:Conference
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-25@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T131500
+DTEND;TZID="Mountain Standard Time":20261106T140000
+SUMMARY:Closing session - next steps
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Aspen Ballroom
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Closing remarks\, takeaways and follo
+ w-up commitments.
+CATEGORIES:Conference
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-26@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T141500
+DTEND;TZID="Mountain Standard Time":20261106T144500
+SUMMARY:Optional coffee with conference peers
+LOCATION:Summit Sales Forum\, Union Conference Center\, 1800 Wynkoop Stree
+ t\, Denver\, CO 80202 (mock venue)\; Lobby cafe
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Low-priority informal coffee before c
+ ollecting bags. Depart promptly to keep the airport buffer.
+CATEGORIES:Conference
+PRIORITY:9
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-27@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T150000
+DTEND;TZID="Mountain Standard Time":20261106T160000
+SUMMARY:Uber hold - hotel to DEN
+LOCATION:The Rally Hotel to Denver International Airport\, Denver\, CO
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Tentative hold\, not a confirmed ride
+ . Collect bags at hotel by 2:50 PM\; request Uber for 3:00 PM Mountain. Ai
+ m to arrive DEN by 4:00 PM. No rental car.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:TENTATIVE
+X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-28@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T160000
+DTEND;TZID="Mountain Standard Time":20261106T170000
+SUMMARY:DEN airport security and boarding
+LOCATION:Denver International Airport\, Denver\, CO
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Check airline app for gate\; clear se
+ curity. Return flight test departure 5:10 PM Mountain.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-29@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Mountain Standard Time":20261106T171000
+DTEND;TZID="Eastern Standard Time":20261106T225000
+SUMMARY:UA 2046 - DEN to MIA
+LOCATION:Denver International Airport to Miami International Airport\, Mia
+ mi\, FL
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Fictional return-flight placeholder f
+ or this mock calendar: departure 5:10 PM Mountain\; arrival 10:50 PM Easte
+ rn. Confirmation DEMO-DEN6. No booking has been made.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:CONFIRMED
+X-MICROSOFT-CDO-BUSYSTATUS:BUSY
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:alex-denver-test-30@example.test
+DTSTAMP:20261007T220000Z
+DTSTART;TZID="Eastern Standard Time":20261106T230500
+DTEND;TZID="Eastern Standard Time":20261106T234500
+SUMMARY:Uber hold - MIA to home
+LOCATION:Miami International Airport to Miami home drop-off\, Miami\, FL
+DESCRIPTION:SYNTHETIC TEST CALENDAR. Tentative transportation hold\, not a
+  confirmed ride. Request after landing and collecting luggage. Pickup abou
+ t 11:05 PM Eastern\; home by 11:45 PM Eastern.
+CATEGORIES:Travel
+PRIORITY:5
+CLASS:PRIVATE
+SEQUENCE:0
+TRANSP:OPAQUE
+STATUS:TENTATIVE
+X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE
+X-MS-OLK-CONFTYPE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+END:VCALENDAR

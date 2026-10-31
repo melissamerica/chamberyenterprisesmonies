@@ -1,0 +1,24 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),ts=require('typescript');
+const cache=new Map();function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(file).exports;const module={exports:{}};cache.set(file,module);const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;const req=name=>{if(name.startsWith('@/')||name.startsWith('.')){const base=name.startsWith('@/')?path.resolve(name.slice(2)):path.resolve(path.dirname(file),name);return load(fs.existsSync(base+'.ts')?base+'.ts':base+'.tsx');}return require(name);};new Function('require','module','exports',code)(req,module,module.exports);return module.exports;}
+const React=require('react'),{renderToString}=require('react-dom/server');
+const entry=load('app/page.tsx'),marketing=renderToString(React.createElement(entry.default));
+assert.ok(marketing.includes('Every trip,'));
+assert.ok(marketing.includes('thoughtfully'));
+assert.ok(marketing.includes('Continue to test workspace'));
+assert.ok(marketing.includes('href="/test?view=home"'));
+assert.ok(marketing.includes('Learning your way of working'.toUpperCase()));
+assert.ok(!marketing.includes('Main navigation'));
+assert.ok(!marketing.includes('Home document upload'));
+assert.ok(!marketing.includes('Create your first executive'));
+assert.ok(!marketing.includes('<form'));
+assert.ok(marketing.includes('No account required'));
+const workspace=renderToString(React.createElement(entry.TestWorkspace));
+assert.ok(workspace.includes('Home document upload'));
+assert.ok(workspace.includes('Create your first executive'));
+assert.ok(workspace.includes('Load sample workspace'));
+assert.ok(workspace.includes('Product home'));
+const {destinationFromSearch}=load('lib/workspace-navigation.ts');
+for(const view of ['home','templates','executive','itinerary','calendar','expenses','billing-codes','unassigned-expenses','profile'])assert.equal(destinationFromSearch('?view='+view).page,view);
+assert.equal(destinationFromSearch(''),null);
+assert.equal(destinationFromSearch('?utm_source=application'),null);
+console.log('PASS: public entry renders product content without workspace controls or account collection; test entry keeps empty-workspace intake and samples; existing explicit workspace destinations remain recognized.');
