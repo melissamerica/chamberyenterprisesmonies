@@ -76,7 +76,7 @@ export async function recordDecision(record:ApprovalRecord,decision:"approve"|"r
  const signature=decision==="approve"?{status:"approved",signatureName:name,signedAt:at,approverEmail:record.approver_email,reportHash:snapshot.reportHash}:undefined;
  const trip={...snapshot.trip,expenseReport:{...snapshot.trip.expenseReport!,approval:signature}};
  const statements=[];
- if(signature)statements.push(db.prepare("UPDATE executive_upload_trips SET trip_json = json_set(trip_json, '$.expenseReport.approval', json(?)), updated_at = ? WHERE trip_id = ? AND EXISTS (SELECT 1 FROM expense_approval_requests WHERE id = ? AND status = 'pending')").bind(JSON.stringify(signature),at,String(trip.id),record.id));
+ if(signature)statements.push(db.prepare("UPDATE executive_upload_trips SET trip_json = jsonb_set(trip_json::jsonb, '{expenseReport,approval}', ?::jsonb, true)::text, updated_at = ? WHERE trip_id = ? AND EXISTS (SELECT 1 FROM expense_approval_requests WHERE id = ? AND status = 'pending')").bind(JSON.stringify(signature),at,String(trip.id),record.id));
  statements.push(db.prepare("UPDATE expense_approval_requests SET status = ?, signature_name = ?, signed_at = ?, notes = ?, updated_at = ? WHERE id = ? AND status = 'pending'").bind(decision==="approve"?"approved":"returned",decision==="approve"?name:null,decision==="approve"?at:null,decision==="return"?notes:null,at,record.id));
  const results=await db.batch(statements);
  if(!results.at(-1)?.meta.changes)throw Error("A decision has already been recorded. Reload the report.");
