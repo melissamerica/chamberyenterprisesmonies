@@ -3,6 +3,9 @@
 // executed atomically through the service-role-only `anya_exec` database function.
 // BUCKET mirrors the R2 put/get/delete API on top of the private "anya-files" storage bucket.
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { currentTenant } from "./tenant";
+
+const firmKey = (key: string) => `firms/${currentTenant().firmId}/${key}`;
 
 type Param = string | number | boolean | null | undefined;
 type ExecResult = { results: Record<string, unknown>[]; changes: number };
@@ -15,7 +18,7 @@ async function exec(statements: PreparedStatement[]): Promise<ExecResult[]> {
     params: s.params.map((p) => (p === undefined ? null : typeof p === "boolean" ? (p ? 1 : 0) : p)),
     returns: returnsRows(s.sql),
   }));
-  const { data, error } = await (supabaseAdmin.rpc as unknown as (fn: string, args: unknown) => Promise<{ data: unknown; error: { message: string } | null }>)("anya_exec", { batch });
+  const { data, error } = await (supabaseAdmin.rpc as unknown as (fn: string, args: unknown) => Promise<{ data: unknown; error: { message: string } | null }>)("anya_exec", { batch, firm: currentTenant().firmId });
   if (error) throw new Error(error.message);
   return data as ExecResult[];
 }
@@ -48,11 +51,11 @@ const BUCKET = {
   async put(key: string, value: ArrayBuffer | Uint8Array | string | Blob, options?: { httpMetadata?: { contentType?: string } }) {
     const contentType = options?.httpMetadata?.contentType ?? (typeof value === "string" ? "text/plain" : "application/octet-stream");
     const body = typeof value === "string" ? new Blob([value], { type: contentType }) : value instanceof Blob ? value : new Blob([value as BlobPart], { type: contentType });
-    const { error } = await supabaseAdmin.storage.from(BUCKET_NAME).upload(key, body, { contentType, upsert: true });
+    const { error } = await supabaseAdmin.storage.from(BUCKET_NAME).upload(firmKey(key), body, { contentType, upsert: true });
     if (error) throw new Error(error.message);
   },
   async get(key: string) {
-    const { data, error } = await supabaseAdmin.storage.from(BUCKET_NAME).download(key);
+    const { data, error } = await supabaseAdmin.storage.from(BUCKET_NAME).download(firmKey(key));
     if (error || !data) return null;
     const blob = data;
     return {
@@ -64,7 +67,7 @@ const BUCKET = {
     };
   },
   async delete(key: string | string[]) {
-    await supabaseAdmin.storage.from(BUCKET_NAME).remove(Array.isArray(key) ? key : [key]);
+    await supabaseAdmin.storage.from(BUCKET_NAME).remove((Array.isArray(key) ? key : [key]).map(firmKey));
   },
 };
 

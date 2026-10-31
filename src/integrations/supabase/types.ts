@@ -20,6 +20,7 @@ export type Database = {
           code: string
           code_key: string
           executive_ids_json: string
+          firm_id: string
           id: string
           label: string
           updated_at: string
@@ -29,6 +30,7 @@ export type Database = {
           code: string
           code_key: string
           executive_ids_json?: string
+          firm_id?: string
           id: string
           label: string
           updated_at: string
@@ -38,6 +40,7 @@ export type Database = {
           code?: string
           code_key?: string
           executive_ids_json?: string
+          firm_id?: string
           id?: string
           label?: string
           updated_at?: string
@@ -46,18 +49,21 @@ export type Database = {
       }
       custom_templates: {
         Row: {
+          firm_id: string
           template_json: string
           traveler_id: string
           traveler_name: string
           updated_at: string
         }
         Insert: {
+          firm_id?: string
           template_json: string
           traveler_id: string
           traveler_name: string
           updated_at: string
         }
         Update: {
+          firm_id?: string
           template_json?: string
           traveler_id?: string
           traveler_name?: string
@@ -65,21 +71,57 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_requests: {
+        Row: {
+          company: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          name: string
+          product: string | null
+          team_size: string | null
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          name: string
+          product?: string | null
+          team_size?: string | null
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          name?: string
+          product?: string | null
+          team_size?: string | null
+        }
+        Relationships: []
+      }
       executive_deferred_uploads: {
         Row: {
           executive_id: string
+          firm_id: string
           id: string
           row_json: string
           updated_at: string
         }
         Insert: {
           executive_id: string
+          firm_id?: string
           id: string
           row_json: string
           updated_at: string
         }
         Update: {
           executive_id?: string
+          firm_id?: string
           id?: string
           row_json?: string
           updated_at?: string
@@ -89,18 +131,21 @@ export type Database = {
       executive_profiles: {
         Row: {
           executive_id: string
+          firm_id: string
           name: string
           profile_json: string
           updated_at: string
         }
         Insert: {
           executive_id: string
+          firm_id?: string
           name: string
           profile_json: string
           updated_at: string
         }
         Update: {
           executive_id?: string
+          firm_id?: string
           name?: string
           profile_json?: string
           updated_at?: string
@@ -111,6 +156,7 @@ export type Database = {
         Row: {
           executive_id: string
           executive_name: string
+          firm_id: string
           id: string
           row_json: string
           updated_at: string
@@ -118,6 +164,7 @@ export type Database = {
         Insert: {
           executive_id: string
           executive_name: string
+          firm_id?: string
           id: string
           row_json: string
           updated_at: string
@@ -125,6 +172,7 @@ export type Database = {
         Update: {
           executive_id?: string
           executive_name?: string
+          firm_id?: string
           id?: string
           row_json?: string
           updated_at?: string
@@ -135,6 +183,7 @@ export type Database = {
         Row: {
           approved_at: string
           executive_id: string
+          firm_id: string
           id: string
           row_json: string
           source_file_id: string
@@ -142,6 +191,7 @@ export type Database = {
         Insert: {
           approved_at: string
           executive_id: string
+          firm_id?: string
           id: string
           row_json: string
           source_file_id: string
@@ -149,6 +199,7 @@ export type Database = {
         Update: {
           approved_at?: string
           executive_id?: string
+          firm_id?: string
           id?: string
           row_json?: string
           source_file_id?: string
@@ -161,6 +212,7 @@ export type Database = {
           created_at: string
           executive_id: string
           filename: string
+          firm_id: string
           id: string
           object_key: string
         }
@@ -169,6 +221,7 @@ export type Database = {
           created_at: string
           executive_id: string
           filename: string
+          firm_id?: string
           id: string
           object_key: string
         }
@@ -177,6 +230,7 @@ export type Database = {
           created_at?: string
           executive_id?: string
           filename?: string
+          firm_id?: string
           id?: string
           object_key?: string
         }
@@ -185,18 +239,21 @@ export type Database = {
       executive_upload_trips: {
         Row: {
           executive_id: string
+          firm_id: string
           trip_id: string
           trip_json: string
           updated_at: string
         }
         Insert: {
           executive_id: string
+          firm_id?: string
           trip_id: string
           trip_json: string
           updated_at: string
         }
         Update: {
           executive_id?: string
+          firm_id?: string
           trip_id?: string
           trip_json?: string
           updated_at?: string
@@ -206,18 +263,21 @@ export type Database = {
       executive_vendor_rules: {
         Row: {
           executive_id: string
+          firm_id: string
           id: string
           rule_json: string
           updated_at: string
         }
         Insert: {
           executive_id: string
+          firm_id?: string
           id: string
           rule_json: string
           updated_at: string
         }
         Update: {
           executive_id?: string
+          firm_id?: string
           id?: string
           rule_json?: string
           updated_at?: string
@@ -231,6 +291,7 @@ export type Database = {
           created_at: string
           documents_json: string
           executive_id: string
+          firm_id: string
           id: string
           message_id: string | null
           notes: string | null
@@ -249,6 +310,7 @@ export type Database = {
           created_at: string
           documents_json: string
           executive_id: string
+          firm_id?: string
           id: string
           message_id?: string | null
           notes?: string | null
@@ -267,6 +329,7 @@ export type Database = {
           created_at?: string
           documents_json?: string
           executive_id?: string
+          firm_id?: string
           id?: string
           message_id?: string | null
           notes?: string | null
@@ -286,6 +349,7 @@ export type Database = {
           active: number
           decision_json: string
           executive_id: string
+          firm_id: string
           id: string
           recorded_at: string
           row_key: string
@@ -294,6 +358,7 @@ export type Database = {
           active?: number
           decision_json: string
           executive_id: string
+          firm_id?: string
           id: string
           recorded_at: string
           row_key: string
@@ -302,6 +367,7 @@ export type Database = {
           active?: number
           decision_json?: string
           executive_id?: string
+          firm_id?: string
           id?: string
           recorded_at?: string
           row_key?: string
@@ -312,6 +378,7 @@ export type Database = {
         Row: {
           active: number
           executive_id: string
+          firm_id: string
           id: string
           preference_json: string
           updated_at: string
@@ -319,6 +386,7 @@ export type Database = {
         Insert: {
           active?: number
           executive_id: string
+          firm_id?: string
           id: string
           preference_json: string
           updated_at: string
@@ -326,6 +394,7 @@ export type Database = {
         Update: {
           active?: number
           executive_id?: string
+          firm_id?: string
           id?: string
           preference_json?: string
           updated_at?: string
@@ -336,17 +405,108 @@ export type Database = {
         Row: {
           enabled: number
           executive_id: string
+          firm_id: string
           updated_at: string
         }
         Insert: {
           enabled?: number
           executive_id: string
+          firm_id?: string
           updated_at: string
         }
         Update: {
           enabled?: number
           executive_id?: string
+          firm_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      firm_invites: {
+        Row: {
+          created_at: string
+          email: string
+          firm_id: string
+          id: string
+          invited_by: string
+          role: Database["public"]["Enums"]["firm_role"]
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          firm_id: string
+          id?: string
+          invited_by: string
+          role?: Database["public"]["Enums"]["firm_role"]
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          firm_id?: string
+          id?: string
+          invited_by?: string
+          role?: Database["public"]["Enums"]["firm_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "firm_invites_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      firm_members: {
+        Row: {
+          created_at: string
+          email: string
+          firm_id: string
+          role: Database["public"]["Enums"]["firm_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          firm_id: string
+          role?: Database["public"]["Enums"]["firm_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          firm_id?: string
+          role?: Database["public"]["Enums"]["firm_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "firm_members_firm_id_fkey"
+            columns: ["firm_id"]
+            isOneToOne: false
+            referencedRelation: "firms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      firms: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          sso_domain: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          sso_domain?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          sso_domain?: string | null
         }
         Relationships: []
       }
@@ -356,6 +516,7 @@ export type Database = {
           created_at: string
           entry_id: string
           executive_id: string
+          firm_id: string
           id: string
           trip_id: string
           updated_at: string
@@ -365,6 +526,7 @@ export type Database = {
           created_at: string
           entry_id: string
           executive_id: string
+          firm_id?: string
           id: string
           trip_id: string
           updated_at: string
@@ -374,6 +536,7 @@ export type Database = {
           created_at?: string
           entry_id?: string
           executive_id?: string
+          firm_id?: string
           id?: string
           trip_id?: string
           updated_at?: string
@@ -382,16 +545,19 @@ export type Database = {
       }
       template_library: {
         Row: {
+          firm_id: string
           id: string
           template_json: string
           updated_at: string
         }
         Insert: {
+          firm_id?: string
           id: string
           template_json: string
           updated_at: string
         }
         Update: {
+          firm_id?: string
           id?: string
           template_json?: string
           updated_at?: string
@@ -403,10 +569,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      anya_exec: { Args: { batch: Json }; Returns: Json }
+      anya_exec: { Args: { batch: Json; firm: string }; Returns: Json }
     }
     Enums: {
-      [_ in never]: never
+      firm_role: "owner" | "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -533,6 +699,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      firm_role: ["owner", "admin", "editor", "viewer"],
+    },
   },
 } as const

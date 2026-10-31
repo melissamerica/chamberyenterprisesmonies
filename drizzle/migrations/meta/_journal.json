@@ -8,6 +8,13 @@
       "when": 1793471218197,
       "tag": "0000_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793472334062,
+      "tag": "0001_firm_tenancy",
+      "breakpoints": true
     }
   ]
 }

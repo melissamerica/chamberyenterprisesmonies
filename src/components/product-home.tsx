@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCheck, ChevronDown, FileCheck2, FileSpreadsheet, FileText, Layers3, MapPin, Paperclip, Plane, ScanLine, Sparkles, UploadCloud } from "lucide-react";
 
-const testHref = "/test?view=home";
+const testHref = "/app?view=home";
 type Output = "Calendar" | "Itinerary" | "Expenses";
 
 function OutputPreview({ output }: { output: Output }) {
@@ -31,7 +31,7 @@ export function ProductHome() {
     <a className="product-skip" href="#product-main">Skip to content</a>
     <div className="product-announcement">For the person behind every executive. <span>Meet Anya.</span></div>
     <header className="product-header"><div className="product-header-inner">
-      <a className="product-brand" href="/" aria-label="Anya product home"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a>
+      <a className="product-brand" href="/anya" aria-label="Anya product home"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a>
       <nav aria-label="Product navigation"><a href="#automation">How it works</a><a href="#features">Features</a><a href="#memory">Learning & preferences</a></nav>
       <a className="product-test-link" href={testHref}>Continue to test workspace <ArrowUpRight aria-hidden="true"/></a>
     </div></header>
@@ -84,7 +84,7 @@ export function ProductHome() {
 
       <section className="product-final-cta"><div className="product-container"><div><p className="product-eyebrow">BUILT AROUND REAL EA WORK</p><h2>See the details<br/><em>come together.</em></h2></div><div><a className="product-primary" href={testHref}>Continue to test workspace <ArrowUpRight/></a><p>Explore the working prototype. No account required.</p></div></div></section>
     </main>
-    <footer className="product-footer product-container"><a className="product-brand" href="/"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a><span>Prototype · Built for executive assistants.</span><a href={testHref}>Test workspace <ArrowUpRight/></a></footer>
+    <footer className="product-footer product-container"><a className="product-brand" href="/anya"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a><span>Prototype · Built for executive assistants.</span><a href={testHref}>Test workspace <ArrowUpRight/></a></footer>
   </div>;
 }
 
