@@ -13,11 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AlecRouteImport } from './routes/alec'
 import { Route as AnyaRouteImport } from './routes/anya'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
 import { Route as ApiExecutiveProfilesRouteImport } from './routes/api.executive-profiles'
@@ -56,6 +59,11 @@ const AnyaRoute = AnyaRouteImport.update({
   path: '/anya',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -79,6 +87,16 @@ const TestRoute = TestRouteImport.update({
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
@@ -180,11 +198,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/app': typeof AuthenticatedAppRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -208,11 +229,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/app': typeof AuthenticatedAppRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -238,11 +262,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -268,11 +295,14 @@ export interface FileRouteTypes {
     | '/'
     | '/alec'
     | '/anya'
+    | '/auth'
     | '/contact'
     | '/pricing'
     | '/security'
     | '/test'
     | '/app'
+    | '/onboarding'
+    | '/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -296,11 +326,14 @@ export interface FileRouteTypes {
     | '/'
     | '/alec'
     | '/anya'
+    | '/auth'
     | '/contact'
     | '/pricing'
     | '/security'
     | '/test'
     | '/app'
+    | '/onboarding'
+    | '/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -325,11 +358,14 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/alec'
     | '/anya'
+    | '/auth'
     | '/contact'
     | '/pricing'
     | '/security'
     | '/test'
     | '/_authenticated/app'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -355,6 +391,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AlecRoute: typeof AlecRoute
   AnyaRoute: typeof AnyaRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   PricingRoute: typeof PricingRoute
   SecurityRoute: typeof SecurityRoute
@@ -400,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnyaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -433,6 +477,20 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/billing-codes': {
@@ -566,10 +624,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -639,6 +701,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AlecRoute: AlecRoute,
   AnyaRoute: AnyaRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   PricingRoute: PricingRoute,
   SecurityRoute: SecurityRoute,
