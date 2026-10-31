@@ -8,10 +8,11 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
-- [ ] Verify build/typecheck; fix errors
-- [ ] Test workspace functions end to end: trips & itineraries, expenses & receipts, approvals, billing codes, templates
-- [ ] Polish /app workspace visuals to Chambery brand (slate leftovers in workspace components)
-- [ ] Redirect old /?view=... prototype links into /app
+- [x] Verify build/typecheck; fix errors (build OK)
+- [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
+- [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries
+- [x] Redirect old /?view=... prototype links into /app
+- [ ] Exercise the document upload → trip → itinerary/expenses flow with a real confirmation file
 
 Deferred (per Melissa, save for later):
 - Signup/onboarding flow questions (invite-only vs self-serve) — leave as built
