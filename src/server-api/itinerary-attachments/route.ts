@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { attachmentTrip, tripAttachments, saveAttachment, reassignAttachment } from "@/lib/itinerary-attachment-storage";
 import { attachmentContentTypes } from "@/lib/itinerary-attachments";
 import { storeUpload, removeStoredUpload } from "@/lib/upload-storage";

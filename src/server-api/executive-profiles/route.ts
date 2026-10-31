@@ -1,5 +1,5 @@
 import { validateTravelPreferences } from "@/lib/travel-preferences";
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { uploadDatabase } from "@/lib/upload-storage";
 import { normalizeExecutiveProfile, validateExecutiveProfile } from "@/lib/executive-profile-records";
 import type { ExecutiveProfile } from "@/lib/executive-profiles";

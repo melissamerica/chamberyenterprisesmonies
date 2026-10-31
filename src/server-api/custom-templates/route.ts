@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { validateCustomTemplate, type ExecutiveTemplates } from "@/lib/executive-profiles";
 import { readTemplateWorkspace, writeCustomTemplate, assignCustomTemplate } from "@/lib/custom-template-storage";
 

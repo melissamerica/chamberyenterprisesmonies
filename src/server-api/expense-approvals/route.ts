@@ -1,5 +1,5 @@
 import { LIVE_CONNECTIONS_ENABLED } from "@/lib/workspace-mode";
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { uploadDatabase, saveUploadTrips } from "@/lib/upload-storage";
 import { tripApprovals, publicApproval, createApproval, sendApproval, runtimeApprovalEnv, approvalById } from "@/lib/expense-approval-storage";
 import { defaultTemplates, type ExecutiveTemplates } from "@/lib/executive-profiles";

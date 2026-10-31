@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { loadExpenseLearning, setExpenseLearningEnabled, setExpenseMemoryActive } from "@/lib/expense-learning-storage";
 
 const validExecutive = (value: unknown): value is string => typeof value === "string" && !!value.trim() && value.length <= 160;

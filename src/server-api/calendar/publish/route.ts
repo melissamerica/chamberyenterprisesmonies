@@ -1,6 +1,6 @@
 import { LIVE_CONNECTIONS_ENABLED } from "@/lib/workspace-mode";
-import { env } from "cloudflare:workers";
-import { NextResponse } from "next/server";
+import { env } from "@/server/runtime-env";
+import { NextResponse } from "@/server/next-server";
 
 type CalendarPayload = {
   title?: unknown;

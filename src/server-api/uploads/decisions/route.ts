@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { saveUploadDecision, removeVendorRule, removeDeferredUpload, uploadDatabase } from "@/lib/upload-storage";
 import { createVendorRule, isOpenUploadTrip, isoDay, type UploadRow, type UploadTrip } from "@/lib/workspace-uploads";
 import { validLearningFeedback, type LearningFeedback } from "@/lib/expense-learning";

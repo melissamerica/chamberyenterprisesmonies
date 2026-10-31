@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { approvalByToken, approvalById, publicApproval, recordDecision, approvalBucket, type ApprovalDocument, type ApprovalSnapshot } from "@/lib/expense-approval-storage";
 import { buildExpenseWorkbook } from "@/lib/travel-exports";
 import { validApprovalEmail } from "@/lib/expense-evidence";

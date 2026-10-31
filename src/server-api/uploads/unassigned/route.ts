@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { saveUnassignedUploads, uploadDatabase } from "@/lib/upload-storage";
 import type { UploadRow } from "@/lib/workspace-uploads";
 

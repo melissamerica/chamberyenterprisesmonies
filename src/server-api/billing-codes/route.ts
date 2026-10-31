@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { readBillingCodes, writeBillingCode } from "@/lib/billing-code-storage";
 
 export async function GET() {

@@ -1,5 +1,5 @@
 import { LIVE_CONNECTIONS_ENABLED } from "@/lib/workspace-mode";
-import { NextResponse } from "next/server";
+import { NextResponse } from "@/server/next-server";
 import { runtimeApprovalEnv } from "@/lib/expense-approval-storage";
 export async function POST(){
  if(!LIVE_CONNECTIONS_ENABLED)return NextResponse.json({error:"Email connections are disabled in this test workspace."},{status:409});
