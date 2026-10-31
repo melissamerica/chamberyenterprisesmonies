@@ -1,15 +1,93 @@
 [
-  {"capability":"code","source":"Next.js (vinext) app on Cloudflare Sites","outcome":"migrate","status":"in_progress","next_action":"Port pages, components, libs and API routes to TanStack Start"},
-  {"capability":"schema","source":"Cloudflare D1 (16 tables via drizzle migrations 0000-0013)","outcome":"migrate","status":"in_progress","next_action":"Recreate tables in Lovable Cloud"},
-  {"capability":"records","source":"Cloudflare D1","outcome":"migrate","status":"pending","next_action":"Request CSV/JSON exports of D1 tables after preview"},
-  {"capability":"auth identities","source":"None used (ChatGPT header helper unused; prototype requires no account)","outcome":"not_applicable","status":"verified","next_action":"none"},
-  {"capability":"authorization","source":"Open prototype; approval links use hashed tokens","outcome":"migrate","status":"in_progress","next_action":"Server-only DB access, RLS deny-all for browser"},
-  {"capability":"uploaded file bytes","source":"Cloudflare R2 bucket","outcome":"migrate","status":"pending","next_action":"Files move to Lovable Cloud storage; existing R2 objects need export"},
-  {"capability":"external providers","source":"Make.com calendar webhooks, expense approval email webhook","outcome":"preserve","status":"pending","next_action":"Live sends disabled in workspace-mode; secrets requested only if enabled"},
-  {"capability":"public endpoints","source":"/api/* routes incl. /api/expense-approvals/review/*","outcome":"preserve","status":"in_progress","next_action":"Recreate same paths as server routes"},
-  {"capability":"schedules","source":"none","outcome":"not_applicable","status":"verified","next_action":"none"},
-  {"capability":"ExecOS decision queue (staging, not deployed)","source":"02_ExecOS_Decision_Queue_STAGING_NOT_DEPLOYED","outcome":"not_migrated","status":"accepted","next_action":"Kept as reference docs only; never deployed in source"},
-  {"capability":"standalone HTML previews","source":"03_Standalone_HTML_Previews","outcome":"migrate","status":"in_progress","next_action":"Serve as static files under /previews"},
-  {"capability":"cutover","source":"Sites live URL","outcome":"pending","status":"pending","next_action":"User publishes when ready"},
-  {"capability":"verification","source":"-","outcome":"migrate","status":"pending","next_action":"Build, route checks, one write/read"}
+ {
+  "capability": "code",
+  "source": "Next.js (vinext) app on Cloudflare Sites",
+  "outcome": "migrate",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "schema",
+  "source": "Cloudflare D1 (16 tables via drizzle migrations 0000-0013)",
+  "outcome": "migrate",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "records",
+  "source": "Cloudflare D1",
+  "outcome": "migrate",
+  "status": "pending",
+  "next_action": "Request CSV/JSON exports of D1 tables after preview"
+ },
+ {
+  "capability": "auth identities",
+  "source": "None used (ChatGPT header helper unused; prototype requires no account)",
+  "outcome": "not_applicable",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "authorization",
+  "source": "Open prototype; approval links use hashed tokens",
+  "outcome": "migrate",
+  "status": "verified",
+  "next_action": "Browser cannot reach tables; all access goes through server routes"
+ },
+ {
+  "capability": "uploaded file bytes",
+  "source": "Cloudflare R2 bucket",
+  "outcome": "migrate",
+  "status": "pending",
+  "next_action": "New uploads use Lovable Cloud storage (verified); old R2 files need export"
+ },
+ {
+  "capability": "external providers",
+  "source": "Make.com calendar webhooks, expense approval email webhook",
+  "outcome": "preserve",
+  "status": "pending",
+  "next_action": "Live sends disabled in workspace-mode; secrets requested only if enabled"
+ },
+ {
+  "capability": "public endpoints",
+  "source": "/api/* routes incl. /api/expense-approvals/review/*",
+  "outcome": "preserve",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "schedules",
+  "source": "none",
+  "outcome": "not_applicable",
+  "status": "verified",
+  "next_action": "none"
+ },
+ {
+  "capability": "ExecOS decision queue (staging, not deployed)",
+  "source": "02_ExecOS_Decision_Queue_STAGING_NOT_DEPLOYED",
+  "outcome": "not_migrated",
+  "status": "accepted",
+  "next_action": "Kept as reference docs only; never deployed in source"
+ },
+ {
+  "capability": "standalone HTML previews",
+  "source": "03_Standalone_HTML_Previews",
+  "outcome": "migrate",
+  "status": "verified",
+  "next_action": "Served at /previews/<file>.html"
+ },
+ {
+  "capability": "cutover",
+  "source": "Sites live URL",
+  "outcome": "pending",
+  "status": "pending",
+  "next_action": "User publishes when ready"
+ },
+ {
+  "capability": "verification",
+  "source": "-",
+  "outcome": "migrate",
+  "status": "verified",
+  "next_action": "Pages load, API reads/writes and file upload/download checked"
+ }
 ]

@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Anya app (migrated from Next.js/Cloudflare)
+- Original source handlers live in src/server-api/** and are exposed as TanStack server routes in src/routes/api.*.ts at the same /api paths; keep that 1:1 mapping so client fetch calls are unchanged.
+- src/server/runtime-env.ts replaces Cloudflare `env`: DB emulates D1 (prepare/bind/batch) via the service-role-only `anya_exec` Postgres function (atomic batches, `?`/`?N` params); BUCKET emulates R2 on the private `anya-files` storage bucket. SQL must be Postgres-compatible.
+- No user accounts: the source prototype was open-access. Tables have RLS enabled with no policies so only server code can read/write.
+- Product rules and history from the source are in docs/source-handoff/ (read SOURCE_AGENTS.md and COLLABORATION.md before changing behavior).
+- OCR language data is a hosted asset (src/assets/eng.traineddata.gz.asset.json) because it exceeds the repo file limit.
