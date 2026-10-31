@@ -1,3 +1,4 @@
+import ocrLangAsset from "@/assets/eng.traineddata.gz.asset.json";
 export type TravelKind = "Flight" | "Hotel" | "Car" | "Appointment" | "Expense";
 export type TravelEntry = {
   billingCode?: import("./billing-codes").BillingCodeSelection | null;
@@ -157,7 +158,7 @@ export function parseFlightTable(text:string,source:string,id=Date.now()):Travel
 let ocrWorker: Promise<import('tesseract.js').Worker> | null=null;
 async function readImage(image: File|HTMLCanvasElement) {
   const {createWorker}=await import('tesseract.js');
-  if(!ocrWorker)ocrWorker=createWorker('eng',1,{workerPath:'/ocr/worker.min.js',corePath:'/ocr/core',langPath:'/ocr/lang'}).catch(error=>{ocrWorker=null;throw error;});
+  if(!ocrWorker)ocrWorker=createWorker('eng',1,{workerPath:'/ocr/worker.min.js',corePath:'/ocr/core',langPath:ocrLangAsset.url.replace(/\/[^/]*$/,'')}).catch(error=>{ocrWorker=null;throw error;});
   const worker=await ocrWorker;const {data}=await worker.recognize(image);return data.text;
 }
 
