@@ -59,7 +59,7 @@ export async function buildApprovalMessage(record:ApprovalRecord,reviewToken:str
  await approvalBucket().put(`expense-approvals/${record.id}/message.raw`,raw);
 }
 export async function sendApproval(record:ApprovalRecord,deliveryToken:string){
- if(!LIVE_CONNECTIONS_ENABLED)throw Error("Live email delivery is disabled in this test workspace.");
+ if(!LIVE_CONNECTIONS_ENABLED)throw Error("Live email delivery is disabled in this workspace.");
  const config=runtimeApprovalEnv();if(config.EXPENSE_APPROVAL_EMAIL_READY!=="true"||!config.EXPENSE_APPROVAL_EMAIL_WEBHOOK)throw Error("Finish the email connection setup before sending for approval.");
  const claimed=await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'sending', updated_at = ? WHERE id = ? AND status = 'draft'").bind(new Date().toISOString(),record.id).run();
  if(!claimed.meta.changes)throw Error("This report is already being sent. Refresh its approval status.");

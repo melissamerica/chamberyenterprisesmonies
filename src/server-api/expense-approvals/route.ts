@@ -12,7 +12,7 @@ export async function GET(request:Request){
  }catch(error){console.error("Approval load failed",error);return NextResponse.json({error:"The approval details could not load. Retry before sending."},{status:503});}
 }
 export async function POST(request:Request){
- if(!LIVE_CONNECTIONS_ENABLED)return NextResponse.json({error:"Live email delivery is disabled in this test workspace."},{status:409});
+ if(!LIVE_CONNECTIONS_ENABLED)return NextResponse.json({error:"Live email delivery is disabled in this workspace."},{status:409});
  try{if(runtimeApprovalEnv().EXPENSE_APPROVAL_EMAIL_READY!=="true")return NextResponse.json({error:"Finish email setup before sending for approval."},{status:409});
  const body=await request.json()as{trip:UploadTrip;templates?:ExecutiveTemplates;approverEmail:string;clarification?:string};
  const trip=body.trip;

@@ -792,7 +792,7 @@ export function TestWorkspace() {
         setActiveTab("itinerary");
         setScreen("detail");
         rememberEditedPage({ page: "itinerary", travelerId: executiveForTrip(destinationTrip, executives)?.id ?? selectedExecutive?.id, tripId: destination });
-        if (!LIVE_CONNECTIONS_ENABLED) { setNotice("Imported. Itinerary, expense report, and calendar entry previews are ready. Live calendar publishing is disabled in this test workspace."); continue; }
+        if (!LIVE_CONNECTIONS_ENABLED) { setNotice("Imported. Itinerary, expense report, and calendar entry previews are ready. Live calendar publishing is disabled in this workspace."); continue; }
         setNotice(`Itinerary and expenses ready. Publishing to ${calendarName}…`);
         const results = await Promise.all(uniqueItems.map((item) => publishToCalendar(item, destinationTrip, true)));
         const published = results.filter(Boolean).length;
@@ -862,7 +862,7 @@ export function TestWorkspace() {
   }
 
   async function publishToCalendar(item: TripItem, tripContext: Trip = activeTrip, quiet = false) {
-    if (!LIVE_CONNECTIONS_ENABLED) { if (!quiet) setNotice("Live calendar publishing is disabled in this test workspace."); return false; }
+    if (!LIVE_CONNECTIONS_ENABLED) { if (!quiet) setNotice("Live calendar publishing is disabled in this workspace."); return false; }
     if (!item.start || !item.end) {
       if (!quiet) setNotice(`${item.title} could not publish because the exact start and end time are missing.`);
       return false;
@@ -1533,7 +1533,7 @@ export function TestWorkspace() {
       {templatesEditor}
 
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent><DialogHeader><DialogTitle>Calendar connection</DialogTitle><DialogDescription>Live calendar publishing is disabled in this test workspace. Calendar previews and exports remain available.</DialogDescription></DialogHeader><div className="grid gap-2 py-3"><Label htmlFor="calendar-provider">Calendar</Label><select id="calendar-provider" className="simple-select" value={calendarProvider} onChange={event => setCalendarProvider(event.target.value as "outlook" | "google")}><option value="outlook">Outlook</option><option value="google">Google Calendar</option></select><p className="text-sm text-slate-600">{calendarConnections[calendarProvider] ? "Connected" : "Live publishing disabled in test mode"}</p></div><DialogFooter><DialogClose asChild><Button>Done</Button></DialogClose></DialogFooter></DialogContent>
+        <DialogContent><DialogHeader><DialogTitle>Calendar connection</DialogTitle><DialogDescription>Live calendar publishing is disabled in this workspace. Calendar previews and exports remain available.</DialogDescription></DialogHeader><div className="grid gap-2 py-3"><Label htmlFor="calendar-provider">Calendar</Label><select id="calendar-provider" className="simple-select" value={calendarProvider} onChange={event => setCalendarProvider(event.target.value as "outlook" | "google")}><option value="outlook">Outlook</option><option value="google">Google Calendar</option></select><p className="text-sm text-slate-600">{calendarConnections[calendarProvider] ? "Connected" : "Live publishing disabled in test mode"}</p></div><DialogFooter><DialogClose asChild><Button>Done</Button></DialogClose></DialogFooter></DialogContent>
       </Dialog>
 
       <Dialog open={newTripOpen} onOpenChange={setNewTripOpen}>

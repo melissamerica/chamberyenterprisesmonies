@@ -21,7 +21,7 @@ function text(value: unknown, maxLength: number) {
 }
 
 export async function POST(request: Request) {
-  if(!LIVE_CONNECTIONS_ENABLED)return NextResponse.json({error:"Live calendar publishing is disabled in this test workspace."},{status:409});
+  if(!LIVE_CONNECTIONS_ENABLED)return NextResponse.json({error:"Live calendar publishing is disabled in this workspace."},{status:409});
   let body: CalendarPayload;
   try {
     body = await request.json() as CalendarPayload;
