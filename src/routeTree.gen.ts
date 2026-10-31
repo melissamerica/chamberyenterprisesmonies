@@ -10,6 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlecRouteImport } from './routes/alec'
+import { Route as AnyaRouteImport } from './routes/anya'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
@@ -33,6 +38,31 @@ import { Route as ApiExpenseApprovalsReviewSplatRouteImport } from './routes/api
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlecRoute = AlecRouteImport.update({
+  id: '/alec',
+  path: '/alec',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnyaRoute = AnyaRouteImport.update({
+  id: '/anya',
+  path: '/anya',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestRoute = TestRouteImport.update({
@@ -137,6 +167,11 @@ const ApiExpenseApprovalsReviewSplatRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alec': typeof AlecRoute
+  '/anya': typeof AnyaRoute
+  '/contact': typeof ContactRoute
+  '/pricing': typeof PricingRoute
+  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
@@ -159,6 +194,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alec': typeof AlecRoute
+  '/anya': typeof AnyaRoute
+  '/contact': typeof ContactRoute
+  '/pricing': typeof PricingRoute
+  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
@@ -182,6 +222,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alec': typeof AlecRoute
+  '/anya': typeof AnyaRoute
+  '/contact': typeof ContactRoute
+  '/pricing': typeof PricingRoute
+  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
@@ -206,6 +251,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/alec'
+    | '/anya'
+    | '/contact'
+    | '/pricing'
+    | '/security'
     | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
@@ -228,6 +278,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/alec'
+    | '/anya'
+    | '/contact'
+    | '/pricing'
+    | '/security'
     | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
@@ -250,6 +305,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/alec'
+    | '/anya'
+    | '/contact'
+    | '/pricing'
+    | '/security'
     | '/test'
     | '/api/billing-codes'
     | '/api/custom-templates'
@@ -273,6 +333,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlecRoute: typeof AlecRoute
+  AnyaRoute: typeof AnyaRoute
+  ContactRoute: typeof ContactRoute
+  PricingRoute: typeof PricingRoute
+  SecurityRoute: typeof SecurityRoute
   TestRoute: typeof TestRoute
   ApiBillingCodesRoute: typeof ApiBillingCodesRouteWithChildren
   ApiCustomTemplatesRoute: typeof ApiCustomTemplatesRoute
@@ -292,6 +357,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alec': {
+      id: '/alec'
+      path: '/alec'
+      fullPath: '/alec'
+      preLoaderRoute: typeof AlecRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anya': {
+      id: '/anya'
+      path: '/anya'
+      fullPath: '/anya'
+      preLoaderRoute: typeof AnyaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test': {
@@ -491,6 +591,11 @@ const ApiUploadsRouteWithChildren = ApiUploadsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlecRoute: AlecRoute,
+  AnyaRoute: AnyaRoute,
+  ContactRoute: ContactRoute,
+  PricingRoute: PricingRoute,
+  SecurityRoute: SecurityRoute,
   TestRoute: TestRoute,
   ApiBillingCodesRoute: ApiBillingCodesRouteWithChildren,
   ApiCustomTemplatesRoute: ApiCustomTemplatesRoute,
