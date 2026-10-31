@@ -32,9 +32,9 @@ export async function importBillingCodes(rows: BillingImportInput[], executiveId
   const result = await uploadDatabase().prepare(`INSERT INTO billing_codes (id, code, code_key, label, active, updated_at, executive_ids_json)
     SELECT (incoming.value->>'id'), (incoming.value->>'code'), (incoming.value->>'code_key'), (incoming.value->>'label'), (incoming.value->>'active')::int, (incoming.value->>'updated_at'), (incoming.value->>'executive_ids_json') FROM jsonb_array_elements(?1::jsonb) AS incoming(value)
     WHERE NOT EXISTS (
-      SELECT 1 FROM jsonb_array_elements(?1::jsonb) AS guard(value) LEFT JOIN billing_codes AS current ON current.code_key = (guard.value->>'code_key')
-      WHERE ((guard.value->>'expectedUpdatedAt') IS NULL AND current.id IS NOT NULL)
-        OR ((guard.value->>'expectedUpdatedAt') IS NOT NULL AND (current.id IS NULL OR current.id != (guard.value->>'id') OR current.updated_at != (guard.value->>'expectedUpdatedAt')))
+      SELECT 1 FROM jsonb_array_elements(?1::jsonb) AS guard(value) LEFT JOIN billing_codes AS cur ON cur.code_key = (guard.value->>'code_key')
+      WHERE ((guard.value->>'expectedUpdatedAt') IS NULL AND cur.id IS NOT NULL)
+        OR ((guard.value->>'expectedUpdatedAt') IS NOT NULL AND (cur.id IS NULL OR cur.id != (guard.value->>'id') OR cur.updated_at != (guard.value->>'expectedUpdatedAt')))
     ) ON CONFLICT(id) DO UPDATE SET code = excluded.code, code_key = excluded.code_key, label = excluded.label, active = excluded.active, updated_at = excluded.updated_at, executive_ids_json = excluded.executive_ids_json RETURNING id`).bind(JSON.stringify(values)).all<{id: string}>();
   if (result.results.length !== rows.length) throw Error("The code list changed while you were reviewing. Reload billing codes and review the file again; nothing was imported.");
   return {codes: await readBillingCodes(), added, updated};
