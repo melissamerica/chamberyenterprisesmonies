@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/calendar/status")({
   server: {
     handlers: {
-      GET: async ({ request, params }) => { const h = await import("@/server-api/calendar/status/route"); return h.GET(request as never); },
+      GET: async ({ request, params }) => { const h = await import("@/server-api/calendar/status/route"); return (h.GET as (r: never) => Promise<Response>)(request as never); },
     },
   },
 });

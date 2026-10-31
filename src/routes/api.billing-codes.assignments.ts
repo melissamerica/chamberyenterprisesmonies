@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/billing-codes/assignments")({
   server: {
     handlers: {
-      POST: async ({ request, params }) => { const h = await import("@/server-api/billing-codes/assignments/route"); return h.POST(request as never); },
+      POST: async ({ request, params }) => { const h = await import("@/server-api/billing-codes/assignments/route"); return (h.POST as (r: never) => Promise<Response>)(request as never); },
     },
   },
 });

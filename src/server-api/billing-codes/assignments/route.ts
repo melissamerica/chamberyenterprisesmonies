@@ -2,7 +2,7 @@ import { NextResponse } from "@/server/next-server";
 import { applyBillingCodes, type BillingOverride } from "@/lib/billing-codes";
 import { readBillingCodes } from "@/lib/billing-code-storage";
 import { uploadDatabase } from "@/lib/upload-storage";
-import { PUT as saveTrips } from "@/app/api/uploads/route";
+import { PUT as saveTrips } from "@/server-api/uploads/route";
 import type { UploadTrip } from "@/lib/workspace-uploads";
 
 export async function POST(request: Request) {
