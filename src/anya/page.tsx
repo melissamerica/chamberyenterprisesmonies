@@ -1334,7 +1334,6 @@ export function TestWorkspace() {
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "templates" ? "page" : undefined} onClick={() => { setNotice(""); window.history.replaceState(null, "", "?view=templates"); setScreen("templates"); }}><Settings2 className="size-4" />Templates</button>
       <button type="button" className="console-rail-link" onClick={() => { setScreen("home"); window.requestAnimationFrame(() => { const panel = document.getElementById("home-attention"); if (panel) { panel.setAttribute("open", ""); panel.scrollIntoView({ block: "nearest" }); } }); }}><Bell className="size-4" />Needs attention</button>
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "billing-codes" ? "page" : undefined} onClick={() => openBillingCodes()}><FileText className="size-4" />Billing codes</button>
-      <span className="console-rail-link"><FileChartColumn aria-hidden="true" className="size-4" />Reports</span>
     </nav>
     <div className="rail-footer"><span className="preview-label">WORKSPACE</span><p>Calendar &amp; email not connected</p><span className="rail-version">Live sends disabled</span></div>
   </aside>;
@@ -1386,11 +1385,10 @@ export function TestWorkspace() {
               {hydrated ? homeAttention.length ? attentionRows(homeAttention, true) : <p className="mt-4 text-sm text-slate-600">Nothing needs attention right now.</p> : <p className="mt-4 text-sm text-slate-600">Loading…</p>}
             </details>
             <Button type="button" variant="outline" disabled={!hydrated} onClick={() => openBillingCodes()} className="h-auto w-full justify-start gap-3 rounded-xl border-slate-200 px-5 py-5 text-base"><FileText className="size-5 text-[#6b3f78]" />Billing codes</Button>
-            <p className="flex items-center gap-3 px-5 py-2 text-base font-medium text-slate-600"><FileChartColumn aria-hidden="true" className="size-5 shrink-0 text-[#6b3f78]" />Reports</p>
           </section>
         </div>
         <div className="sample-invitation"><div><strong>Take Anya for a test trip.</strong><p>Explore fictional bookings and expenses for Alex Morgan.</p></div><Button type="button" variant="outline" disabled={!hydrated||uploadLoading||profilesLoading||sampleTrips.every(sample=>trips.some(trip=>trip.id===sample.id))} onClick={loadSampleWorkspace}>Load sample workspace</Button></div>
-        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Test workspace. Live calendar and email sends are disabled.</small></div>
+        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small></div>
 
       </div>
 
