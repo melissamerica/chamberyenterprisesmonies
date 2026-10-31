@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck, Users, KeyRound, Building2 } from "lucide-react";
 import { SiteShell } from "@/components/site/site-layout";
 import { ChamberyWordmark, ProductWordmark } from "@/components/site/brand";
@@ -7,6 +7,13 @@ import cat from "@/assets/anya-cat.png";
 import dog from "@/assets/alec-dog.png";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => search,
+  // Legacy prototype links (/?view=...) open the signed-in firm workspace.
+  beforeLoad: ({ search }) => {
+    if (typeof search.view === "string" && search.view) {
+      throw redirect({ to: "/app", search: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Chambery Enterprises — Assistants for executive assistants" },
