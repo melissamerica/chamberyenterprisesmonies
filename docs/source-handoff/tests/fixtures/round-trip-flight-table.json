@@ -1,0 +1,726 @@
+[
+  [
+    {
+      "str": "MOCK DOCUMENT \u2014 FOR SOFTWARE TESTING ONLY",
+      "transform": [
+        14,
+        0,
+        0,
+        14,
+        62,
+        785.8898
+      ],
+      "width": 370.23
+    },
+    {
+      "str": "Delta Air Lines",
+      "transform": [
+        18,
+        0,
+        0,
+        18,
+        234.6198,
+        747.8898
+      ],
+      "width": 126.036
+    },
+    {
+      "str": "Flight confirmation & eTicket receipt",
+      "transform": [
+        14,
+        0,
+        0,
+        14,
+        62,
+        701.8898
+      ],
+      "width": 242.71799999999996
+    },
+    {
+      "str": "Fictional sample. Not issued by Delta Air Lines. No reservation, ticket, or payment exists. Flight numbers,",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        62,
+        665.8898
+      ],
+      "width": 464.0499999999997
+    },
+    {
+      "str": "schedules, and prices are invented for testing.",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        62,
+        653.8898
+      ],
+      "width": 203.9900000000001
+    },
+    {
+      "str": "Reservation details",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        622.8897999999999
+      ],
+      "width": 91.70000000000002
+    },
+    {
+      "str": "Passenger",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        592.8897999999999
+      ],
+      "width": 47.800000000000004
+    },
+    {
+      "str": "Fictional QA Executive",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        592.8897999999999
+      ],
+      "width": 82.79000000000003
+    },
+    {
+      "str": "Confirmation code",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        562.8897999999999
+      ],
+      "width": 81.14000000000001
+    },
+    {
+      "str": "TSTABC",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        562.8897999999999
+      ],
+      "width": 39.45
+    },
+    {
+      "str": "Ticket number (test only)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        532.8897999999999
+      ],
+      "width": 110.02999999999999
+    },
+    {
+      "str": "0060000000000",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        532.8897999999999
+      ],
+      "width": 72.28000000000002
+    },
+    {
+      "str": "Booking / issue date",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        502.8898
+      ],
+      "width": 90.05000000000001
+    },
+    {
+      "str": "October 6, 2026",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        502.8898
+      ],
+      "width": 71.70999999999997
+    },
+    {
+      "str": "Trip type / cabin",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        472.8898
+      ],
+      "width": 71.14000000000001
+    },
+    {
+      "str": "Round trip / Main Cabin",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        472.8898
+      ],
+      "width": 105.03999999999996
+    },
+    {
+      "str": "Reservation status",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        442.8898
+      ],
+      "width": 82.81000000000002
+    },
+    {
+      "str": "Confirmed (simulated)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        263,
+        442.8898
+      ],
+      "width": 98.35000000000004
+    },
+    {
+      "str": "Flight itinerary",
+      "transform": [
+        14,
+        0,
+        0,
+        14,
+        62,
+        389.8898
+      ],
+      "width": 97.24400000000001
+    },
+    {
+      "str": "Outbound",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        350.88980000000004
+      ],
+      "width": 47.769999999999996
+    },
+    {
+      "str": "Return",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        350.88980000000004
+      ],
+      "width": 32.22
+    },
+    {
+      "str": "Date",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        320.88980000000004
+      ],
+      "width": 21.120000000000005
+    },
+    {
+      "str": "October 20, 2026",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        320.88980000000004
+      ],
+      "width": 77.27000000000002
+    },
+    {
+      "str": "October 23, 2026",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        320.88980000000004
+      ],
+      "width": 77.26999999999997
+    },
+    {
+      "str": "Airline / flight",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        290.88980000000004
+      ],
+      "width": 57.24000000000001
+    },
+    {
+      "str": "Delta Air Lines DL 1234",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        290.88980000000004
+      ],
+      "width": 105.60000000000002
+    },
+    {
+      "str": "Delta Air Lines DL 2345",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        290.88980000000004
+      ],
+      "width": 105.59999999999991
+    },
+    {
+      "str": "Departure airport",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        260.88980000000004
+      ],
+      "width": 75.58000000000001
+    },
+    {
+      "str": "Tallahassee (TLH)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        260.88980000000004
+      ],
+      "width": 82.24000000000001
+    },
+    {
+      "str": "Atlanta (ATL)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        260.88980000000004
+      ],
+      "width": 58.909999999999975
+    },
+    {
+      "str": "Departure time",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        230.8898
+      ],
+      "width": 66.13000000000001
+    },
+    {
+      "str": "9:15 AM EDT",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        230.8898
+      ],
+      "width": 60.02
+    },
+    {
+      "str": "5:30 PM EDT",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        230.8898
+      ],
+      "width": 60.019999999999946
+    },
+    {
+      "str": "Arrival airport",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        200.8898
+      ],
+      "width": 59.45
+    },
+    {
+      "str": "Atlanta (ATL)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        200.8898
+      ],
+      "width": 58.910000000000004
+    },
+    {
+      "str": "Tallahassee (TLH)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        200.8898
+      ],
+      "width": 82.23999999999998
+    },
+    {
+      "str": "Arrival time",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        170.8898
+      ],
+      "width": 50
+    },
+    {
+      "str": "10:25 AM EDT",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        170.8898
+      ],
+      "width": 65.58000000000001
+    },
+    {
+      "str": "6:40 PM EDT",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        170.8898
+      ],
+      "width": 60.019999999999946
+    },
+    {
+      "str": "Seat / cabin",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        140.8898
+      ],
+      "width": 52.81000000000001
+    },
+    {
+      "str": "14A / Main Cabin",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        198,
+        140.8898
+      ],
+      "width": 76.7
+    },
+    {
+      "str": "15A / Main Cabin",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        383,
+        140.8898
+      ],
+      "width": 76.69999999999992
+    },
+    {
+      "str": "All departure and arrival times are local. Time zone: America/New_York (UTC",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        62,
+        97.88976
+      ],
+      "width": 343.4200000000001
+    },
+    {
+      "str": "\u2212",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        405.4200000000002,
+        97.88976
+      ],
+      "width": 5.49
+    },
+    {
+      "str": "04:00) for both airports on",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        410.9100000000002,
+        97.88976
+      ],
+      "width": 115.0599999999999
+    },
+    {
+      "str": "these dates.",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        62,
+        85.88976
+      ],
+      "width": 54.48000000000001
+    },
+    {
+      "str": "Receipt / payment summary",
+      "transform": [
+        14,
+        0,
+        0,
+        14,
+        62,
+        47.88976
+      ],
+      "width": 185.948
+    }
+  ],
+  [
+    {
+      "str": "Description",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        770.8898
+      ],
+      "width": 55.010000000000005
+    },
+    {
+      "str": "Amount (USD)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        770.8898
+      ],
+      "width": 68.31999999999996
+    },
+    {
+      "str": "Base fare (round trip)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        740.8898
+      ],
+      "width": 94.47999999999998
+    },
+    {
+      "str": "$300.00",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        740.8898
+      ],
+      "width": 36.14000000000001
+    },
+    {
+      "str": "Taxes and carrier fees (mock aggregate)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        710.8898
+      ],
+      "width": 180.62000000000006
+    },
+    {
+      "str": "$58.40",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        710.8898
+      ],
+      "width": 30.580000000000005
+    },
+    {
+      "str": "Total paid (simulated)",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        680.8898
+      ],
+      "width": 96.14000000000001
+    },
+    {
+      "str": "$358.40",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        680.8898
+      ],
+      "width": 36.14000000000001
+    },
+    {
+      "str": "Payment method",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        650.8898
+      ],
+      "width": 75.59000000000002
+    },
+    {
+      "str": "Test Visa ending 0000",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        650.8898
+      ],
+      "width": 99.49999999999994
+    },
+    {
+      "str": "Payment date",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        68,
+        620.8898
+      ],
+      "width": 61.70000000000002
+    },
+    {
+      "str": "October 6, 2026",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        368,
+        620.8898
+      ],
+      "width": 71.70999999999997
+    },
+    {
+      "str": "TEST DATA ONLY \u2022 Not valid for travel, reimbursement, or proof of purchase.",
+      "transform": [
+        10,
+        0,
+        0,
+        10,
+        62,
+        577.8898
+      ],
+      "width": 344.72999999999996
+    }
+  ]
+]

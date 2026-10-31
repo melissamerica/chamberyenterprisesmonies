@@ -10,33 +10,279 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestRouteImport } from './routes/test'
+import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
+import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
+import { Route as ApiExecutiveProfilesRouteImport } from './routes/api.executive-profiles'
+import { Route as ApiExpenseApprovalsRouteImport } from './routes/api.expense-approvals'
+import { Route as ApiExpenseLearningRouteImport } from './routes/api.expense-learning'
+import { Route as ApiItineraryAttachmentsRouteImport } from './routes/api.itinerary-attachments'
+import { Route as ApiUploadsRouteImport } from './routes/api.uploads'
+import { Route as ApiBillingCodesAssignmentsRouteImport } from './routes/api.billing-codes.assignments'
+import { Route as ApiBillingCodesImportRouteImport } from './routes/api.billing-codes.import'
+import { Route as ApiCalendarPublishRouteImport } from './routes/api.calendar.publish'
+import { Route as ApiCalendarStatusRouteImport } from './routes/api.calendar.status'
+import { Route as ApiExpenseApprovalsConnectionRouteImport } from './routes/api.expense-approvals.connection'
+import { Route as ApiItineraryAttachmentsIdRouteImport } from './routes/api.itinerary-attachments.$id'
+import { Route as ApiUploadsIdRouteImport } from './routes/api.uploads.$id'
+import { Route as ApiUploadsDecisionsRouteImport } from './routes/api.uploads.decisions'
+import { Route as ApiUploadsExclusionsRouteImport } from './routes/api.uploads.exclusions'
+import { Route as ApiUploadsUnassignedRouteImport } from './routes/api.uploads.unassigned'
+import { Route as ApiExpenseApprovalsReviewSplatRouteImport } from './routes/api.expense-approvals.review.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestRoute = TestRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
+  id: '/api/billing-codes',
+  path: '/api/billing-codes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCustomTemplatesRoute = ApiCustomTemplatesRouteImport.update({
+  id: '/api/custom-templates',
+  path: '/api/custom-templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExecutiveProfilesRoute = ApiExecutiveProfilesRouteImport.update({
+  id: '/api/executive-profiles',
+  path: '/api/executive-profiles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExpenseApprovalsRoute = ApiExpenseApprovalsRouteImport.update({
+  id: '/api/expense-approvals',
+  path: '/api/expense-approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExpenseLearningRoute = ApiExpenseLearningRouteImport.update({
+  id: '/api/expense-learning',
+  path: '/api/expense-learning',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiItineraryAttachmentsRoute = ApiItineraryAttachmentsRouteImport.update({
+  id: '/api/itinerary-attachments',
+  path: '/api/itinerary-attachments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUploadsRoute = ApiUploadsRouteImport.update({
+  id: '/api/uploads',
+  path: '/api/uploads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingCodesAssignmentsRoute =
+  ApiBillingCodesAssignmentsRouteImport.update({
+    id: '/assignments',
+    path: '/assignments',
+    getParentRoute: () => ApiBillingCodesRoute,
+  } as any)
+const ApiBillingCodesImportRoute = ApiBillingCodesImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => ApiBillingCodesRoute,
+} as any)
+const ApiCalendarPublishRoute = ApiCalendarPublishRouteImport.update({
+  id: '/api/calendar/publish',
+  path: '/api/calendar/publish',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCalendarStatusRoute = ApiCalendarStatusRouteImport.update({
+  id: '/api/calendar/status',
+  path: '/api/calendar/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiExpenseApprovalsConnectionRoute =
+  ApiExpenseApprovalsConnectionRouteImport.update({
+    id: '/connection',
+    path: '/connection',
+    getParentRoute: () => ApiExpenseApprovalsRoute,
+  } as any)
+const ApiItineraryAttachmentsIdRoute =
+  ApiItineraryAttachmentsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiItineraryAttachmentsRoute,
+  } as any)
+const ApiUploadsIdRoute = ApiUploadsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiUploadsRoute,
+} as any)
+const ApiUploadsDecisionsRoute = ApiUploadsDecisionsRouteImport.update({
+  id: '/decisions',
+  path: '/decisions',
+  getParentRoute: () => ApiUploadsRoute,
+} as any)
+const ApiUploadsExclusionsRoute = ApiUploadsExclusionsRouteImport.update({
+  id: '/exclusions',
+  path: '/exclusions',
+  getParentRoute: () => ApiUploadsRoute,
+} as any)
+const ApiUploadsUnassignedRoute = ApiUploadsUnassignedRouteImport.update({
+  id: '/unassigned',
+  path: '/unassigned',
+  getParentRoute: () => ApiUploadsRoute,
+} as any)
+const ApiExpenseApprovalsReviewSplatRoute =
+  ApiExpenseApprovalsReviewSplatRouteImport.update({
+    id: '/review/$',
+    path: '/review/$',
+    getParentRoute: () => ApiExpenseApprovalsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
+  '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
+  '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
+  '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
+  '/api/expense-learning': typeof ApiExpenseLearningRoute
+  '/api/itinerary-attachments': typeof ApiItineraryAttachmentsRouteWithChildren
+  '/api/uploads': typeof ApiUploadsRouteWithChildren
+  '/api/billing-codes/assignments': typeof ApiBillingCodesAssignmentsRoute
+  '/api/billing-codes/import': typeof ApiBillingCodesImportRoute
+  '/api/calendar/publish': typeof ApiCalendarPublishRoute
+  '/api/calendar/status': typeof ApiCalendarStatusRoute
+  '/api/expense-approvals/connection': typeof ApiExpenseApprovalsConnectionRoute
+  '/api/itinerary-attachments/$id': typeof ApiItineraryAttachmentsIdRoute
+  '/api/uploads/$id': typeof ApiUploadsIdRoute
+  '/api/uploads/decisions': typeof ApiUploadsDecisionsRoute
+  '/api/uploads/exclusions': typeof ApiUploadsExclusionsRoute
+  '/api/uploads/unassigned': typeof ApiUploadsUnassignedRoute
+  '/api/expense-approvals/review/$': typeof ApiExpenseApprovalsReviewSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
+  '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
+  '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
+  '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
+  '/api/expense-learning': typeof ApiExpenseLearningRoute
+  '/api/itinerary-attachments': typeof ApiItineraryAttachmentsRouteWithChildren
+  '/api/uploads': typeof ApiUploadsRouteWithChildren
+  '/api/billing-codes/assignments': typeof ApiBillingCodesAssignmentsRoute
+  '/api/billing-codes/import': typeof ApiBillingCodesImportRoute
+  '/api/calendar/publish': typeof ApiCalendarPublishRoute
+  '/api/calendar/status': typeof ApiCalendarStatusRoute
+  '/api/expense-approvals/connection': typeof ApiExpenseApprovalsConnectionRoute
+  '/api/itinerary-attachments/$id': typeof ApiItineraryAttachmentsIdRoute
+  '/api/uploads/$id': typeof ApiUploadsIdRoute
+  '/api/uploads/decisions': typeof ApiUploadsDecisionsRoute
+  '/api/uploads/exclusions': typeof ApiUploadsExclusionsRoute
+  '/api/uploads/unassigned': typeof ApiUploadsUnassignedRoute
+  '/api/expense-approvals/review/$': typeof ApiExpenseApprovalsReviewSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/test': typeof TestRoute
+  '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
+  '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
+  '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
+  '/api/expense-learning': typeof ApiExpenseLearningRoute
+  '/api/itinerary-attachments': typeof ApiItineraryAttachmentsRouteWithChildren
+  '/api/uploads': typeof ApiUploadsRouteWithChildren
+  '/api/billing-codes/assignments': typeof ApiBillingCodesAssignmentsRoute
+  '/api/billing-codes/import': typeof ApiBillingCodesImportRoute
+  '/api/calendar/publish': typeof ApiCalendarPublishRoute
+  '/api/calendar/status': typeof ApiCalendarStatusRoute
+  '/api/expense-approvals/connection': typeof ApiExpenseApprovalsConnectionRoute
+  '/api/itinerary-attachments/$id': typeof ApiItineraryAttachmentsIdRoute
+  '/api/uploads/$id': typeof ApiUploadsIdRoute
+  '/api/uploads/decisions': typeof ApiUploadsDecisionsRoute
+  '/api/uploads/exclusions': typeof ApiUploadsExclusionsRoute
+  '/api/uploads/unassigned': typeof ApiUploadsUnassignedRoute
+  '/api/expense-approvals/review/$': typeof ApiExpenseApprovalsReviewSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/test'
+    | '/api/billing-codes'
+    | '/api/custom-templates'
+    | '/api/executive-profiles'
+    | '/api/expense-approvals'
+    | '/api/expense-learning'
+    | '/api/itinerary-attachments'
+    | '/api/uploads'
+    | '/api/billing-codes/assignments'
+    | '/api/billing-codes/import'
+    | '/api/calendar/publish'
+    | '/api/calendar/status'
+    | '/api/expense-approvals/connection'
+    | '/api/itinerary-attachments/$id'
+    | '/api/uploads/$id'
+    | '/api/uploads/decisions'
+    | '/api/uploads/exclusions'
+    | '/api/uploads/unassigned'
+    | '/api/expense-approvals/review/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/test'
+    | '/api/billing-codes'
+    | '/api/custom-templates'
+    | '/api/executive-profiles'
+    | '/api/expense-approvals'
+    | '/api/expense-learning'
+    | '/api/itinerary-attachments'
+    | '/api/uploads'
+    | '/api/billing-codes/assignments'
+    | '/api/billing-codes/import'
+    | '/api/calendar/publish'
+    | '/api/calendar/status'
+    | '/api/expense-approvals/connection'
+    | '/api/itinerary-attachments/$id'
+    | '/api/uploads/$id'
+    | '/api/uploads/decisions'
+    | '/api/uploads/exclusions'
+    | '/api/uploads/unassigned'
+    | '/api/expense-approvals/review/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/test'
+    | '/api/billing-codes'
+    | '/api/custom-templates'
+    | '/api/executive-profiles'
+    | '/api/expense-approvals'
+    | '/api/expense-learning'
+    | '/api/itinerary-attachments'
+    | '/api/uploads'
+    | '/api/billing-codes/assignments'
+    | '/api/billing-codes/import'
+    | '/api/calendar/publish'
+    | '/api/calendar/status'
+    | '/api/expense-approvals/connection'
+    | '/api/itinerary-attachments/$id'
+    | '/api/uploads/$id'
+    | '/api/uploads/decisions'
+    | '/api/uploads/exclusions'
+    | '/api/uploads/unassigned'
+    | '/api/expense-approvals/review/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TestRoute: typeof TestRoute
+  ApiBillingCodesRoute: typeof ApiBillingCodesRouteWithChildren
+  ApiCustomTemplatesRoute: typeof ApiCustomTemplatesRoute
+  ApiExecutiveProfilesRoute: typeof ApiExecutiveProfilesRoute
+  ApiExpenseApprovalsRoute: typeof ApiExpenseApprovalsRouteWithChildren
+  ApiExpenseLearningRoute: typeof ApiExpenseLearningRoute
+  ApiItineraryAttachmentsRoute: typeof ApiItineraryAttachmentsRouteWithChildren
+  ApiUploadsRoute: typeof ApiUploadsRouteWithChildren
+  ApiCalendarPublishRoute: typeof ApiCalendarPublishRoute
+  ApiCalendarStatusRoute: typeof ApiCalendarStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +294,213 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing-codes': {
+      id: '/api/billing-codes'
+      path: '/api/billing-codes'
+      fullPath: '/api/billing-codes'
+      preLoaderRoute: typeof ApiBillingCodesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/custom-templates': {
+      id: '/api/custom-templates'
+      path: '/api/custom-templates'
+      fullPath: '/api/custom-templates'
+      preLoaderRoute: typeof ApiCustomTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/executive-profiles': {
+      id: '/api/executive-profiles'
+      path: '/api/executive-profiles'
+      fullPath: '/api/executive-profiles'
+      preLoaderRoute: typeof ApiExecutiveProfilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/expense-approvals': {
+      id: '/api/expense-approvals'
+      path: '/api/expense-approvals'
+      fullPath: '/api/expense-approvals'
+      preLoaderRoute: typeof ApiExpenseApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/expense-learning': {
+      id: '/api/expense-learning'
+      path: '/api/expense-learning'
+      fullPath: '/api/expense-learning'
+      preLoaderRoute: typeof ApiExpenseLearningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/itinerary-attachments': {
+      id: '/api/itinerary-attachments'
+      path: '/api/itinerary-attachments'
+      fullPath: '/api/itinerary-attachments'
+      preLoaderRoute: typeof ApiItineraryAttachmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/uploads': {
+      id: '/api/uploads'
+      path: '/api/uploads'
+      fullPath: '/api/uploads'
+      preLoaderRoute: typeof ApiUploadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing-codes/assignments': {
+      id: '/api/billing-codes/assignments'
+      path: '/assignments'
+      fullPath: '/api/billing-codes/assignments'
+      preLoaderRoute: typeof ApiBillingCodesAssignmentsRouteImport
+      parentRoute: typeof ApiBillingCodesRoute
+    }
+    '/api/billing-codes/import': {
+      id: '/api/billing-codes/import'
+      path: '/import'
+      fullPath: '/api/billing-codes/import'
+      preLoaderRoute: typeof ApiBillingCodesImportRouteImport
+      parentRoute: typeof ApiBillingCodesRoute
+    }
+    '/api/calendar/publish': {
+      id: '/api/calendar/publish'
+      path: '/api/calendar/publish'
+      fullPath: '/api/calendar/publish'
+      preLoaderRoute: typeof ApiCalendarPublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/calendar/status': {
+      id: '/api/calendar/status'
+      path: '/api/calendar/status'
+      fullPath: '/api/calendar/status'
+      preLoaderRoute: typeof ApiCalendarStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/expense-approvals/connection': {
+      id: '/api/expense-approvals/connection'
+      path: '/connection'
+      fullPath: '/api/expense-approvals/connection'
+      preLoaderRoute: typeof ApiExpenseApprovalsConnectionRouteImport
+      parentRoute: typeof ApiExpenseApprovalsRoute
+    }
+    '/api/itinerary-attachments/$id': {
+      id: '/api/itinerary-attachments/$id'
+      path: '/$id'
+      fullPath: '/api/itinerary-attachments/$id'
+      preLoaderRoute: typeof ApiItineraryAttachmentsIdRouteImport
+      parentRoute: typeof ApiItineraryAttachmentsRoute
+    }
+    '/api/uploads/$id': {
+      id: '/api/uploads/$id'
+      path: '/$id'
+      fullPath: '/api/uploads/$id'
+      preLoaderRoute: typeof ApiUploadsIdRouteImport
+      parentRoute: typeof ApiUploadsRoute
+    }
+    '/api/uploads/decisions': {
+      id: '/api/uploads/decisions'
+      path: '/decisions'
+      fullPath: '/api/uploads/decisions'
+      preLoaderRoute: typeof ApiUploadsDecisionsRouteImport
+      parentRoute: typeof ApiUploadsRoute
+    }
+    '/api/uploads/exclusions': {
+      id: '/api/uploads/exclusions'
+      path: '/exclusions'
+      fullPath: '/api/uploads/exclusions'
+      preLoaderRoute: typeof ApiUploadsExclusionsRouteImport
+      parentRoute: typeof ApiUploadsRoute
+    }
+    '/api/uploads/unassigned': {
+      id: '/api/uploads/unassigned'
+      path: '/unassigned'
+      fullPath: '/api/uploads/unassigned'
+      preLoaderRoute: typeof ApiUploadsUnassignedRouteImport
+      parentRoute: typeof ApiUploadsRoute
+    }
+    '/api/expense-approvals/review/$': {
+      id: '/api/expense-approvals/review/$'
+      path: '/review/$'
+      fullPath: '/api/expense-approvals/review/$'
+      preLoaderRoute: typeof ApiExpenseApprovalsReviewSplatRouteImport
+      parentRoute: typeof ApiExpenseApprovalsRoute
+    }
   }
 }
 
+interface ApiBillingCodesRouteChildren {
+  ApiBillingCodesAssignmentsRoute: typeof ApiBillingCodesAssignmentsRoute
+  ApiBillingCodesImportRoute: typeof ApiBillingCodesImportRoute
+}
+
+const ApiBillingCodesRouteChildren: ApiBillingCodesRouteChildren = {
+  ApiBillingCodesAssignmentsRoute: ApiBillingCodesAssignmentsRoute,
+  ApiBillingCodesImportRoute: ApiBillingCodesImportRoute,
+}
+
+const ApiBillingCodesRouteWithChildren = ApiBillingCodesRoute._addFileChildren(
+  ApiBillingCodesRouteChildren,
+)
+
+interface ApiExpenseApprovalsRouteChildren {
+  ApiExpenseApprovalsConnectionRoute: typeof ApiExpenseApprovalsConnectionRoute
+  ApiExpenseApprovalsReviewSplatRoute: typeof ApiExpenseApprovalsReviewSplatRoute
+}
+
+const ApiExpenseApprovalsRouteChildren: ApiExpenseApprovalsRouteChildren = {
+  ApiExpenseApprovalsConnectionRoute: ApiExpenseApprovalsConnectionRoute,
+  ApiExpenseApprovalsReviewSplatRoute: ApiExpenseApprovalsReviewSplatRoute,
+}
+
+const ApiExpenseApprovalsRouteWithChildren =
+  ApiExpenseApprovalsRoute._addFileChildren(ApiExpenseApprovalsRouteChildren)
+
+interface ApiItineraryAttachmentsRouteChildren {
+  ApiItineraryAttachmentsIdRoute: typeof ApiItineraryAttachmentsIdRoute
+}
+
+const ApiItineraryAttachmentsRouteChildren: ApiItineraryAttachmentsRouteChildren =
+  {
+    ApiItineraryAttachmentsIdRoute: ApiItineraryAttachmentsIdRoute,
+  }
+
+const ApiItineraryAttachmentsRouteWithChildren =
+  ApiItineraryAttachmentsRoute._addFileChildren(
+    ApiItineraryAttachmentsRouteChildren,
+  )
+
+interface ApiUploadsRouteChildren {
+  ApiUploadsIdRoute: typeof ApiUploadsIdRoute
+  ApiUploadsDecisionsRoute: typeof ApiUploadsDecisionsRoute
+  ApiUploadsExclusionsRoute: typeof ApiUploadsExclusionsRoute
+  ApiUploadsUnassignedRoute: typeof ApiUploadsUnassignedRoute
+}
+
+const ApiUploadsRouteChildren: ApiUploadsRouteChildren = {
+  ApiUploadsIdRoute: ApiUploadsIdRoute,
+  ApiUploadsDecisionsRoute: ApiUploadsDecisionsRoute,
+  ApiUploadsExclusionsRoute: ApiUploadsExclusionsRoute,
+  ApiUploadsUnassignedRoute: ApiUploadsUnassignedRoute,
+}
+
+const ApiUploadsRouteWithChildren = ApiUploadsRoute._addFileChildren(
+  ApiUploadsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TestRoute: TestRoute,
+  ApiBillingCodesRoute: ApiBillingCodesRouteWithChildren,
+  ApiCustomTemplatesRoute: ApiCustomTemplatesRoute,
+  ApiExecutiveProfilesRoute: ApiExecutiveProfilesRoute,
+  ApiExpenseApprovalsRoute: ApiExpenseApprovalsRouteWithChildren,
+  ApiExpenseLearningRoute: ApiExpenseLearningRoute,
+  ApiItineraryAttachmentsRoute: ApiItineraryAttachmentsRouteWithChildren,
+  ApiUploadsRoute: ApiUploadsRouteWithChildren,
+  ApiCalendarPublishRoute: ApiCalendarPublishRoute,
+  ApiCalendarStatusRoute: ApiCalendarStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
