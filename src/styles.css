@@ -1,31 +1,43 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss" source("../src");
 @import "tw-animate-css";
+@import "./vendor/shadcn-tailwind-4.13.0.css";
 
-@custom-variant dark (&:is(.dark *));
-
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
+:root {
+  --background: #ffffff;
+  --foreground: #172b3b;
+  --card: #ffffff;
+  --card-foreground: #172b3b;
+  --popover: #ffffff;
+  --popover-foreground: #172b3b;
+  --primary: #117e9a;
+  --primary-foreground: #ffffff;
+  --secondary: #edf3f7;
+  --secondary-foreground: #28475a;
+  --muted: #f4f7f9;
+  --muted-foreground: #596a80;
+  --accent: #e9f6fa;
+  --accent-foreground: #12637a;
+  --destructive: #dc2626;
+  --border: #dce4ee;
+  --input: #bdcdda;
+  --ring: #117e9a;
+  --chart-1: #6b3f78;
+  --chart-2: #6476b3;
+  --chart-3: #059669;
+  --chart-4: #d97706;
+  --chart-5: #e11d48;
+  --radius: 0.5rem;
+  --sidebar: #102535;
+  --sidebar-foreground: #e5edf4;
+  --sidebar-primary: #203d50;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #203d50;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #29495c;
+  --sidebar-ring: #99c8d6;
+}
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -41,11 +53,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -59,86 +69,201 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+* { box-sizing: border-box; }
+html { background: var(--background); }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+button, input, select { font: inherit; }
+button, summary { touch-action: manipulation; }
+.simple-select {
+  min-height: 2.5rem;
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0.4rem 2rem 0.4rem 0.75rem;
+  background: white;
+  color: var(--foreground);
+  font-size: 0.875rem;
+}
+.simple-select:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.print-only { display: none; }
+
+::selection {
+  background: #dceef5;
+  color: #172b3b;
 }
 
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+/* Approved Console presentation. Booking, review, storage and output logic are unchanged. */
+@font-face {
+  font-family: "Console Cormorant";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/cormorant-garamond-italic-300.ttf") format("truetype");
+}
+.console-shell { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-height: 100vh; background: #f4f7f9; color: #172b3b; }
+.console-body { min-width: 0; }
+.console-rail { display: flex; flex-direction: column; gap: 30px; min-width: 0; padding: 24px 17px; background: #102535; color: #e5edf4; }
+.console-brand { display: block; width: 100%; padding: 0 0 6px; text-align: left; }
+.console-wordmark { display: block; max-width: 100%; color: #8b57a3; font: italic 300 24px/1.4 "Console Cormorant", "Cormorant Garamond", Georgia, serif; letter-spacing: .5px; font-kerning: none; font-variant-ligatures: none; overflow-wrap: normal; }
+.console-rail-heading { margin: 0 0 12px; padding: 0 10px; color: #a3b4c2; font-size: 10px; font-weight: 500; line-height: 1.5; letter-spacing: 1.2px; text-transform: uppercase; }
+.console-executives { display: grid; gap: 4px; margin: 0 0 4px; padding: 0; list-style: none; }
+.console-rail-link { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 10px; border: 0; border-radius: 5px; background: transparent; color: #c4d2dd; text-align: left; font-size: 12px; line-height: 1.5; }
+.console-rail-link > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.console-rail-link:hover, .console-rail-link[aria-current="page"] { background: #203d50; color: #ffffff; }
+.console-rail-link:disabled { opacity: .5; }
+.console-brand:focus-visible, .console-rail-link:focus-visible { outline: 2px solid #99c8d6; outline-offset: 3px; }
+.console-initials { display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border: 1px solid #3c5d70; border-radius: 50%; background: #29495c; color: #ffffff; font-size: 10px; font-weight: 600; }
+.console-rail-empty { padding: 8px 10px; color: #a3b4c2; font-size: 12px; }
+.console-workspace-nav { display: grid; gap: 3px; }
+.console-workspace-nav .console-rail-heading { margin-bottom: 9px; }
+.console-page { background: #f4f7f9; color: #172b3b; }
+.console-page > .max-w-4xl, .console-content { width: 100%; max-width: 1080px; }
+.console-topbar { background: #ffffff; border-color: #dce4ee; }
+.console-topbar > div { max-width: 1080px; min-height: 66px; padding-top: 16px; padding-bottom: 16px; }
+.console-breadcrumb { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; min-width: 0; color: #596a80; font-size: 12px; text-align: left; }
+.console-breadcrumb > span { color: #8b9aac; }
+.console-content { padding-top: 24px; padding-bottom: 30px; }
+.console-workspace > .console-content, .console-workspace .console-topbar > div { max-width: none; margin-left: 0; margin-right: 0; }
+.console-trip-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 28px; align-items: start; }
+.console-trip-main { min-width: 0; grid-column: 1; }
+.console-upload-panel { min-width: 0; grid-column: 2; padding: 22px; border: 1px solid #dce4ee; border-radius: 6px; background: #ffffff; }
+.console-upload-toggle { min-height: 46px; font-size: 18px; font-weight: 600; }
+.console-upload-title { display: flex; align-items: center; gap: 10px; color: #117e9a; }
+.console-upload-title h2 { font-size: 18px; font-weight: 600; color: #172b3b; }
+.console-upload-review { display: grid; gap: 10px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #dce4ee; }
+.console-upload-review button { width: 100%; white-space: normal; }
+.console-upload-panel .console-drop { flex-direction: column; align-items: flex-start; padding: 18px !important; }
+@media (max-width: 900px) {
+  .console-trip-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .console-upload-panel { grid-column: 1; grid-row: 1; }
+}
+.console-workspace-heading { display: block; margin-bottom: 20px; }
+.console-workspace-heading h1 { font-size: 25px; line-height: 1.25; letter-spacing: -.65px; }
+.console-workspace-heading > div:last-child:not(:first-child) { margin-top: 17px; }
+.console-workspace-heading > div:first-child > button { margin-bottom: 12px; color: #12637a; }
+.console-page [data-slot="button"] { border-radius: 4px; }
+.console-page .simple-select { border-radius: 4px; border-color: #bdcdda; background: #ffffff; }
+.console-drop { padding: 20px !important; border: 1px dashed #a8bbd7; border-radius: 4px; background: #ffffff; }
+.console-drop:hover { border-color: #117e9a; background: #fbfdfe; }
+.console-drop > svg { box-sizing: content-box; width: 20px; height: 20px; padding: 11px; border-radius: 7px; background: #e9f6fa; color: #117e9a; }
+.console-drop > span > span:first-child { font-size: 14px; font-weight: 600; }
+.console-drop > span > span:last-child:not(:first-child) { font-size: 12px; }
+.console-page h1[class~="text-[#56315f]"] { color: #172b3b; }
+.console-home section[aria-label="Homepage options"] { max-width: 680px; }
+.console-home section[aria-label="Homepage options"] > button, .console-home section[aria-label="Homepage options"] > details { background: #ffffff; border-color: #dce4ee; border-radius: 6px; }
+.console-home section[aria-label="Homepage options"] svg { color: #117e9a; }
+.console-output-tabs > [data-slot="tabs-list"] { flex-wrap: wrap; height: auto; min-height: 42px; gap: 24px; border-color: #dce4ee; }
+.console-output-tabs > [data-slot="tabs-list"] > [data-slot="tabs-trigger"] { flex: 0 1 auto; min-height: 42px; padding: 10px 0; border-radius: 0; color: #8b57a3; font-family: "Segoe UI", Arial, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.5; }
+.console-output-tabs > [data-slot="tabs-list"] > [data-slot="tabs-trigger"][data-state="active"] { color: #8b57a3; }
+.console-output-tabs > [data-slot="tabs-list"] > [data-slot="tabs-trigger"]::after { bottom: -1px; background: #8b57a3; }
+.console-output-tabs > [data-slot="tabs-content"] > section[aria-label$="output"] { padding: 20px; border: 1px solid #dce4ee; border-radius: 4px; }
+.console-output-tabs [data-slot="tabs-content"] > section[aria-label="Travel itinerary output"] { padding: 20px; border: 1px solid #dce4ee; border-radius: 4px; }
+@media (max-width: 750px) {
+  .console-shell { grid-template-columns: 1fr; }
+  .console-rail { flex-direction: row; align-items: flex-start; flex-wrap: wrap; gap: 18px 24px; padding: 18px 20px; }
+  .console-brand { width: 100%; padding-bottom: 0; }
+  .console-wordmark { max-width: none; }
+  .console-rail > section { flex: 1 1 180px; }
+  .console-workspace-nav { flex: 0 1 180px; }
+  .console-executives { display: flex; flex-wrap: wrap; gap: 4px; }
+  .console-executives li { min-width: 130px; }
+  .console-rail-heading { padding-left: 10px; margin-bottom: 6px; }
+  .console-topbar > div { padding: 14px 20px; }
+  .console-content { padding: 24px 20px; }
+  .console-page:not(.console-workspace) { padding: 28px 20px; }
+}
+@media (max-width: 460px) {
+  .console-output-tabs > [data-slot="tabs-list"] { gap: 16px; }
+  .console-output-tabs > [data-slot="tabs-list"] > [data-slot="tabs-trigger"] { font-size: 14px; }
+  .console-drop { gap: 10px; padding: 16px 12px !important; }
+  .console-drop > svg { padding: 8px; }
+  .console-workspace-nav { flex-basis: 100%; }
+  .console-output-tabs [data-slot="tabs-content"] > section[aria-label="Travel itinerary output"], .console-output-tabs > [data-slot="tabs-content"] > section[aria-label$="output"] { padding: 12px; }
+}
+@media (pointer: coarse) {
+  .console-rail-link { min-height: 44px; }
+}
+@media print {
+  .console-shell { display: block; min-height: 0; background: #ffffff; }
+  .console-rail { display: none !important; }
+  .console-body, .console-page { min-height: 0; background: #ffffff; }
+  .console-content { max-width: none; margin: 0; padding: 0; }
+  .console-trip-layout { display: block; }
+  .console-output-tabs [data-slot="tabs-content"] > section[aria-label="Travel itinerary output"], .console-output-tabs > [data-slot="tabs-content"] > section[aria-label$="output"] { padding: 0; border: 0; }
 }
 
-@layer base {
-  * {
-    border-color: var(--color-border);
+@media print {
+  .app-chrome, [role="tablist"], [role="dialog"], [data-slot="dialog-overlay"], [data-slot="dropdown-menu-content"], button { display: none !important; }
+  .print-only { display: block; }
+  tr, article { break-inside: avoid; }
+  main, section, article {
+    background: white !important;
+    box-shadow: none !important;
+    border: 0 !important;
   }
+}
 
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-  }
+.outlook-editor { overflow: hidden; border: 1px solid #b7b7b7; background: #fff; color: #323130; font: 13px/1.35 "Segoe UI", Arial, sans-serif; box-shadow: 0 1px 5px #00000014; }
+.outlook-titlebar { display: flex; align-items: center; gap: 12px; height: 34px; padding: 0 12px; background: #0078d4; color: white; font-size: 12px; }
+.outlook-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; min-height: 33px; padding: 0 13px; border-bottom: 1px solid #dadada; font-size: 12px; }
+.outlook-tabs span { padding: 8px 0 6px; white-space: nowrap; }
+.outlook-active-tab { border-bottom: 2px solid #0078d4; }
+.outlook-ribbon { display: flex; flex-wrap: wrap; gap: 0; min-height: 95px; padding: 7px 8px 3px; background: #fafafa; border-bottom: 3px solid #e2e2e2; }
+.outlook-ribbon-group { display: flex; flex-direction: column; justify-content: space-between; padding: 0 12px; border-right: 1px solid #d5d5d5; }
+.outlook-ribbon-group:last-child { border: 0; }
+.outlook-ribbon-group > p { margin: 5px 0 0; text-align: center; font-size: 10px; color: #605e5c; }
+.outlook-ribbon-tools { display: flex; align-items: flex-start; gap: 13px; }
+.outlook-tool { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 35px; text-align: center; font-size: 11px; color: #605e5c; }
+.outlook-options { justify-content: start; gap: 6px; }
+.outlook-options > p { margin-top: auto; }
+.outlook-option { display: grid; grid-template-columns: 14px 60px 112px; align-items: center; gap: 5px; font-size: 11px; }
+.outlook-option select { width: 100%; height: 24px; border: 1px solid #bcbcbc; border-radius: 0; padding: 1px 3px; background: #fff; font-size: 11px; color: #323130; opacity: 1; }
+.outlook-form { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 16px; padding: 19px 13px 0; }
+.outlook-save-column { padding-top: 2px; }
+.outlook-save { display: flex; width: 57px; min-height: 70px; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid #bcbcbc; background: white; padding: 5px; font-size: 11px; }
+.outlook-save:hover { background: #e5f1fb; border-color: #0078d4; }
+.outlook-fields { min-width: 0; }
+.outlook-field-row { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-bottom: 7px; min-width: 0; }
+.outlook-field-row > label { flex: 0 0 62px; font-size: 11px; color: #605e5c; }
+.outlook-title-input, .outlook-location-input { flex: 1; min-width: 0; height: 30px; padding: 3px 0; border: 0; border-bottom: 1px solid #bcbcbc; border-radius: 0; background: white; color: #323130; outline-offset: 1px; }
+.outlook-title-input { font-size: 17px; }
+.outlook-location-input { height: 26px; font-size: 12px; }
+.outlook-field-row > .outlook-location-label { padding: 5px 6px; text-align: center; border: 1px solid #bcbcbc; border-radius: 2px; color: #323130; }
+.outlook-date-controls { display: flex; gap: 6px; max-width: 100%; }
+.outlook-date-box { display: flex; align-items: center; gap: 4px; height: 25px; padding: 2px 5px; border: 1px solid #bcbcbc; background: white; }
+.outlook-date { width: 142px; }
+.outlook-time { width: 96px; }
+.outlook-date-box input { width: 100%; min-width: 0; border: 0; background: white; padding: 0; font-size: 11px; outline: none; }
+.outlook-date-box svg { flex-shrink: 0; color: #605e5c; }
+.outlook-checks { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.outlook-checks label { display: flex; gap: 5px; align-items: center; white-space: nowrap; font-size: 11px; }
+.outlook-checks input { width: 12px; height: 12px; accent-color: #0078d4; }
+.outlook-zone { font-size: 10px; color: #605e5c; }
+.outlook-body { display: block; width: calc(100% - 26px); min-height: 270px; margin: 0 13px 13px; padding: 15px 7px; border: 0; border-top: 1px solid #c8c8c8; border-radius: 0; resize: vertical; background: white; font: 14px/1.5 "Segoe UI", Arial, sans-serif; }
+.outlook-status { padding: 10px 13px; border-top: 1px solid #dadada; background: #fafafa; }
+@media (max-width: 640px) {
+  .outlook-tabs { gap: 13px; }
+  .outlook-ribbon-group { padding: 0 7px; margin-bottom: 5px; }
+  .outlook-ribbon-tools { gap: 8px; }
+  .outlook-form { grid-template-columns: 1fr; gap: 10px; padding-top: 12px; }
+  .outlook-save { width: auto; min-height: 0; flex-direction: row; padding: 5px 10px; }
+  .outlook-save br { display: none; }
+  .outlook-timing-row > label { flex-basis: 62px; }
+  .outlook-checks, .outlook-zone { margin-left: 71px; }
+  .outlook-date { width: 128px; }
+  .outlook-time { width: 79px; }
+  .outlook-title-input { font-size: 15px; }
 }
