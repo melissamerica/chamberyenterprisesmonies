@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { ArrowUpRight, CalendarDays, Check, FileSpreadsheet, FileText, Paperclip, Sparkles, MapPin, RotateCcw } from 'lucide-react';
