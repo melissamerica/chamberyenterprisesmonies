@@ -10,12 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AlecRouteImport } from './routes/alec'
 import { Route as AnyaRouteImport } from './routes/anya'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
 import { Route as ApiExecutiveProfilesRouteImport } from './routes/api.executive-profiles'
@@ -38,6 +40,10 @@ import { Route as ApiExpenseApprovalsReviewSplatRouteImport } from './routes/api
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlecRoute = AlecRouteImport.update({
@@ -69,6 +75,11 @@ const TestRoute = TestRouteImport.update({
   id: '/test',
   path: '/test',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
   id: '/api/billing-codes',
@@ -173,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
+  '/app': typeof AuthenticatedAppRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -200,6 +212,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
+  '/app': typeof AuthenticatedAppRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -222,12 +235,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
   '/contact': typeof ContactRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
+  '/_authenticated/app': typeof AuthenticatedAppRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
@@ -257,6 +272,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/security'
     | '/test'
+    | '/app'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -284,6 +300,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/security'
     | '/test'
+    | '/app'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -305,12 +322,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/alec'
     | '/anya'
     | '/contact'
     | '/pricing'
     | '/security'
     | '/test'
+    | '/_authenticated/app'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/executive-profiles'
@@ -333,6 +352,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AlecRoute: typeof AlecRoute
   AnyaRoute: typeof AnyaRoute
   ContactRoute: typeof ContactRoute
@@ -357,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alec': {
@@ -400,6 +427,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/test'
       preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/billing-codes': {
       id: '/api/billing-codes'
@@ -530,6 +564,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface ApiBillingCodesRouteChildren {
   ApiBillingCodesAssignmentsRoute: typeof ApiBillingCodesAssignmentsRoute
   ApiBillingCodesImportRoute: typeof ApiBillingCodesImportRoute
@@ -591,6 +636,7 @@ const ApiUploadsRouteWithChildren = ApiUploadsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AlecRoute: AlecRoute,
   AnyaRoute: AnyaRoute,
   ContactRoute: ContactRoute,
