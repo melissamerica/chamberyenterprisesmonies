@@ -33,7 +33,7 @@ export function ProductHome() {
     <header className="product-header"><div className="product-header-inner">
       <a className="product-brand" href="/anya" aria-label="Anya product home"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a>
       <nav aria-label="Product navigation"><a href="#automation">How it works</a><a href="#features">Features</a><a href="#memory">Learning & preferences</a></nav>
-      <a className="product-test-link" href={testHref}>Continue to test workspace <ArrowUpRight aria-hidden="true"/></a>
+      <a className="product-test-link" href={testHref}>Open the workspace <ArrowUpRight aria-hidden="true"/></a>
     </div></header>
 
     <main id="product-main">
@@ -41,7 +41,7 @@ export function ProductHome() {
         <div className="product-hero-copy"><p className="product-eyebrow">YOUR EXECUTIVE ASSISTANT WORKSPACE</p><h1>Every trip,<br/><em>thoughtfully<br/>organized.</em></h1>
           <p className="product-hero-subtitle">Itineraries, calendars and expenses. One place to keep the details together.</p>
           <p className="product-hero-description">Turn travel confirmations into the details you used to type by hand. Keep your executive’s formats, preferences and travel paperwork working together.</p>
-          <a className="product-primary" href={testHref}>Explore the prototype <ArrowRight aria-hidden="true"/></a><p className="product-entry-note">No account required to try the test workspace.</p>
+          <a className="product-primary" href={testHref}>Open the workspace <ArrowRight aria-hidden="true"/></a><p className="product-entry-note">Sign in to open your firm’s workspace.</p>
         </div>
         <div className="product-hero-visual">
           <div className="product-recognized"><span className="product-upload-icon"><FileText aria-hidden="true"/></span><div><small>DROP A CONFIRMATION</small><strong>Flight confirmation.pdf</strong></div><span className="product-recognized-tag"><ScanLine aria-hidden="true"/> Recognized</span></div>
@@ -50,7 +50,7 @@ export function ProductHome() {
             <div className="product-output-content" aria-live="polite"><OutputPreview output={output}/></div>
             <div className="product-window-bottom"><Check aria-hidden="true"/><span>Your saved template. Your executive’s details.</span></div>
           </div>
-          <div className="product-confirmed-note"><CheckCheck aria-hidden="true"/><div><strong>Confirm the trip. Let the details follow.</strong><small>Calendar + itinerary + expense lines</small></div></div><p className="product-example-note">Illustrative outputs · Live calendar and email sends are disabled in the prototype.</p>
+          <div className="product-confirmed-note"><CheckCheck aria-hidden="true"/><div><strong>Confirm the trip. Let the details follow.</strong><small>Calendar + itinerary + expense lines</small></div></div><p className="product-example-note">Illustrative outputs · Live calendar and email sends stay off until your firm enables them.</p>
         </div>
       </div></section>
 
@@ -77,14 +77,14 @@ export function ProductHome() {
       <section className="product-container product-supporting-features"><div><FileCheck2/><h3>Keep exceptions visible.</h3><p>Needs attention, reminders and Review later keep unresolved items within reach.</p></div><div><Paperclip/><h3>Keep the evidence together.</h3><p>Bookings, itinerary materials and expense documents remain connected to the trip.</p></div><div><FileText/><h3>Keep the outputs editable.</h3><p>Refine templates and take itineraries into Word and expense reports into Excel.</p></div></section>
 
       <section className="product-faq product-container"><p className="product-eyebrow">BEFORE YOU EXPLORE</p><h2>A few useful details.</h2><div>
-        <details><summary>Can I try Anya without signing up?<ChevronDown/></summary><p>Yes. Continue to the test workspace to explore the prototype. Start with an executive profile or choose “Load sample workspace” for fictional sample records.</p></details>
-        <details><summary>Will the prototype send emails or change my live calendar?<ChevronDown/></summary><p>No. Live calendar and email sends are disabled in this test release. You can review the generated outputs and download editable documents.</p></details>
+        <details><summary>How do I get started?<ChevronDown/></summary><p>Sign in and open your firm’s workspace. Start with an executive profile or choose “Load sample workspace” for fictional sample records.</p></details>
+        <details><summary>Will Anya send emails or change my live calendar?<ChevronDown/></summary><p>No. Live calendar and email sends stay off until your firm enables them. You can review the generated outputs and download editable documents.</p></details>
         <details><summary>What does Anya remember?<ChevronDown/></summary><p>It keeps your saved executive preferences, templates and vendor decisions. Completed expense decisions also provide contextual evidence for recurring category suggestions. Explicitly saved category preferences fill in automatically. You can inspect, pause, forget or restore learning memories.</p></details>
       </div></section>
 
-      <section className="product-final-cta"><div className="product-container"><div><p className="product-eyebrow">BUILT AROUND REAL EA WORK</p><h2>See the details<br/><em>come together.</em></h2></div><div><a className="product-primary" href={testHref}>Continue to test workspace <ArrowUpRight/></a><p>Explore the working prototype. No account required.</p></div></div></section>
+      <section className="product-final-cta"><div className="product-container"><div><p className="product-eyebrow">BUILT AROUND REAL EA WORK</p><h2>See the details<br/><em>come together.</em></h2></div><div><a className="product-primary" href={testHref}>Open the workspace <ArrowUpRight/></a><p>Sign in to open your firm’s workspace.</p></div></div></section>
     </main>
-    <footer className="product-footer product-container"><a className="product-brand" href="/anya"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a><span>Prototype · Built for executive assistants.</span><a href={testHref}>Test workspace <ArrowUpRight/></a></footer>
+    <footer className="product-footer product-container"><a className="product-brand" href="/anya"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a><span>Built for executive assistants.</span><a href={testHref}>Workspace <ArrowUpRight/></a></footer>
   </div>;
 }
 

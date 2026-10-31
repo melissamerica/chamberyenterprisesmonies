@@ -1,7 +1,7 @@
 
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { CloudUpload, Download, Plus, UserRound, FileText, FileChartColumn, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu } from "lucide-react";
+import { CloudUpload, Download, Plus, UserRound, FileText, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu } from "lucide-react";
 import { createRecordId } from "@/lib/record-id";
 import { Button } from "@/components/ui/button";
 import {
@@ -792,7 +792,7 @@ export function TestWorkspace() {
         setActiveTab("itinerary");
         setScreen("detail");
         rememberEditedPage({ page: "itinerary", travelerId: executiveForTrip(destinationTrip, executives)?.id ?? selectedExecutive?.id, tripId: destination });
-        if (!LIVE_CONNECTIONS_ENABLED) { setNotice("Imported. Itinerary, expense report, and calendar entry previews are ready. Live calendar publishing is disabled in this test workspace."); continue; }
+        if (!LIVE_CONNECTIONS_ENABLED) { setNotice("Imported. Itinerary, expense report, and calendar entry previews are ready. Live calendar publishing is disabled in this workspace."); continue; }
         setNotice(`Itinerary and expenses ready. Publishing to ${calendarName}…`);
         const results = await Promise.all(uniqueItems.map((item) => publishToCalendar(item, destinationTrip, true)));
         const published = results.filter(Boolean).length;
@@ -862,7 +862,7 @@ export function TestWorkspace() {
   }
 
   async function publishToCalendar(item: TripItem, tripContext: Trip = activeTrip, quiet = false) {
-    if (!LIVE_CONNECTIONS_ENABLED) { if (!quiet) setNotice("Live calendar publishing is disabled in this test workspace."); return false; }
+    if (!LIVE_CONNECTIONS_ENABLED) { if (!quiet) setNotice("Live calendar publishing is disabled in this workspace."); return false; }
     if (!item.start || !item.end) {
       if (!quiet) setNotice(`${item.title} could not publish because the exact start and end time are missing.`);
       return false;
@@ -1334,11 +1334,10 @@ export function TestWorkspace() {
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "templates" ? "page" : undefined} onClick={() => { setNotice(""); window.history.replaceState(null, "", "?view=templates"); setScreen("templates"); }}><Settings2 className="size-4" />Templates</button>
       <button type="button" className="console-rail-link" onClick={() => { setScreen("home"); window.requestAnimationFrame(() => { const panel = document.getElementById("home-attention"); if (panel) { panel.setAttribute("open", ""); panel.scrollIntoView({ block: "nearest" }); } }); }}><Bell className="size-4" />Needs attention</button>
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "billing-codes" ? "page" : undefined} onClick={() => openBillingCodes()}><FileText className="size-4" />Billing codes</button>
-      <span className="console-rail-link"><FileChartColumn aria-hidden="true" className="size-4" />Reports</span>
     </nav>
-    <div className="rail-footer"><span className="preview-label">TEST WORKSPACE</span><p>Calendar &amp; email not connected</p><span className="rail-version">Live sends disabled</span></div>
+    <div className="rail-footer"><span className="preview-label">WORKSPACE</span><p>Calendar &amp; email not connected</p><span className="rail-version">Live sends disabled</span></div>
   </aside>;
-  const consoleShell = (children: ReactNode) => <div className="console-shell"><a className="skip-link" href="#workspace-main">Skip to content</a>{consoleNavigation}<div id="workspace-main" className="console-body"><div className="preview-status"><span><a href="/" className="underline underline-offset-4">Product home</a> <span className="status-divider">/</span> Test workspace · No live sends</span><span>Calendar &amp; email disconnected</span></div>{children}{executiveEditor}{profileEditor}{executiveUpload}
+  const consoleShell = (children: ReactNode) => <div className="console-shell"><a className="skip-link" href="#workspace-main">Skip to content</a>{consoleNavigation}<div id="workspace-main" className="console-body"><div className="preview-status"><span><a href="/" className="underline underline-offset-4">Product home</a> <span className="status-divider">/</span> Workspace · Live sends off</span><span>Calendar &amp; email disconnected</span></div>{children}{executiveEditor}{profileEditor}{executiveUpload}
     {auxiliaryUpload?.kind === "attachment" && <AttachmentUploadReview key={auxiliaryUpload.file.name} file={auxiliaryUpload.file} warning={auxiliaryUpload.warning} executives={executives} trips={trips} onSkip={finishAuxiliaryUpload} onSaved={trip => { attachmentTripSaved(trip); setSelectedExecutiveId(trip.executiveId!); setActiveTripId(trip.id); setActiveTab("itinerary"); setItineraryTab("attachments"); setAttachmentEntryId(undefined); setAttachmentRevision(value => value + 1); setScreen("detail"); setNotice(`Saved “${auxiliaryUpload.file.name}” in ${trip.name} → Travel itinerary → Attachments.`); finishAuxiliaryUpload(); }} />}
     {auxiliaryUpload?.kind === "billing" && <DetectedBillingUpload file={auxiliaryUpload.file} executives={executives} onClose={finishAuxiliaryUpload} />}
     {auxiliaryUpload?.kind === "review" && <Dialog open onOpenChange={open => { if(!open)finishAuxiliaryUpload(); }}><DialogContent><DialogHeader><DialogTitle>This file needs a closer look</DialogTitle><DialogDescription>The app could not confidently identify this document. It has not been filed or added to a trip.</DialogDescription></DialogHeader><p className="break-all text-sm font-medium">{auxiliaryUpload.file.name}</p><p className="text-sm text-slate-600">{auxiliaryUpload.warning || "For a travel confirmation or financial document, upload a readable copy with the booking or transaction details. If this is supporting itinerary material, you can choose to save it as an attachment."}</p><DialogFooter><Button variant="outline" onClick={finishAuxiliaryUpload}>Skip file</Button><Button onClick={() => setAuxiliaryUpload({...auxiliaryUpload,kind:"attachment"})}>This is itinerary material</Button></DialogFooter></DialogContent></Dialog>}
@@ -1386,11 +1385,10 @@ export function TestWorkspace() {
               {hydrated ? homeAttention.length ? attentionRows(homeAttention, true) : <p className="mt-4 text-sm text-slate-600">Nothing needs attention right now.</p> : <p className="mt-4 text-sm text-slate-600">Loading…</p>}
             </details>
             <Button type="button" variant="outline" disabled={!hydrated} onClick={() => openBillingCodes()} className="h-auto w-full justify-start gap-3 rounded-xl border-slate-200 px-5 py-5 text-base"><FileText className="size-5 text-[#6b3f78]" />Billing codes</Button>
-            <p className="flex items-center gap-3 px-5 py-2 text-base font-medium text-slate-600"><FileChartColumn aria-hidden="true" className="size-5 shrink-0 text-[#6b3f78]" />Reports</p>
           </section>
         </div>
         <div className="sample-invitation"><div><strong>Take Anya for a test trip.</strong><p>Explore fictional bookings and expenses for Alex Morgan.</p></div><Button type="button" variant="outline" disabled={!hydrated||uploadLoading||profilesLoading||sampleTrips.every(sample=>trips.some(trip=>trip.id===sample.id))} onClick={loadSampleWorkspace}>Load sample workspace</Button></div>
-        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Test workspace. Live calendar and email sends are disabled.</small></div>
+        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small></div>
 
       </div>
 
@@ -1533,7 +1531,7 @@ export function TestWorkspace() {
       {templatesEditor}
 
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent><DialogHeader><DialogTitle>Calendar connection</DialogTitle><DialogDescription>Live calendar publishing is disabled in this test workspace. Calendar previews and exports remain available.</DialogDescription></DialogHeader><div className="grid gap-2 py-3"><Label htmlFor="calendar-provider">Calendar</Label><select id="calendar-provider" className="simple-select" value={calendarProvider} onChange={event => setCalendarProvider(event.target.value as "outlook" | "google")}><option value="outlook">Outlook</option><option value="google">Google Calendar</option></select><p className="text-sm text-slate-600">{calendarConnections[calendarProvider] ? "Connected" : "Live publishing disabled in test mode"}</p></div><DialogFooter><DialogClose asChild><Button>Done</Button></DialogClose></DialogFooter></DialogContent>
+        <DialogContent><DialogHeader><DialogTitle>Calendar connection</DialogTitle><DialogDescription>Live calendar publishing is disabled in this workspace. Calendar previews and exports remain available.</DialogDescription></DialogHeader><div className="grid gap-2 py-3"><Label htmlFor="calendar-provider">Calendar</Label><select id="calendar-provider" className="simple-select" value={calendarProvider} onChange={event => setCalendarProvider(event.target.value as "outlook" | "google")}><option value="outlook">Outlook</option><option value="google">Google Calendar</option></select><p className="text-sm text-slate-600">{calendarConnections[calendarProvider] ? "Connected" : "Live publishing disabled in test mode"}</p></div><DialogFooter><DialogClose asChild><Button>Done</Button></DialogClose></DialogFooter></DialogContent>
       </Dialog>
 
       <Dialog open={newTripOpen} onOpenChange={setNewTripOpen}>

@@ -40,7 +40,7 @@ export function ExpenseMemoryPanel({ memory }: { memory: MemoryState }) {
   return <details className="rounded-lg border border-[#e2d8e8] bg-[#fcfafc] p-3 text-sm">
     <summary className="cursor-pointer font-medium text-[#684576]">Anya memory <span className="font-normal text-slate-500">· {activePreferences.length} saved category preferences · {activeDecisions.length} {activeDecisions.length===1?"decision":"decisions"}</span></summary>
     <div className="mt-4 space-y-4">
-      <p className="text-xs leading-5 text-slate-600">Trip matching and document automation run as usual. Saved category preferences fill in automatically; inferred patterns stay suggestions. Memory is kept separately for each executive in this test workspace.</p>
+      <p className="text-xs leading-5 text-slate-600">Trip matching and document automation run as usual. Saved category preferences fill in automatically; inferred patterns stay suggestions. Memory is kept separately for each executive in this workspace.</p>
       <label className="flex items-start gap-2"><input type="checkbox" checked={knowledge.enabled} disabled={saving} onChange={event => void update({ enabled: event.target.checked })}/><span>Learn patterns from completed expense decisions<small className="mt-1 block text-xs text-slate-500">Pausing stops new background learning and inferred suggestions. Your explicitly saved preferences still work.</small></span></label>
       {error && <p role="status" className="text-xs text-amber-800">{error}</p>}
       <p className="text-xs"><a href="/Anya_Learning_Demo.zip" download className="text-[#795b88] underline underline-offset-4">Download fictional receipts to test learning</a></p>

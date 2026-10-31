@@ -7,13 +7,16 @@ Built (needs verification):
 - [x] Chambery style (dark green serif, plum dot, off-white), mascots used sparingly
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
-Open (priority: functional + aesthetically pleasing):
-- [ ] Verify build/typecheck; fix errors
-- [ ] Test sign-in, firm onboarding, team invites, role permissions, cross-firm isolation
-- [ ] Redirect old /?view=... prototype links into /app
-- [ ] Polish /app workspace visuals to Chambery brand (currently slate leftovers in workspace components)
+Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
+- [x] Verify build/typecheck; fix errors (build OK)
+- [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
+- [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries
+- [x] Redirect old /?view=... prototype links into /app
+- [ ] Exercise the document upload → trip → itinerary/expenses flow with a real confirmation file
 
 Deferred (per Melissa, save for later):
+- Signup/onboarding flow questions (invite-only vs self-serve) — leave as built
+- Team & roles verification, cross-firm isolation testing
 - Real pricing terms on pricing page (currently contact-based)
 - Security page claim review
 - Demo-request owner notification (email or in-app lead list)
