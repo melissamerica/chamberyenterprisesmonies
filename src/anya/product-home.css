@@ -37,7 +37,7 @@
 .product-entry-note{font-size:10px;color:#959298;margin:12px 0 0;}
 .product-hero-visual{position:relative;padding:28px 0 0;min-width:0;}
 .product-hero-visual::before{content:'';position:absolute;inset:12px -31px 60px 44px;border-radius:150px 28px 28px 28px;background:#e9e0ed;z-index:0;}
-.product-recognized{position:relative;z-index:1;display:flex;align-items:center;gap:11px;padding:16px 17px;background:#193640;color:#fff;border-radius:11px;margin:0 37px -10px -13px;box-shadow:0 9px 25px #1b35421a;transform:rotate(-3deg);}
+.product-recognized{position:relative;z-index:1;display:flex;align-items:center;gap:11px;padding:16px 17px;background:#193640;color:#fff;border-radius:11px;margin:0 37px -10px -13px;box-shadow:0 9px 25px #1f2d241a;transform:rotate(-3deg);}
 .product-upload-icon{width:37px;height:43px;border-radius:7px;display:grid;place-items:center;background:#dce6c9;color:#375044;}
 .product-recognized small{display:block;font-size:7px;letter-spacing:1.4px;color:#b8ced4;margin-bottom:5px;}
 .product-recognized strong{display:block;font-size:12px;font-weight:500;}
@@ -119,7 +119,7 @@
 .product-meeting-card>p{font-size:9px;color:#9e92a6;}
 .product-selected{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;background:#edf2e5;color:#84966c;font-size:8px;margin-top:16px;border-radius:5px;}
 .product-selected svg{width:10px;height:10px;}
-.product-material-card{position:relative;z-index:4;display:flex;align-items:center;gap:9px;margin:-12px -2px 0 38px;padding:15px 17px;background:#1d3a44;border-radius:9px;box-shadow:0 8px 25px #1b35421a;color:#fff;}
+.product-material-card{position:relative;z-index:4;display:flex;align-items:center;gap:9px;margin:-12px -2px 0 38px;padding:15px 17px;background:#1d3a44;border-radius:9px;box-shadow:0 8px 25px #1f2d241a;color:#fff;}
 .product-material-card>svg{width:17px;height:17px;color:#cfc2d7;}
 .product-material-card strong{display:block;font-size:10px;font-weight:500;}
 .product-material-card small{display:block;font-size:7px;color:#9fb6bf;margin-top:3px;}
