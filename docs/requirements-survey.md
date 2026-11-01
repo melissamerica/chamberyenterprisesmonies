@@ -51,7 +51,7 @@ Answer in your own words; examples and “not sure” are welcome. All answers b
 
 | ID | Question | Official answer |
 | --- | --- | --- |
-| Q001 | Walk me through one real trip you manage, from the first request through closing its expenses: where does your work begin and end? | Pending |
+| Q001 | Walk me through one real trip you manage, from the first request through closing its expenses: where does your work begin and end? | Answered Nov 1, 2026: "The app code answers that." The existing code is the source of truth for the trip workflow: documents/requests arrive → content-based recognition (`automatic-upload.ts`) → review and confirm the trip before filing → records filed to the trip → itinerary, calendar and expense outputs (`travel-output.tsx`, `travel-exports.ts`) → expenses reviewed and closed. Changes to this flow must be proposed against the code, not assumed. |
 | Q002 | Which three repetitive EA tasks must Anya remove first for you to consider it useful? | Pending |
 | Q003 | Besides the EA, who should use the workspace, and what work should each person actually do there? | Pending |
 | Q004 | In a typical week, how many executives and active trips does one EA manage? | Pending |
