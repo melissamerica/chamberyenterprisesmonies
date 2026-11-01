@@ -4,7 +4,8 @@
 - Requested by Melissa on November 1, 2026: 200 questions, delivered in 20-question checkpoints to control credit spend.
 - This source-held document is the official survey and answer record. Preserve question IDs, record Melissa's actual answers, distinguish interpretations from confirmed requirements, and mirror durable decisions in project memory.
 - Check this record and source-handoff requirements before asking questions. Do not repeat settled questions. An unanswered or skipped question stays unresolved; never treat silence as approval.
-- Survey answers specify desired behavior, not authorization to implement, publish, connect live services or enable the Executive time tracker.
+- Purpose (clarified by Melissa, November 1, 2026): the survey exists to clarify and then implement features, functions, rules and roles. Confirmed answers become the build specification; implement what they settle, in checkpoint-sized steps Melissa can review.
+- Confirmed answers still do not authorize publishing, connecting live services or enabling the Executive time tracker; those need separate explicit approval.
 - Current focus: useful, aesthetically pleasing EA workspace functions and workflows for other users. Signup, sales, pricing, security claims, demo notifications and per-client SAML are deferred.
 
 ## Review method
