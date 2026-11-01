@@ -143,3 +143,8 @@ Melissa's Nov 1 addition: urgent items (e.g. cancellations) should proactively a
 - Q001–Q008 have recorded answers or settled rules; original generic Q002–Q020 drafts are superseded.
 - Q009 answered conditionally: decision delegation can be included; clarify its behavior before implementation.
 - Next action: inspect a signature feature's current implementation against its documented intent, then ask one unresolved product-choice question. Save Melissa's answer before moving on.
+## Survey status: STOPPED (Melissa, Nov 1 2026)
+Melissa rejected the question-by-question survey approach ("NO"). Do not resume
+asking survey questions. Recorded answers so far stand as settled requirements.
+Future work proceeds only from Melissa's explicit requests; derive obvious rules
+from her objectives and the source docs instead of asking.
