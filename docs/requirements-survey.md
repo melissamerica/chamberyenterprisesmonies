@@ -10,6 +10,7 @@
 
 ## Review method
 Review relevant source flows for each checkpoint, from input to review/save to output. Record observed implementation separately from desired behavior. Source inspection is not end-to-end verification.
+- Method change (Melissa, November 1, 2026): every question must be derived from a concrete shortcoming or hole found in the app code — not generic EA-workflow questions. Each question cites the gap it comes from. Q002 onward re-derived from the gap audit; Q001 stands as answered.
 
 ## Checkpoint map (200 questions total)
 1. Q001–Q020: EA workday, collaborators, intake and trip decisions.
