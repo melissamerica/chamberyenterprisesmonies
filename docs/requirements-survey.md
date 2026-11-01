@@ -11,6 +11,7 @@
 ## Review method
 Review relevant source flows for each checkpoint, from input to review/save to output. Record observed implementation separately from desired behavior. Source inspection is not end-to-end verification.
 - Method change (Melissa, November 1, 2026): every question must be derived from a concrete shortcoming or hole found in the app code — not generic EA-workflow questions, and never ask Melissa to re-specify what the code already does ("you're asking me to recreate the wheel"). Each question cites the gap it comes from and includes a proposed answer/behavior for Melissa to confirm or correct. Q002 onward re-derived from the gap audit; Q001 stands as answered.
+- Review the built app alongside source requirements and recorded answers, not the handoff alone. Prioritize unresolved choices that advance signature features; work out obvious implementation details without burdening Melissa. Ask one grounded question at a time and save the answer before advancing. Do not ask Melissa to identify or re-explain features already documented.
 
 ## Checkpoint map (200 questions total)
 1. Q001–Q020: EA workday, collaborators, intake and trip decisions.
@@ -138,6 +139,6 @@ Melissa's Nov 1 addition: urgent items (e.g. cancellations) should proactively a
 | Q008 | G19 | What is the currency rule for expenses? | Answered Nov 1, 2026: receipts and card statements already list currency — "figure it out." Decided rule: read each expense's currency from the source document, store it with the expense, and total each currency separately with home-currency conversion noted on reports. |
 
 ## Answer progress
-- Q001 answered; Q002+ being re-derived from the gap register, asked one at a time.
-- Answers recorded: 0 / 200.
-- Next action: Melissa answers Q001–Q020, all at once or in smaller groups. Record answers before preparing checkpoint 2.
+- Q001–Q008 have recorded answers or settled rules; original generic Q002–Q020 drafts are superseded.
+- Q009 signature feature inventory is documented above; no answer to a new product-choice question has been recorded.
+- Next action: inspect a signature feature's current implementation against its documented intent, then ask one unresolved product-choice question. Save Melissa's answer before moving on.
