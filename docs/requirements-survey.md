@@ -44,6 +44,7 @@ Later questions are not yet drafted; adapt them to previous answers to avoid rep
 - `src/lib/travel-exports.ts`: Word itinerary and Excel expense report generation. Current monetary formatting uses dollar signs; do not assume this meets international firm needs.
 - `docs/source-handoff/SOURCE_AGENTS.md` and `COLLABORATION.md`: existing approval-before-filing, billing, template, intake and learning requirements.
 - These are source observations, not a new claim that all paths have been tested.
+- Focused review also found mixed browser-held/API-backed trip state, limited manual appointment fields, unresolved cancellation reconciliation and exact-title/start duplicate checks. Continuity, manual editing and revision handling need explicit expectations before implementation; inspect `src/anya/page.tsx` around trip persistence, manual creation and travel import.
 
 Answer in your own words; examples and “not sure” are welcome. All answers below are pending.
 
@@ -60,7 +61,7 @@ Answer in your own words; examples and “not sure” are welcome. All answers b
 | Q009 | Where do trip requests and booking documents arrive today—email, travel agency, booking portal, messages, paper or elsewhere—and which sources matter first? | Pending |
 | Q010 | Which intake methods should be available first: uploading files, forwarding emails, pasting text, scanning receipts or importing from another tool? | Pending |
 | Q011 | For a batch containing documents for several executives, how should Anya help you review and separate them while keeping explicit executive confirmation? | Pending |
-| Q012 | What should you see while a large batch is processing, and how should a failed file be handled without interrupting the others? | Pending |
+| Q012 | What work must carry over when you switch devices or another EA takes over, and what should happen if two EAs edit the same trip? | Pending |
 | Q013 | If a document names someone other than the selected executive, what should Anya show and what choices should you have? | Pending |
 | Q014 | What defines one trip in your work, especially with several cities, several clients or personal days mixed in? | Pending |
 | Q015 | Beyond executive, dates and city, what information would make a suggested trip match trustworthy to you? | Pending |
