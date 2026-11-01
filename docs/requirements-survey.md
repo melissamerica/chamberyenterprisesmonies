@@ -103,6 +103,8 @@ Per Melissa's direction, gaps whose correct behavior follows obviously from her 
 
 Genuine judgment calls reserved for Melissa: G07 (cancellation handling), G08 (duplicate vs amendment vs rebooking), G17 (suppressed documents), G19 (currency model), G15 (role powers in workspace), G20 (template-import promise), G11 (calendar update/delete lifecycle — deferred with live sends).
 
+Priority change (Melissa, Nov 1, 2026): solidify each app's unique/signature features FIRST; the gap-register details above are worked out later. Remaining detail questions (G15, G20) postponed until after the unique features are defined.
+
 ## Gap-derived questions
 | ID | Gap | Question | Official answer |
 | --- | --- | --- | --- |
