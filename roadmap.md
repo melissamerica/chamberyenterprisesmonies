@@ -32,3 +32,7 @@ Deferred (per Melissa, save for later):
 - Security page claim review
 - Demo-request owner notification (email or in-app lead list)
 - Per-client SAML IdP configuration / setup screen
+
+## Mobile EA workspace (new Nov 1)
+- Brainstorming phase — Melissa: "Don't build yet." No code changes until she approves scope.
+- Note: /app redirects to sign-in without a session; workspace mobile layout not yet visually verified (only cheap read-only checks allowed meanwhile).
