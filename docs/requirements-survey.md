@@ -148,3 +148,9 @@ Melissa rejected the question-by-question survey approach ("NO"). Do not resume
 asking survey questions. Recorded answers so far stand as settled requirements.
 Future work proceeds only from Melissa's explicit requests; derive obvious rules
 from her objectives and the source docs instead of asking.
+
+## Product clarification — November 1, 2026
+Melissa invited credible questions after the app review; this does not restart the stopped survey.
+- Asked whether “Where in the World Is…” should cover private/charter flights as well as commercial flights.
+- Melissa's actual answer: “Where in the world is.... a user who is caring for execs.... a feature far right hand of screen live flight tracking for traveling exec.... that's in anya”.
+- Confirmed: this is Anya's far-right-screen live flight-tracking feature for the user caring for traveling executives. Do not re-ask its audience, placement or product. The answer does not choose aircraft coverage; do not infer a commercial-only or private/charter policy.
