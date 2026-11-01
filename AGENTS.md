@@ -15,3 +15,4 @@
 - No user accounts: the source prototype was open-access. Tables have RLS enabled with no policies so only server code can read/write.
 - Product rules and history from the source are in docs/source-handoff/ (read SOURCE_AGENTS.md and COLLABORATION.md before changing behavior).
 - OCR language data is a hosted asset (src/assets/eng.traineddata.gz.asset.json) because it exceeds the repo file limit.
+- Keep the official numbered requirements survey and answer ledger in docs/requirements-survey.md; consult it before new survey questions so confirmed answers remain portable and are not repeated.
