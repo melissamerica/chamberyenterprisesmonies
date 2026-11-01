@@ -8,6 +8,8 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
+- [ ] Reconcile outdated/conflicting project guidance and complete a detailed source-grounded action audit of intake/trips, expenses/outputs, and signature features; preserve decisions and app behavior. Requested Nov 1 after focused review proved insufficient.
+- [ ] Research whether a private/custom learning system is necessary for reliable development context; report supported mechanisms and limits, not guarantees.
 - [x] Focused read-only review of actual workspace source, v4/v5 signature blueprints and recorded decisions; source-grounded understanding saved in docs/app-understanding.md. No app behavior changed; exhaustive/runtime verification not performed.
 - [x] Verify build/typecheck; fix errors (build OK)
 - [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
