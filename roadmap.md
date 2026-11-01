@@ -15,6 +15,8 @@ Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
 - [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries
 - [x] Redirect old /?view=... prototype links into /app
 - [ ] Exercise the document upload → trip → itinerary/expenses flow with a real confirmation file
+- [ ] Implement settled survey rules (docs/requirements-survey.md gap triage): durable saves, account-tied cache, report-replace warning, viewer read-only UI, full appointment fields, reservation time zones, working controls only, trip lifecycle, consistent billing validation, attributed learning, upload contract, confirmed team writes, reviewable suppressed-documents list, currency tracking, revised-booking reconciliation
+- [ ] Future feature (Melissa, Nov 1): proactive EA alerts in her preferred channel — including Anya voice-dialing the EA for urgent items like cancellations; Alec equivalent ("the trailer")
 
 Deferred (per Melissa, save for later):
 - Signup/onboarding flow questions (invite-only vs self-serve) — leave as built
