@@ -89,7 +89,7 @@ Ranked by severity. Each gap becomes one or more survey questions with a propose
 ## Gap-derived questions
 | ID | Gap | Question | Official answer |
 | --- | --- | --- | --- |
-| Q002 | G01+G02 | See chat, Nov 1, 2026 | Pending |
+| Q002 | G01+G02 | First framing rejected Nov 1, 2026: "What teammates. I've never once mentioned teammates in this design. Never." Settled rule: the Anya workspace is a single-EA tool; do not frame workspace features around teammates, sharing or multi-editor editing. Firm accounts/roles are the enterprise sales layer only. Underlying gap (browser-only saves, cross-account cache mixing) re-asked as Q003 in single-EA terms. | Answered — framing rule settled |
 
 ## Answer progress
 - Q001 answered; Q002+ being re-derived from the gap register, asked one at a time.
