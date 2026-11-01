@@ -9,6 +9,7 @@ Built (needs verification):
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
 - [ ] Requirements survey: 200 questions in 20-question checkpoints focused on features, functions, rules and roles; confirmed answers become the build spec and are implemented in checkpoint-sized steps. Await Melissa's answers between checkpoints.
+- [ ] Survey questions must be derived from app shortcomings/holes (per Melissa, Nov 1): audit the code for gaps first, then ask. Q001 answered (code is source of truth for trip flow); Q002+ to be re-derived from gap audit.
 - [x] Verify build/typecheck; fix errors (build OK)
 - [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
 - [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries
