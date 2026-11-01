@@ -8,6 +8,7 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
+- [ ] Clarify decision delegation through one concrete, plain-language question at a time; record each answer before advancing. Q009 permits inclusion conditional on understanding its behavior, not an unspecified implementation.
 - [ ] Requirements survey: 200 questions in 20-question checkpoints focused on features, functions, rules and roles; confirmed answers become the build spec and are implemented in checkpoint-sized steps. Await Melissa's answers between checkpoints.
 - [ ] Survey questions must be derived from app shortcomings/holes (per Melissa, Nov 1): audit the code for gaps first, then ask. Q001 answered (code is source of truth for trip flow); Q002+ to be re-derived from gap audit.
 - [x] Verify build/typecheck; fix errors (build OK)
