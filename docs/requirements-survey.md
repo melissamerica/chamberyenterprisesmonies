@@ -105,6 +105,27 @@ Genuine judgment calls reserved for Melissa: G07 (cancellation handling), G08 (d
 
 Priority change (Melissa, Nov 1, 2026): solidify each app's unique/signature features FIRST; the gap-register details above are worked out later. Remaining detail questions (G15, G20) postponed until after the unique features are defined.
 
+## Signature features — Q009, derived from the master blueprint
+Source: `docs/source-handoff/execos-staging-not-deployed/Master_Document/Anya_Master_Future_Features_and_ExecOS_Engineering_v4.docx` (Oct 29, 2026) — the single source of future feature requirements. Product thesis: "Anya becomes the Executive Assistant. The Executive Assistant becomes the Chief of Staff." EA elevation, not replacement.
+
+The unique feature set (F01–F12):
+- F01 EA homepage / premium workspace: Smart Drop intake, Needs Attention (Open/Dismiss/Remind Me), exception-first design.
+- F02 Automatic Outlook/Gmail travel-confirmation ingestion (travel messages only — never general inbox triage).
+- F03 Itinerary/calendar/documents/approvals output, including the versioned "trip bible" with EA review gates.
+- F04 "Where in the World Is…" live flight tracking on the EA homepage right rail (real licensed positions, never simulated).
+- F05 Executive mobile receipt camera ("Snap Receipt") with automatic trip matching (feature-flagged auto-file-to-draft).
+- F06 Expenses, billing codes, background learning, reports.
+- F07 Executive Decision Queue: one decision-ready card at a time on mobile, with universal "Send voice reply" / "Send video reply" on every question.
+- F08 Executive-initiated communications: "Let's Talk", Call/Video if Free, callback; Teams/Meet/Zoom links. No autonomous schedule defense.
+- F09 Delegation with explicit modes: Request Input / Delegate Decision / Assign Execution.
+- F10 Contextual scheduling of decision delivery (send now / chosen time / relative to a meeting or flight — human-configured).
+- F11 Contextual learning: reuse prior choices by executive/city/client/vendor; confirmed vs inferred kept separate and explainable.
+- F12 Chief of Staff operating layer: morning brief, commitments tracking, briefing preparation, priority stewardship.
+
+Explicitly rejected (never reintroduce): email triage/inbox management, automated routine defense, algorithmic smart-scheduling links, focus-time protection, autonomous calendar reshuffling, workload/capacity analytics. Executive Time Tracker stays deferred until Melissa authorizes.
+
+Melissa's Nov 1 addition: urgent items (e.g. cancellations) should proactively alert the EA in her preferred way — one option is Anya voice-dialing the EA; Alec gets an equivalent ("the trailer").
+
 ## Gap-derived questions
 | ID | Gap | Question | Official answer |
 | --- | --- | --- | --- |
