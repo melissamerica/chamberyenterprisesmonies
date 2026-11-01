@@ -12,6 +12,7 @@ Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
 - [ ] Research whether a private/custom learning system is necessary for reliable development context; report supported mechanisms and limits, not guarantees.
 - [ ] Explain how source-backed history, ambitions, action knowledge and decision checks can improve familiarity across sessions without promising human-equivalent memory (Melissa, Nov 1 02:20 UTC).
 - [x] Save Melissa's standing rule: never grasp at straws; contributions must stem from existing code/status and settled decisions (Nov 1 02:22 UTC).
+- [x] Save working roles: Melissa specifies a nuance to an existing feature; inspect and implement directly within that scope (Nov 1 02:23 UTC).
 - [x] Focused read-only review of actual workspace source, v4/v5 signature blueprints and recorded decisions; source-grounded understanding saved in docs/app-understanding.md. No app behavior changed; exhaustive/runtime verification not performed.
 - [x] Verify build/typecheck; fix errors (build OK)
 - [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
