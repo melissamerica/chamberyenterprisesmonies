@@ -8,9 +8,9 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
-- [ ] Reconcile outdated/conflicting project guidance and complete a detailed source-grounded action audit of intake/trips, expenses/outputs, and signature features; preserve decisions and app behavior. Requested Nov 1 after focused review proved insufficient.
-- [ ] Research whether a private/custom learning system is necessary for reliable development context; report supported mechanisms and limits, not guarantees.
-- [ ] Explain how source-backed history, ambitions, action knowledge and decision checks can improve familiarity across sessions without promising human-equivalent memory (Melissa, Nov 1 02:20 UTC).
+- [x] Reconcile outdated/conflicting guidance; detailed source audit saved in docs/app-action-inventory.md and docs/project-history.md. Current source inspection complete; nonempty runtime upload/export and isolation verification remain unperformed. No app behavior changed.
+- [x] Research private/custom AI context: primary-source findings and limits in docs/development-context-research.md; no custom service necessary merely for continuity, no perfect-memory guarantee.
+- [x] Explain source-backed history, ambitions and decision checks; preserve source-linked records across sessions, not a promise of human-equivalent memory.
 - [x] Save Melissa's standing rule: never grasp at straws; contributions must stem from existing code/status and settled decisions (Nov 1 02:22 UTC).
 - [x] Save working roles: Melissa specifies a nuance to an existing feature; inspect and implement directly within that scope (Nov 1 02:23 UTC).
 - [x] Focused read-only review of actual workspace source, v4/v5 signature blueprints and recorded decisions; source-grounded understanding saved in docs/app-understanding.md. No app behavior changed; exhaustive/runtime verification not performed.
