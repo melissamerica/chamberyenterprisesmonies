@@ -8,6 +8,7 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
+- [ ] Requirements survey: 200 questions in 20-question checkpoints; examine relevant flows, inputs and outputs; record answers without repeating settled decisions. Await Melissa's answers between checkpoints.
 - [x] Verify build/typecheck; fix errors (build OK)
 - [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
 - [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries
