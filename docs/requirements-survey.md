@@ -86,6 +86,23 @@ Ranked by severity. Each gap becomes one or more survey questions with a propose
 - G21: Upload format/size rules are inconsistent between browser and server (20 MB cap; some accepted formats get no extraction).
 - G22: Firm creation/invitation/member-removal can report success when the database write failed.
 
+## Gap triage — November 1, 2026
+Per Melissa's direction, gaps whose correct behavior follows obviously from her objectives are settled rules to implement, not questions. Settled without asking:
+- G01–G04: durable immediate saves to the firm workspace; server is the system of record; account-tied browser cache wiped on sign-out (single-EA tool, so no multi-editor conflict model needed beyond server-wins). (Q003)
+- G05: never silently destroy an expense report — warn and keep the existing one until confirmed.
+- G06: viewer role must be genuinely read-only in the UI, not just on the server.
+- G09: manual appointments get full fields (time, duration, location, notes) and are editable after creation.
+- G10: live calendar/email sends stay off until Melissa explicitly authorizes (already settled).
+- G12: event time zones come from each reservation, never hardcoded.
+- G13: every visible control must work or be removed — no inert controls.
+- G14: trips get a full lifecycle: rename, close/reopen, archive, delete.
+- G16: billing-code validation enforced consistently on every save path.
+- G18: learned decisions attributed to the real signed-in person.
+- G21: one consistent upload format/size contract between browser and server.
+- G22: firm/team writes must confirm the database write succeeded before reporting success.
+
+Genuine judgment calls reserved for Melissa: G07 (cancellation handling), G08 (duplicate vs amendment vs rebooking), G17 (suppressed documents), G19 (currency model), G15 (role powers in workspace), G20 (template-import promise), G11 (calendar update/delete lifecycle — deferred with live sends).
+
 ## Gap-derived questions
 | ID | Gap | Question | Official answer |
 | --- | --- | --- | --- |
