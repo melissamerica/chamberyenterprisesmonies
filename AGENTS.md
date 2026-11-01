@@ -16,3 +16,4 @@
 - Product rules and history from the source are in docs/source-handoff/ (read SOURCE_AGENTS.md and COLLABORATION.md before changing behavior).
 - OCR language data is a hosted asset (src/assets/eng.traineddata.gz.asset.json) because it exceeds the repo file limit.
 - Keep the official numbered requirements survey and answer ledger in docs/requirements-survey.md; consult it before new survey questions so confirmed answers remain portable and are not repeated.
+- Use docs/app-understanding.md as a source-navigation map before proposing workspace changes, then inspect the cited implementation and latest decisions; it separates current functionality from staged code and future intent to prevent repeating discovery or treating plans as shipped.

@@ -8,7 +8,7 @@ Built (needs verification):
 - [x] Workspace moves behind sign-in at /app (old /test links redirect)
 
 Open (priority: EA workspace functions + aesthetics — Melissa, Oct 31):
-- [ ] Learn the app as written from actual source, signature-feature blueprint and recorded decisions; save a source-grounded understanding without making Melissa reteach it. Read-only review only; no implementation authorized by this request.
+- [x] Focused read-only review of actual workspace source, v4/v5 signature blueprints and recorded decisions; source-grounded understanding saved in docs/app-understanding.md. No app behavior changed; exhaustive/runtime verification not performed.
 - [x] Verify build/typecheck; fix errors (build OK)
 - [x] Test workspace functions: executive creation, templates, billing codes, sample loader, legacy redirect — all pass; upload/trip flow not yet exercised with a real file
 - [x] Polish /app wording: removed "Test workspace" labels and dead Reports nav entries

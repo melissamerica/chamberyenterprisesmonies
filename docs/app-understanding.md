@@ -13,6 +13,7 @@ Authoritative references:
 - `docs/source-handoff/COLLABORATION.md`: source-era changes and verification limits.
 - `docs/requirements-survey.md`: later answers, delegated rules, signature feature index and STOPPED survey status.
 - `docs/source-handoff/execos-staging-not-deployed/Master_Document/Anya_Master_Future_Features_and_ExecOS_Engineering_v4.docx`: consolidated future-feature blueprint, not a claim of implementation.
+- `docs/source-handoff/product-specifications/Anya_ExecOS_Master_Future_Features_Anya_and_Alec_v5.docx`: later consolidated proposed blueprint, including Alec in §25. The survey cites v4; retain v5's additional scope without treating proposed behavior as shipped or overriding newer explicit decisions.
 
 ## Actual workspace: input → decision → output
 
@@ -56,7 +57,11 @@ The master blueprint's F01–F12 includes:
 
 The executive Decision Queue has actual **staged code**, under `docs/source-handoff/execos-staging-not-deployed/src`, not a reachable production workspace feature. Its recording preview is local, its identity boundary intentionally fails closed and its delegation saves pending delivery rather than claiming a message arrived. Audio/video replies do not automatically constitute approval or completed work. Deferred decisions and callbacks remain unresolved obligations.
 
-The blueprint explicitly labels mailbox automation, real flight tracking, mobile receipt capture and the broader operating layer as future work. Do not confuse standalone HTML demonstrations or product-page illustrations with functioning integrations. Alec branding and Melissa's requested equivalent urgent-alert idea are recorded; do not invent Alec-specific operational rules from Anya's blueprint.
+The blueprint explicitly labels mailbox automation, real flight tracking, mobile receipt capture and the broader operating layer as future work. Do not confuse standalone HTML demonstrations or product-page illustrations with functioning integrations.
+
+### Alec is a different operating experience, not Anya with renamed labels
+
+The v5 blueprint §25 defines Alec for senior managers/new VPs **without a dedicated EA**. It proposes the same ExecOS engine and relevant travel, expense, evidence, connector and learning capabilities, but the manager is the initiator and final decision-maker. Its personal dashboard centers on My Decisions, My Trips and My Follow-through; own-flight tracking replaces Anya's multi-executive rail. Receipt review and operational decisions go directly to the manager, with separate finance approvals preserved. No assumed EA, Chief of Staff or delegates; no default “call my EA” action. Delegation is only to actually authorized contacts. A future transition to Anya should preserve trip, receipt and audit history. Current `/alec` is a product/early-access page, not an operational Alec workspace.
 
 ## Important implementation boundaries already identified
 
