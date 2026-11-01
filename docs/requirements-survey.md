@@ -53,27 +53,45 @@ Answer in your own words; examples and “not sure” are welcome. All answers b
 | ID | Question | Official answer |
 | --- | --- | --- |
 | Q001 | Walk me through one real trip you manage, from the first request through closing its expenses: where does your work begin and end? | Answered Nov 1, 2026: "The app code answers that." The existing code is the source of truth for the trip workflow: documents/requests arrive → content-based recognition (`automatic-upload.ts`) → review and confirm the trip before filing → records filed to the trip → itinerary, calendar and expense outputs (`travel-output.tsx`, `travel-exports.ts`) → expenses reviewed and closed. Changes to this flow must be proposed against the code, not assumed. |
-| Q002 | Which three repetitive EA tasks must Anya remove first for you to consider it useful? | Pending |
-| Q003 | Besides the EA, who should use the workspace, and what work should each person actually do there? | Pending |
-| Q004 | In a typical week, how many executives and active trips does one EA manage? | Pending |
-| Q005 | When you open Anya each morning, which information must be visible immediately? | Pending |
-| Q006 | What exactly makes an item urgent enough to appear in Needs attention, and what determines its priority? | Pending |
-| Q007 | When another EA covers for you, what must the handoff show so they can continue without asking you? | Pending |
-| Q008 | Which devices do you use for which tasks, and what must an executive be able to do on their phone? | Pending |
-| Q009 | Where do trip requests and booking documents arrive today—email, travel agency, booking portal, messages, paper or elsewhere—and which sources matter first? | Pending |
-| Q010 | Which intake methods should be available first: uploading files, forwarding emails, pasting text, scanning receipts or importing from another tool? | Pending |
-| Q011 | For a batch containing documents for several executives, how should Anya help you review and separate them while keeping explicit executive confirmation? | Pending |
-| Q012 | What work must carry over when you switch devices or another EA takes over, and what should happen if two EAs edit the same trip? | Pending |
-| Q013 | If a document names someone other than the selected executive, what should Anya show and what choices should you have? | Pending |
-| Q014 | What defines one trip in your work, especially with several cities, several clients or personal days mixed in? | Pending |
-| Q015 | Beyond executive, dates and city, what information would make a suggested trip match trustworthy to you? | Pending |
-| Q016 | When several trips look plausible, what details should the comparison show before you confirm one? | Pending |
-| Q017 | When creating a trip, what information must be required, and what should its suggested name contain? | Pending |
-| Q018 | After you confirm a trip, which outputs should be prepared automatically, and which should stay drafts for another review? | Pending |
-| Q019 | If a revised booking arrives, how should Anya present the old and new details before you accept the change? | Pending |
-| Q020 | Who receives each finished output, in which format or destination, and what must you check before it is ready to share? | Pending |
+| Q002–Q020 (original drafts) | Generic EA-workflow questions | Superseded Nov 1, 2026: Melissa directed that questions come from app shortcomings/holes, not generic workflow questions. Replaced by gap-derived questions below. |
+
+## Gap register — code audit, November 1, 2026
+Ranked by severity. Each gap becomes one or more survey questions with a proposed rule for Melissa to confirm or correct. Evidence citations live in the audit; key files: `src/anya/page.tsx`, `src/lib/workspace-uploads.ts`, `src/server-api/uploads/route.ts`, `src/server/tenant.ts`, `src/lib/workspace-mode.ts`, `src/lib/travel-exports.ts`, `src/lib/firm.functions.ts`.
+
+**Data loss / integrity**
+- G01: Browser-cached workspace data is not scoped to a user or firm — signing into another account in the same browser can expose/mix the previous workspace.
+- G02: Manual trip creation, travel imports, manual appointments and report creation show "saved" but only persist to browser storage; invisible to teammates and other devices.
+- G03: Server hydration keeps stale browser records and misses server-only itinerary items; no authoritative merge rule.
+- G04: Concurrent editing silently overwrites — whole-trip snapshot saves with no revision/conflict handling.
+- G05: Creating a new expense report silently replaces the existing one, dropping its approval reference.
+- G06: Viewer role is read-only on the server but the UI lets viewers "edit" locally and shows success.
+
+**Broken / misleading flows**
+- G07: Cancellations go to a review queue with no matching to the original reservation; attention items vanish on reload.
+- G08: Duplicate detection matches only exact title+start — changed bookings silently ignored, rebookings double-counted.
+- G09: Manual appointments take only a title and optional date — no time, location, or editing; can't be published to a calendar.
+- G10: Calendar publishing and approval email are hardcoded off, not firm-configurable.
+- G11: Published calendar events have no update/delete path for changed or cancelled bookings.
+- G12: Calendar publishing hardcodes New York time regardless of trip destination.
+- G13: The event editor shows controls (all-day, time zone) that look editable but are inert.
+
+**Missing capabilities / undefined rules**
+- G14: No trip lifecycle API — no rename, close/reopen, archive, or delete.
+- G15: Owner/admin/editor have identical workspace write powers; roles only differ in team management.
+- G16: Billing-code validation is bypassable through generic trip saves.
+- G17: Remembered expense decisions can silently suppress later documents; user sees only a count.
+- G18: Learned decisions are recorded as "workspace_user", not the actual person — no accountability.
+- G19: Expenses have no currency field at all — amounts in different currencies would be summed as if equal.
+- G20: Template import approximates layouts; it cannot reproduce a firm's actual template.
+- G21: Upload format/size rules are inconsistent between browser and server (20 MB cap; some accepted formats get no extraction).
+- G22: Firm creation/invitation/member-removal can report success when the database write failed.
+
+## Gap-derived questions
+| ID | Gap | Question | Official answer |
+| --- | --- | --- | --- |
+| Q002 | G01+G02 | See chat, Nov 1, 2026 | Pending |
 
 ## Answer progress
-- Questions drafted: 20 / 200.
+- Q001 answered; Q002+ being re-derived from the gap register, asked one at a time.
 - Answers recorded: 0 / 200.
 - Next action: Melissa answers Q001–Q020, all at once or in smaller groups. Record answers before preparing checkpoint 2.
