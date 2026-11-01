@@ -12,8 +12,10 @@
 ## Anya app (migrated from Next.js/Cloudflare)
 - Original source handlers live in src/server-api/** and are exposed as TanStack server routes in src/routes/api.*.ts at the same /api paths; keep that 1:1 mapping so client fetch calls are unchanged.
 - src/server/runtime-env.ts replaces Cloudflare `env`: DB emulates D1 (prepare/bind/batch) via the service-role-only `anya_exec` Postgres function (atomic batches, `?`/`?N` params); BUCKET emulates R2 on the private `anya-files` storage bucket. SQL must be Postgres-compatible.
-- No user accounts: the source prototype was open-access. Tables have RLS enabled with no policies so only server code can read/write.
+- The imported prototype was open-access; the current /app requires a signed-in firm member. Keep ported workspace API calls behind withTenant; source-era no-account descriptions are historical, not current behavior.
 - Product rules and history from the source are in docs/source-handoff/ (read SOURCE_AGENTS.md and COLLABORATION.md before changing behavior).
 - OCR language data is a hosted asset (src/assets/eng.traineddata.gz.asset.json) because it exceeds the repo file limit.
 - Keep the official numbered requirements survey and answer ledger in docs/requirements-survey.md; consult it before new survey questions so confirmed answers remain portable and are not repeated.
 - Use docs/app-understanding.md as a source-navigation map before proposing workspace changes, then inspect the cited implementation and latest decisions; it separates current functionality from staged code and future intent to prevent repeating discovery or treating plans as shipped.
+- Use docs/app-action-inventory.md for detailed current action/read/review/write/output paths and docs/project-history.md for provenance; verify relevant source before relying on line references because edits can move them.
+- Maintain source-backed action knowledge with affected behavior changes; distinguish browser writes, server writes, source inspection, executed tests and observed UI so continuity does not depend on chat summaries.

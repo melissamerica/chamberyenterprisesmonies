@@ -2,6 +2,8 @@
 
 Read-only review, November 1, 2026. This is a navigation aid to the actual source and recorded requirements, not a new specification or proof of live behavior. Read the relevant implementation before changing it. Later explicit Melissa decisions override older source-era instructions.
 
+Detailed follow-up: `docs/app-action-inventory.md` traces current triggers, review gates, browser/server writes and outputs; `docs/project-history.md` links history and ambitions; `docs/development-context-research.md` documents continuity mechanisms and their limits. Current route/role tests passed (4 tests) and a signed-in empty workspace was observed without page errors; populated upload/export flows were not exercised in this review.
+
 ## Product, not a generic productivity app
 
 The central thesis is **Anya becomes the Executive Assistant; the human EA becomes the Chief of Staff**. Automate repeatable administrative execution so the human can lead priorities, prepare decisions and follow through. Executive judgment remains human. The existing travel workspace is the operational foundation, not the whole product vision.
@@ -21,7 +23,7 @@ Authoritative references:
 
 `src/lib/automatic-upload.ts` reads document contents and routes travel, expenses, calendar exports, billing-code lists, ordinary supporting materials or uncertain documents. This is not a document-type selection form. An unreadable or ambiguous document returns to review; it is not automatically treated as an attachment.
 
-`src/anya/page.tsx` serializes intake, retains the selected executive for Home uploads and hands files to existing review paths. Travel parsing extracts bookings, finds the executive and suggests open trips. The EA confirms an existing trip, creates a named trip or skips **before** trip changes. It re-reads current trip state after the answer. A round-trip flight produces separate legs; fare eligibility is limited to the first flight item to avoid counting the fare twice.
+`src/anya/page.tsx` serializes intake and captures the Home-selected executive as context; a recognized passenger matching another known executive can supersede that selection. Travel parsing suggests open trips. The EA confirms an existing trip, creates a named trip or skips **before** trip changes. It re-reads current trip state after the answer. Review corrects trip selection/name, not parsed booking facts. A round-trip flight produces separate legs; fare eligibility is limited to the first flight item to avoid counting the fare twice.
 
 Confirmed records feed calendar-entry previews, itinerary and expense outputs. `src/components/travel-output.tsx` renders those outputs; `src/lib/travel-exports.ts` creates an actual Word itinerary and Excel expense workbook. Preparing a preview/export is not publishing a calendar event.
 
@@ -37,7 +39,11 @@ Executive profiles contain ranked hotel, airline and car-rental preferences, cus
 
 Reference uploads create **reviewed editable template drafts**, not pixel-perfect reproductions. Flight-only calendar formats must not overwrite hotel, car or appointment formats.
 
+Template executive assignment replaces the selected recipient set for that template; omitted previously assigned executives reset to defaults (`src/lib/custom-template-storage.ts:38–54`). Central overwrite is not an exposed template version/revert history.
+
 `src/lib/expense-learning.ts` is a local feedback-trained classifier, not an external autonomous AI system. It keeps explicit category preferences separate from inferred patterns, scopes evidence by executive and relevant context, explains suggestions and abstains on conflict or insufficient evidence. Category learning does not choose a trip. Optional learning must not become another mandatory training chore; automation comes first.
+
+“Local” describes classification, not browser-only storage: evidence/preferences have server-backed APIs. Pausing inference leaves explicit category preferences active; forget/restore changes evidence activity, not already filed expense assignments.
 
 ## Signature features beyond the current workspace
 

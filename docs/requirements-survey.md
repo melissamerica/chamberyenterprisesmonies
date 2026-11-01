@@ -49,7 +49,7 @@ Later questions are not yet drafted; adapt them to previous answers to avoid rep
 - These are source observations, not a new claim that all paths have been tested.
 - Focused review also found mixed browser-held/API-backed trip state, limited manual appointment fields, unresolved cancellation reconciliation and exact-title/start duplicate checks. Continuity, manual editing and revision handling need explicit expectations before implementation; inspect `src/anya/page.tsx` around trip persistence, manual creation and travel import.
 
-Answer in your own words; examples and “not sure” are welcome. All answers below are pending.
+Historical checkpoint draft; the survey is stopped. Consult the recorded answers below, not this draft, for current decisions.
 
 | ID | Question | Official answer |
 | --- | --- | --- |
@@ -102,12 +102,12 @@ Per Melissa's direction, gaps whose correct behavior follows obviously from her 
 - G21: one consistent upload format/size contract between browser and server.
 - G22: firm/team writes must confirm the database write succeeded before reporting success.
 
-Genuine judgment calls reserved for Melissa: G07 (cancellation handling), G08 (duplicate vs amendment vs rebooking), G17 (suppressed documents), G19 (currency model), G15 (role powers in workspace), G20 (template-import promise), G11 (calendar update/delete lifecycle — deferred with live sends).
+Historical triage: G07, G08, G17 and G19 were subsequently answered below; do not reopen them. G15 and G20 are postponed detail topics, not permission to start questions. G11 stays deferred with live sends.
 
 Priority change (Melissa, Nov 1, 2026): solidify each app's unique/signature features FIRST; the gap-register details above are worked out later. Remaining detail questions (G15, G20) postponed until after the unique features are defined.
 
 ## Signature features — Q009, derived from the master blueprint
-Source: `docs/source-handoff/execos-staging-not-deployed/Master_Document/Anya_Master_Future_Features_and_ExecOS_Engineering_v4.docx` (Oct 29, 2026) — the single source of future feature requirements. Product thesis: "Anya becomes the Executive Assistant. The Executive Assistant becomes the Chief of Staff." EA elevation, not replacement.
+Source: `docs/source-handoff/execos-staging-not-deployed/Master_Document/Anya_Master_Future_Features_and_ExecOS_Engineering_v4.docx` (Oct 29, 2026), with later consolidated v5 under `docs/source-handoff/product-specifications/`. Both are blueprint evidence, not proof of shipped functionality; later explicit Melissa decisions control. Product thesis: "Anya becomes the Executive Assistant. The Executive Assistant becomes the Chief of Staff." EA elevation, not replacement.
 
 The unique feature set (F01–F12):
 - F01 EA homepage / premium workspace: Smart Drop intake, Needs Attention (Open/Dismiss/Remind Me), exception-first design.
@@ -142,7 +142,7 @@ Melissa's Nov 1 addition: urgent items (e.g. cancellations) should proactively a
 ## Answer progress
 - Q001–Q008 have recorded answers or settled rules; original generic Q002–Q020 drafts are superseded.
 - Q009 answered conditionally: decision delegation can be included; clarify its behavior before implementation.
-- Next action: inspect a signature feature's current implementation against its documented intent, then ask one unresolved product-choice question. Save Melissa's answer before moving on.
+- Current method: survey stopped; inspect existing code and settled decisions. Melissa names a feature and nuance; implement that scoped change, asking only when consequential ambiguity prevents proceeding.
 ## Survey status: STOPPED (Melissa, Nov 1 2026)
 Melissa rejected the question-by-question survey approach ("NO"). Do not resume
 asking survey questions. Recorded answers so far stand as settled requirements.
