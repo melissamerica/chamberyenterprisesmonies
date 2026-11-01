@@ -89,7 +89,8 @@ Ranked by severity. Each gap becomes one or more survey questions with a propose
 ## Gap-derived questions
 | ID | Gap | Question | Official answer |
 | --- | --- | --- | --- |
-| Q002 | G01+G02 | First framing rejected Nov 1, 2026: "What teammates. I've never once mentioned teammates in this design. Never." Settled rule: the Anya workspace is a single-EA tool; do not frame workspace features around teammates, sharing or multi-editor editing. Firm accounts/roles are the enterprise sales layer only. Underlying gap (browser-only saves, cross-account cache mixing) re-asked as Q003 in single-EA terms. | Answered — framing rule settled |
+| Q002 | G01+G02 | First framing rejected Nov 1, 2026: "What teammates. I've never once mentioned teammates in this design. Never." Settled rule: the Anya workspace is a single-EA tool; do not frame workspace features around teammates, sharing or multi-editor editing. Firm accounts/roles are the enterprise sales layer only. | Answered — framing rule settled |
+| Q003 | G01+G02 | Should every create/edit save durably to the firm's workspace immediately, with the browser cache account-tied and wiped on sign-out? | Answered Nov 1, 2026: yes — "Why wouldn't it be the rule based on my objectives." Settled rule: durable immediate saves, account-tied browser cache cleared on sign-out. Method rule added: when the correct behavior follows obviously from Melissa's stated objectives, record and implement it directly; only ask about genuine judgment calls. |
 
 ## Answer progress
 - Q001 answered; Q002+ being re-derived from the gap register, asked one at a time.
