@@ -15,6 +15,13 @@
       "when": 1793472334062,
       "tag": "0001_firm_tenancy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793587472701,
+      "tag": "0002_decision_queue",
+      "breakpoints": true
     }
   ]
 }
