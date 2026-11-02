@@ -23,6 +23,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
+import { Route as ApiDecisionQueueRouteImport } from './routes/api.decision-queue'
 import { Route as ApiExecutiveProfilesRouteImport } from './routes/api.executive-profiles'
 import { Route as ApiExpenseApprovalsRouteImport } from './routes/api.expense-approvals'
 import { Route as ApiExpenseLearningRouteImport } from './routes/api.expense-learning'
@@ -107,6 +108,11 @@ const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
 const ApiCustomTemplatesRoute = ApiCustomTemplatesRouteImport.update({
   id: '/api/custom-templates',
   path: '/api/custom-templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDecisionQueueRoute = ApiDecisionQueueRouteImport.update({
+  id: '/api/decision-queue',
+  path: '/api/decision-queue',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiExecutiveProfilesRoute = ApiExecutiveProfilesRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/decision-queue': typeof ApiDecisionQueueRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
   '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
   '/api/expense-learning': typeof ApiExpenseLearningRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/decision-queue': typeof ApiDecisionQueueRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
   '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
   '/api/expense-learning': typeof ApiExpenseLearningRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/team': typeof AuthenticatedTeamRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
+  '/api/decision-queue': typeof ApiDecisionQueueRoute
   '/api/executive-profiles': typeof ApiExecutiveProfilesRoute
   '/api/expense-approvals': typeof ApiExpenseApprovalsRouteWithChildren
   '/api/expense-learning': typeof ApiExpenseLearningRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
+    | '/api/decision-queue'
     | '/api/executive-profiles'
     | '/api/expense-approvals'
     | '/api/expense-learning'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
+    | '/api/decision-queue'
     | '/api/executive-profiles'
     | '/api/expense-approvals'
     | '/api/expense-learning'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/_authenticated/team'
     | '/api/billing-codes'
     | '/api/custom-templates'
+    | '/api/decision-queue'
     | '/api/executive-profiles'
     | '/api/expense-approvals'
     | '/api/expense-learning'
@@ -398,6 +410,7 @@ export interface RootRouteChildren {
   TestRoute: typeof TestRoute
   ApiBillingCodesRoute: typeof ApiBillingCodesRouteWithChildren
   ApiCustomTemplatesRoute: typeof ApiCustomTemplatesRoute
+  ApiDecisionQueueRoute: typeof ApiDecisionQueueRoute
   ApiExecutiveProfilesRoute: typeof ApiExecutiveProfilesRoute
   ApiExpenseApprovalsRoute: typeof ApiExpenseApprovalsRouteWithChildren
   ApiExpenseLearningRoute: typeof ApiExpenseLearningRoute
@@ -505,6 +518,13 @@ declare module '@tanstack/react-router' {
       path: '/api/custom-templates'
       fullPath: '/api/custom-templates'
       preLoaderRoute: typeof ApiCustomTemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/decision-queue': {
+      id: '/api/decision-queue'
+      path: '/api/decision-queue'
+      fullPath: '/api/decision-queue'
+      preLoaderRoute: typeof ApiDecisionQueueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/executive-profiles': {
@@ -708,6 +728,7 @@ const rootRouteChildren: RootRouteChildren = {
   TestRoute: TestRoute,
   ApiBillingCodesRoute: ApiBillingCodesRouteWithChildren,
   ApiCustomTemplatesRoute: ApiCustomTemplatesRoute,
+  ApiDecisionQueueRoute: ApiDecisionQueueRoute,
   ApiExecutiveProfilesRoute: ApiExecutiveProfilesRoute,
   ApiExpenseApprovalsRoute: ApiExpenseApprovalsRouteWithChildren,
   ApiExpenseLearningRoute: ApiExpenseLearningRoute,
