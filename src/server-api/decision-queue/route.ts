@@ -1,5 +1,4 @@
 import { env } from "@/server/runtime-env";
-import { currentTenant } from "@/server/tenant";
 import type { CommunicationBatch, DeliveryIntent, ResponseAction, SavedItemResponse } from "@/features/communication-queue/types";
 
 // Decision Queue storage (firm-scoped). Delivery is recorded as intent only: live sends stay disabled.
@@ -72,7 +71,6 @@ export async function POST(request: Request) {
       if (!b || !b.items.some(i => i.id === body.itemId)) return bad("This question is no longer available.", 404);
       if (b.status !== "delivered" && b.status !== "completed") return bad("This queue has not been delivered yet.", 409);
       const saved: SavedItemResponse = { id: crypto.randomUUID(), batchId: b.id, itemId: body.itemId as string, action: body.action as ResponseAction, recordedAt: new Date().toISOString() };
-      void currentTenant();
       await db().prepare("INSERT INTO decision_responses (id, batch_id, item_id, action_json, recorded_at) VALUES (?, ?, ?, ?, ?)").bind(saved.id, saved.batchId, saved.itemId, JSON.stringify(saved.action), saved.recordedAt).run();
       return Response.json(saved);
     }

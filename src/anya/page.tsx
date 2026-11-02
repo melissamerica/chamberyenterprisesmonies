@@ -1,7 +1,7 @@
 
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { CloudUpload, Download, Plus, UserRound, FileText, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu } from "lucide-react";
+import { CloudUpload, Download, Plus, UserRound, FileText, Settings2, X, Loader2, Check, Plane, Hotel, Car, CalendarDays, Bell, ChevronDown, Menu, MessagesSquare } from "lucide-react";
 import { createRecordId } from "@/lib/record-id";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +38,7 @@ import { CalendarOutput, ExpenseReportOutput, ItineraryOutput } from "@/componen
 import { parseLabeledConfirmation, readTravelDocument } from "@/lib/travel-confirmations";
 import { destinationFromSearch, type WorkspaceDestination } from "@/lib/workspace-navigation";
 import { reminderCalendarUrl, reminderTimes, type ReminderCalendar } from "@/lib/attention-reminders";
+import { DecisionQueue } from "@/components/decision-queue";
 
 type AttentionItem = { id: number; tripId: number; title: string; detail: string };
 
@@ -363,7 +364,7 @@ export function TestWorkspace() {
   const [hydrated, setHydrated] = useState(false);
   const [navigationRestored, setNavigationRestored] = useState(false);
   const pendingDestination = useRef<WorkspaceDestination | null>(null);
-  const [screen, setScreen] = useState<"home" | "executive" | "detail" | "templates" | "unassigned-expenses" | "billing-codes">("home");
+  const [screen, setScreen] = useState<"home" | "executive" | "detail" | "templates" | "unassigned-expenses" | "billing-codes" | "decision-queue">("home");
   const [billingReturnToReport, setBillingReturnToReport] = useState(false);
   const [activeTripId, setActiveTripId] = useState(1);
   const [notice, setNotice] = useState("");
@@ -1334,6 +1335,7 @@ export function TestWorkspace() {
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "templates" ? "page" : undefined} onClick={() => { setNotice(""); window.history.replaceState(null, "", "?view=templates"); setScreen("templates"); }}><Settings2 className="size-4" />Templates</button>
       <button type="button" className="console-rail-link" onClick={() => { setScreen("home"); window.requestAnimationFrame(() => { const panel = document.getElementById("home-attention"); if (panel) { panel.setAttribute("open", ""); panel.scrollIntoView({ block: "nearest" }); } }); }}><Bell className="size-4" />Needs attention</button>
       <button type="button" disabled={!hydrated} className="console-rail-link" aria-current={screen === "billing-codes" ? "page" : undefined} onClick={() => openBillingCodes()}><FileText className="size-4" />Billing codes</button>
+      <button type="button" disabled={!hydrated || !selectedExecutive} className="console-rail-link" aria-current={screen === "decision-queue" ? "page" : undefined} onClick={() => { setNotice(""); setScreen("decision-queue"); }}><MessagesSquare className="size-4" />Decision Queue</button>
     </nav>
     <div className="rail-footer"><span className="preview-label">WORKSPACE</span><p>Calendar &amp; email not connected</p><span className="rail-version">Live sends disabled</span></div>
   </aside>;
@@ -1342,6 +1344,7 @@ export function TestWorkspace() {
     {auxiliaryUpload?.kind === "billing" && <DetectedBillingUpload file={auxiliaryUpload.file} executives={executives} onClose={finishAuxiliaryUpload} />}
     {auxiliaryUpload?.kind === "review" && <Dialog open onOpenChange={open => { if(!open)finishAuxiliaryUpload(); }}><DialogContent><DialogHeader><DialogTitle>This file needs a closer look</DialogTitle><DialogDescription>The app could not confidently identify this document. It has not been filed or added to a trip.</DialogDescription></DialogHeader><p className="break-all text-sm font-medium">{auxiliaryUpload.file.name}</p><p className="text-sm text-slate-600">{auxiliaryUpload.warning || "For a travel confirmation or financial document, upload a readable copy with the booking or transaction details. If this is supporting itinerary material, you can choose to save it as an attachment."}</p><DialogFooter><Button variant="outline" onClick={finishAuxiliaryUpload}>Skip file</Button><Button onClick={() => setAuxiliaryUpload({...auxiliaryUpload,kind:"attachment"})}>This is itinerary material</Button></DialogFooter></DialogContent></Dialog>}
     {travelImportReview && <TravelImportReview key={travelImportReview.filename} request={travelImportReview} onDecide={decision => { const resolve = travelImportResolve.current; travelImportResolve.current = null; setTravelImportReview(null); resolve?.(decision); }} />}</div></div>;
+  if (screen === "decision-queue" && selectedExecutive) return consoleShell(<DecisionQueue executive={{ id: selectedExecutive.id, name: selectedExecutive.name }} onBack={() => setScreen("home")} />);
   if (screen === "billing-codes") return consoleShell(<><BillingCodeLibrary executives={executives} returnToReport={billingReturnToReport} onBack={() => { if (billingReturnToReport && activeTrip) { setActiveTab("expenses"); setScreen("detail"); window.history.replaceState(null, "", `?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}&trip=${activeTrip.id}`); } else { setScreen("home"); window.history.replaceState(null, "", "?view=home"); } }} /></>);
   if(screen==="unassigned-expenses")return consoleShell(<><UnassignedExpenses receipts={allUnassignedExpenses} executives={executives} loading={uploadLoading} error={uploadLoadError} onRetry={()=>void loadUploads()} onBack={()=>{setActiveTab("expenses");setScreen(activeTrip?"detail":"executive");window.history.replaceState(null,"",`?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}${activeTrip?`&trip=${activeTrip.id}`:""}`);}} onReview={receipt=>{setSelectedExecutiveId(receipt.executiveId);setReviewLater(false);setCalendarReview(false);setUploadFocusRow(receipt.row.key);setUploadOpen(true);}}/></>);
 
