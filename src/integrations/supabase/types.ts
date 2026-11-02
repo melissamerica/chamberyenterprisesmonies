@@ -71,6 +71,60 @@ export type Database = {
         }
         Relationships: []
       }
+      decision_batches: {
+        Row: {
+          batch_json: string
+          executive_id: string
+          firm_id: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          batch_json: string
+          executive_id: string
+          firm_id?: string
+          id: string
+          status?: string
+          updated_at: string
+        }
+        Update: {
+          batch_json?: string
+          executive_id?: string
+          firm_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      decision_responses: {
+        Row: {
+          action_json: string
+          batch_id: string
+          firm_id: string
+          id: string
+          item_id: string
+          recorded_at: string
+        }
+        Insert: {
+          action_json: string
+          batch_id: string
+          firm_id?: string
+          id: string
+          item_id: string
+          recorded_at: string
+        }
+        Update: {
+          action_json?: string
+          batch_id?: string
+          firm_id?: string
+          id?: string
+          item_id?: string
+          recorded_at?: string
+        }
+        Relationships: []
+      }
       demo_requests: {
         Row: {
           company: string
