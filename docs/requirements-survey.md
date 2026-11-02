@@ -155,3 +155,8 @@ Melissa invited credible questions after the app review; this does not restart t
 - Melissa's actual answer: “Where in the world is.... a user who is caring for execs.... a feature far right hand of screen live flight tracking for traveling exec.... that's in anya”.
 - Confirmed: this is Anya's far-right-screen live flight-tracking feature for the user caring for traveling executives. Do not re-ask its audience, placement or product. The answer does not choose aircraft coverage; do not infer a commercial-only or private/charter policy.
 - Follow-up answer, November 1, 2026: “why in gods name are you talking about private flihgts.. stop ANTICIPATING. LEARN what i've already built and we work on that. STOP .. LIKE, JEEZ... do you understand? why why why are you talking aobut private flihts.. look at teh code... see ewhat matters to me”. Private/charter discussion is rejected, not a selected aircraft-coverage policy. Stop hypothetical scope expansion; ground future work in existing code and Melissa's established priorities. Do not reopen this topic without her explicit request.
+
+## Communication Queue integration answers (Nov 2, 2026)
+- Q-CQ1 EA access: inside the main /app workspace (not a separate app).
+- Q-CQ2 Executive player: both — executive mobile experience AND an in-workspace EA preview of exactly what the executive receives.
+- Q-CQ3 Storage: Lovable Cloud database with firm-scoped access controls (not browser-only), covering questions, responses, scheduled deliveries and delegation history.
