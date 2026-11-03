@@ -1425,7 +1425,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
         {legacyDataAvailable && <aside className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950" role="status">
           <strong>Older browser-only workspace data was found.</strong> It cannot safely be assigned to this signed-in firm automatically, so the original records were left untouched. Save a backup before reviewing their recovery.
           <Button type="button" variant="outline" size="sm" className="ml-3 mt-2" onClick={downloadLegacyBackup}>Download legacy backup</Button>
-        </aside>
+        </aside>}
         <section className="anya-home-hero" aria-label="Your travel workspace"><div className="min-w-0"><div className="home-heading"><h1>Every trip,<br/><em>thoughtfully organized.</em></h1><p className="home-subtitle">Itineraries, calendars and expenses. One place to keep the details together.</p><p className="anya-home-intro-copy">Drop in a confirmation. Confirm the trip. Anya turns the booking details into calendar entries, an itinerary and expenses—in your executive’s saved format.</p></div>
         {profilesLoadError&&<p role="alert" className="mb-5 text-sm text-amber-800">{profilesLoadError} <Button variant="outline" size="sm" onClick={()=>void loadExecutiveProfiles()}>Retry profiles</Button></p>}
         <HomeDocumentUpload executives={executives} disabled={!hydrated||profilesLoading||uploadLoading||!!uploadLoadError||!!profilesLoadError} onStart={(executiveId,files)=>{setSelectedExecutiveId(executiveId);setHomeImport({executiveId,files,id:createRecordId()});}} onCreateExecutive={()=>{setExecutiveError("");setNewProfileDraft(emptyExecutiveProfile());setExecutiveName("");setExecutiveOpen(true);}}/>
