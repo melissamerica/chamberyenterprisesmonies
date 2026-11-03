@@ -182,9 +182,33 @@ export async function savedUnassignedUploads() {
 }
 
 export async function saveUnassignedUploads(executiveId:string, executiveName:string, rows:UploadRow[]) {
-  const db=uploadDatabase(), at=new Date().toISOString();
-  if(rows.length)await db.batch(rows.map(row=>db.prepare("INSERT INTO executive_unassigned_uploads (id, executive_id, executive_name, row_json, updated_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET row_json = excluded.row_json, executive_name = excluded.executive_name, updated_at = excluded.updated_at").bind(row.key,executiveId,executiveName,JSON.stringify(row),at)));
-  return rows.map(row=>({executiveId,executiveName,row,updatedAt:at}));
+  const db=uploadDatabase(),at=new Date().toISOString();
+  if(!rows.length)return [];
+  // A late import from an older tab must not resurrect a receipt already
+  // excluded, deferred for review, or assigned to a saved trip.
+  const query=`INSERT INTO executive_unassigned_uploads
+    (id, executive_id, executive_name, row_json, updated_at)
+    SELECT ?,?,?,?,?
+    WHERE NOT EXISTS (SELECT 1 FROM executive_upload_exclusions e WHERE e.id = ? AND e.executive_id = ?)
+      AND NOT EXISTS (SELECT 1 FROM executive_deferred_uploads d WHERE d.id = ? AND d.executive_id = ?)
+      AND NOT EXISTS (
+        SELECT 1 FROM executive_upload_trips t
+        WHERE t.executive_id = ? AND EXISTS (
+          SELECT 1 FROM jsonb_array_elements(COALESCE(t.trip_json::jsonb->'items', '[]'::jsonb)) item
+          WHERE item->>'importKey' = ? AND item->>'sourceFileId' = ?
+        )
+      )
+    ON CONFLICT(id) DO UPDATE
+      SET row_json = excluded.row_json, executive_name = excluded.executive_name,
+          updated_at = excluded.updated_at
+    RETURNING id`;
+  const statements=rows.map(row=>db.prepare(query).bind(
+    row.key,executiveId,executiveName,JSON.stringify(row),at,
+    row.key,executiveId,row.key,executiveId,executiveId,row.key,row.fileId,
+  ));
+  const saved=await db.batch(statements);
+  return rows.filter((_,index)=>saved[index]?.meta.changes===1)
+    .map(row=>({executiveId,executiveName,row,updatedAt:at}));
 }
 
 export async function assertExpenseEditable(trip:UploadTrip) {
