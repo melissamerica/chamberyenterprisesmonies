@@ -7,14 +7,34 @@ export async function readBillingCodes(): Promise<BillingCode[]> {
   const result = await uploadDatabase().prepare("SELECT id, code, label, active, updated_at, executive_ids_json FROM billing_codes ORDER BY active DESC, lower(code), id").all<StoredCode>();
   return result.results.map(row => ({ id: row.id, code: row.code, label: row.label, active: row.active === 1, updatedAt: row.updated_at, executiveIds: JSON.parse(row.executive_ids_json) as string[] }));
 }
-export async function writeBillingCode(input: { id?: string; code: string; label: string; active: boolean; executiveIds?: string[] }) {
+export async function writeBillingCode(input: { id?: string; code: string; label: string; active: boolean; executiveIds?: string[]; expectedUpdatedAt?: string }) {
   const db = uploadDatabase();
-  const previous = input.id ? await db.prepare("SELECT executive_ids_json FROM billing_codes WHERE id = ?").bind(input.id).first<{executive_ids_json: string}>() : null;
+  const previous = input.id
+    ? await db.prepare("SELECT updated_at, executive_ids_json FROM billing_codes WHERE id = ?")
+        .bind(input.id).first<{ updated_at: string; executive_ids_json: string }>()
+    : null;
   if (input.id && !previous) throw new Error("This billing code no longer exists. Refresh the list.");
-  const value: BillingCode = { id: input.id ?? crypto.randomUUID(), code: input.code.trim(), label: input.label.trim(), active: input.active, updatedAt: new Date().toISOString(), executiveIds: input.executiveIds ?? (previous ? JSON.parse(previous.executive_ids_json) as string[] : []) };
-  const existing = await db.prepare("SELECT id FROM billing_codes WHERE code_key = ?").bind(value.code.toLocaleLowerCase("en-US")).first<{ id: string }>();
+  if (input.id && (!input.expectedUpdatedAt || previous!.updated_at !== input.expectedUpdatedAt))
+    throw new Error("The billing code changed in another session. Refresh the code list before editing.");
+  const priorMs = previous ? Date.parse(previous.updated_at) : 0;
+  const updatedAt = new Date(Math.max(Date.now(), Number.isFinite(priorMs) ? priorMs + 1 : 0)).toISOString();
+  const value: BillingCode = {
+    id: input.id ?? crypto.randomUUID(),
+    code: input.code.trim(), label: input.label.trim(), active: input.active,
+    updatedAt, executiveIds: input.executiveIds ?? (previous ? JSON.parse(previous.executive_ids_json) as string[] : []),
+  };
+  const key = value.code.toLocaleLowerCase("en-US");
+  const existing = await db.prepare("SELECT id FROM billing_codes WHERE code_key = ?")
+    .bind(key).first<{ id: string }>();
   if (existing && existing.id !== value.id) throw new Error("That billing code already exists. Edit or restore the existing code.");
-  await db.prepare("INSERT INTO billing_codes (id, code, code_key, label, active, updated_at, executive_ids_json) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET code = excluded.code, code_key = excluded.code_key, label = excluded.label, active = excluded.active, updated_at = excluded.updated_at, executive_ids_json = excluded.executive_ids_json").bind(value.id, value.code, value.code.toLocaleLowerCase("en-US"), value.label, value.active ? 1 : 0, value.updatedAt, JSON.stringify(value.executiveIds)).run();
+  const result = input.id
+    ? await db.prepare("UPDATE billing_codes SET code = ?, code_key = ?, label = ?, active = ?, updated_at = ?, executive_ids_json = ? WHERE id = ? AND updated_at = ?")
+        .bind(value.code, key, value.label, value.active ? 1 : 0, value.updatedAt, JSON.stringify(value.executiveIds), value.id, input.expectedUpdatedAt).run()
+    : await db.prepare("INSERT INTO billing_codes (id, code, code_key, label, active, updated_at, executive_ids_json) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING")
+        .bind(value.id, value.code, key, value.label, value.active ? 1 : 0, value.updatedAt, JSON.stringify(value.executiveIds)).run();
+  if (result.meta.changes !== 1) throw new Error(input.id
+    ? "The billing code changed in another session. Refresh the code list before editing."
+    : "That billing code already exists. Edit or restore the existing code.");
   return value;
 }
 
