@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e9ede2">
+<title>Chambery ExecOS | Interview Demo</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #e9ede2; color: #202b23; font: 1rem/1.5 system-ui, sans-serif; }
+main { width: min(100%, 42rem); margin: auto; padding: 1.25rem; }
+h1 { font: 3rem Georgia, serif; margin: .5rem 0; }
+nav { display: flex; gap: .5rem; flex-wrap: wrap; }
+button, input, textarea, select { font: inherit; max-width: 100%; }
+button { min-height: 48px; padding: .65rem 1rem; border: 1px solid #4c604e; border-radius: .65rem; background: white; color: inherit; cursor: pointer; }
+button[aria-current="page"], .action { background: #314838; color: white; }
+.action { display: block; width: 100%; margin: .75rem 0; text-align: left; min-height: 64px; font-weight: bold; }
+article, form { background: #fff; border-radius: .8rem; padding: 1rem; margin: .75rem 0; overflow-wrap: anywhere; }
+label, textarea, select { display: block; margin-bottom: .6rem; }
+textarea { width: 100%; }
+:focus-visible { outline: 3px solid #8d4e30; outline-offset: 3px; }
+</style>
+<main>
+<p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
+<nav aria-label="Demo workspaces">
+<button data-view="alec">Alec Mobile</button>
+<button data-view="executive">Executive Mobile</button>
+<button data-view="desktop">Desktop Review</button>
+</nav>
+<section id="screen"></section>
+<p id="status" role="status"></p>
+</main>
+<script type="module">
+const screen = document.querySelector('#screen');
+const status = document.querySelector('#status');
+const seed = { id: 'sample', kind: 'Decision', title: 'Approve the November briefing format', owner: 'Executive office', state: 'Needs review' };
+const ready = new Promise((resolve, reject) => {
+  const request = indexedDB.open('chambery-interview-demo-v1', 1);
+  request.onupgradeneeded = () => {
+    request.result.createObjectStore('work', { keyPath: 'id' }).add(seed);
+  };
+  request.onsuccess = () => resolve(request.result);
+  request.onerror = () => reject(request.error);
+});
+async function records() {
+  const db = await ready;
+  return new Promise((resolve, reject) => {
+    const request = db.transaction('work').objectStore('work').getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function save(record) {
+  const db = await ready;
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('work', 'readwrite');
+    transaction.objectStore('work').put(record);
+    transaction.oncomplete = resolve;
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
+let view = 'alec';
+let renderVersion = 0;
+function open(next) {
+  view = next;
+  status.textContent = '';
+  render().catch(() => { status.textContent = 'Could not open browser storage.'; });
+}
+document.querySelectorAll('nav button').forEach(button => {
+  button.onclick = () => open(button.dataset.view);
+});
+async function render() {
+  const version = ++renderVersion;
+  document.querySelectorAll('nav button').forEach(button => {
+    if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
+  if (view === 'alec') {
+    screen.innerHTML = '<h1>Alec Mobile</h1><h2>Your Work</h2><button class="action" data-next="decisions">Decisions, Decisions</button><button class="action" data-next="dump">Doc Dump</button><button class="action" data-next="call">Call Alec</button><h2>Alec’s Work</h2><button data-next="accountability">View status and ownership</button>';
+    screen.querySelectorAll('[data-next]').forEach(button => {
+      button.onclick = () => open(button.dataset.next);
+    });
+    return;
+  }
+  if (view === 'call') {
+    screen.innerHTML = '<h1>Call Alec</h1><p>Voice assistant preview. Live calling is unavailable in this demo.</p>';
+    return;
+  }
+  if (view === 'dump') {
+    screen.innerHTML = '<h1>Doc Dump</h1><p>Use synthetic files only. Text files are checked for invoice or receipt wording. Other files go to manual review.</p><form><label for="file">Document</label><input id="file" type="file" required><p><button>Save to Desktop Review</button></p></form>';
+    const form = screen.querySelector('form');
+    form.onsubmit = async event => {
+      event.preventDefault();
+      const file = form.querySelector('input').files[0];
+      const button = form.querySelector('button');
+      button.disabled = true;
+      try {
+        if (file.size > 10 * 1024 * 1024) throw new Error('Choose a file up to 10 MB.');
+        const sample = file.type.startsWith('text/') || /\\.(txt|csv|md)$/i.test(file.name)
+          ? await file.slice(0, 65536).text() : '';
+        const invoice = /\\binvoice\\b/i.test(sample);
+        const receipt = /\\breceipt\\b/i.test(sample);
+        const suggestion = invoice === receipt ? 'Manual review' : invoice ? 'Possible invoice' : 'Possible receipt';
+        await save({ id: crypto.randomUUID(), kind: 'Document', title: file.name, owner: 'Desktop reviewer', state: 'Needs review', suggestion, file });
+        if (view === 'dump') {
+          form.reset();
+          status.textContent = 'Saved in this browser. Open Desktop Review to see the document.';
+        }
+      } catch (error) {
+        if (view === 'dump') status.textContent = error.message || 'Could not save the document.';
+      } finally {
+        button.disabled = false;
+      }
+    };
+    return;
+  }
+  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', accountability: 'Alec’s Work' };
+  screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
+  screen.querySelector('h1').textContent = titles[view];
+  if (view === 'decisions') {
+    screen.insertAdjacentHTML('beforeend', '<p>Decide and Bunt actions are pending definition. Review the decision and save a note.</p>');
+  }
+  const items = await records();
+  if (version !== renderVersion) return;
+  for (const item of items) {
+    if ((view === 'executive' || view === 'decisions') && item.kind !== 'Decision') continue;
+    const card = document.createElement('article');
+    const heading = document.createElement('h2');
+    heading.textContent = item.title;
+    const detail = document.createElement('p');
+    detail.textContent = [item.kind, item.state, item.owner, item.suggestion].filter(Boolean).join(' · ');
+    card.append(heading, detail);
+    if (item.note) {
+      const note = document.createElement('p');
+      note.textContent = item.note;
+      card.append(note);
+    }
+    if (item.kind === 'Decision' && view === 'decisions') {
+      const label = document.createElement('label');
+      label.textContent = 'Decision note';
+      const input = document.createElement('textarea');
+      input.maxLength = 1000;
+      input.value = item.note || '';
+      label.append(input);
+      const button = document.createElement('button');
+      button.textContent = 'Save note';
+      button.onclick = async () => {
+        button.disabled = true;
+        try {
+          await save({ ...item, note: input.value.trim() });
+          open('decisions');
+          status.textContent = 'Decision note saved.';
+        } catch {
+          status.textContent = 'Could not save the note.';
+          button.disabled = false;
+        }
+      };
+      card.append(label, button);
+    }
+    if (item.file && view === 'desktop') {
+      const button = document.createElement('button');
+      button.textContent = 'Download saved document';
+      button.onclick = () => {
+        const url = URL.createObjectURL(item.file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = item.title;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+      card.append(button);
+    }
+    screen.append(card);
+  }
+}
+open('alec');
+</script>
+</html>
