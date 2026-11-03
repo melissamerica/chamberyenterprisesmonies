@@ -40,7 +40,7 @@ import { destinationFromSearch, type WorkspaceDestination } from "@/lib/workspac
 import { reminderCalendarUrl, reminderTimes, type ReminderCalendar } from "@/lib/attention-reminders";
 import { DecisionQueue } from "@/components/decision-queue";
 import { saveInteractiveTrip } from "@/lib/workspace-trip-client";
-import { scopedWorkspaceCache, legacyWorkspaceExists, LEGACY_WORKSPACE_KEYS } from "@/lib/workspace-cache";
+import { scopedWorkspaceCache, legacyWorkspaceExists } from "@/lib/workspace-cache";
 
 type AttentionItem = { id: number; tripId: number; title: string; detail: string };
 
@@ -520,18 +520,6 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
     setTrips(next);
   }
 
-  function downloadLegacyBackup() {
-    const data = Object.fromEntries(LEGACY_WORKSPACE_KEYS
-      .map(key => [key, window.localStorage.getItem(key)])
-      .filter((entry): entry is [string, string] => entry[1] !== null));
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), data }, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "chambery-legacy-browser-backup.json";
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
 
   function uploadedTripsSaved(saved: UploadTrip[], kind: "expenses" | "itinerary", notice?: string) {
     setTrips(current => { const merged = [...current.map(trip => saved.find(updated => updated.id === trip.id) ?? trip), ...saved.filter(trip => !current.some(existing => existing.id === trip.id))]; tripsRef.current = merged; return merged; });
@@ -1423,8 +1411,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
       <div className="anya-home-inner mx-auto w-full">
         <div className="anya-home-topline"><p className="anya-home-kicker">YOUR EXECUTIVE ASSISTANT WORKSPACE</p><span>Built around the way you work.</span></div>
         {legacyDataAvailable && <aside className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950" role="status">
-          <strong>Older browser-only workspace data was found.</strong> It cannot safely be assigned to this signed-in firm automatically, so the original records were left untouched. Save a backup before reviewing their recovery.
-          <Button type="button" variant="outline" size="sm" className="ml-3 mt-2" onClick={downloadLegacyBackup}>Download legacy backup</Button>
+          <strong>Older browser-only workspace data was found.</strong> It cannot safely be attributed to this signed-in account. These records remain unchanged in this browser, but are not opened or imported. A verified recovery step is required before they can be moved into a firm.
         </aside>}
         <section className="anya-home-hero" aria-label="Your travel workspace"><div className="min-w-0"><div className="home-heading"><h1>Every trip,<br/><em>thoughtfully organized.</em></h1><p className="home-subtitle">Itineraries, calendars and expenses. One place to keep the details together.</p><p className="anya-home-intro-copy">Drop in a confirmation. Confirm the trip. Anya turns the booking details into calendar entries, an itinerary and expenses—in your executive’s saved format.</p></div>
         {profilesLoadError&&<p role="alert" className="mb-5 text-sm text-amber-800">{profilesLoadError} <Button variant="outline" size="sm" onClick={()=>void loadExecutiveProfiles()}>Retry profiles</Button></p>}
