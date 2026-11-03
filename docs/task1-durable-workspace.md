@@ -7,20 +7,24 @@
 - Local browser cache uses `chambery-workspace-v1:<encoded-user>:<encoded-firm>:<key>`, not the old unscoped prototype keys. Explicit sign-out clears the authenticated user's scoped cache only. The server is authoritative for the trip list after a successful API read.
 - Legacy browser-only keys are **not read into a new account, deleted, exported to another account, or silently assigned to the firm**. The Home screen warns of their existence without showing their contents. Any migration must be supervised, preserve custom templates and metadata, identify the original owner, and handle duplicate trip IDs.
 - The existing `/api/uploads` PUT route adds an optional guarded single-trip contract: `{ "trips": [trip], "ifMatch": null | "<exact server updatedAt>" }`. `null` creates only if the ID is new; a precise revision is required for updates. Stale or colliding writes return HTTP 409; nothing is overwritten. The response includes the saved trip and its new `updatedAt`. No schema change or data wipe.
-- Guarded writes cover manual trip creation, manually added appointments, reviewed travel confirmation additions, assistant-created trips/appointments, opt-in sample trips, itinerary materials, expense draft corrections, and explicit expense-report creation.
+- Guarded writes cover manual trip creation, appointments, reviewed confirmations, assistant-created records, samples, itinerary materials, expense draft corrections, and explicit report creation.
+- Bulk receipt and calendar import now uses a single firm-scoped PostgreSQL RPC transaction with an all-or-nothing revision assertion; any stale trip aborts the entire batch. Successful responses return authoritative updated revisions to the browser.
+- Individual receipt assignment, exclusion/defer, vendor rules and learning feedback preserve their existing behavior, but trip changes and dependent receipt decisions now commit together or roll back together on a version conflict.
+- Attaching and reassigning itinerary files no longer pre-save stale trip snapshots. Server-side row locks and transactional metadata changes protect trip versions; failed uploads clean up the stored file.
+- Billing-code assignments check the trip revision, and manual code edits enforce a saved revision; existing billing-code list imports retain their original guarded bulk import.
 - Expense report creation prompts before replacing a draft; an existing approval record is protected.
-- Saved upload/expense/attachment APIs retain their original workflows. This PR does **not** claim every existing write path now uses compare-and-swap.
 
 ## Verification
 Run `bun install --frozen-lockfile`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`. GitHub Actions executes these on the pull request. The new tests cover scoped-cache isolation/sign-out, guarded client calls, server create/update/stale-write behavior, verified tenant membership, and viewer-write rejection.
 
-Tests are isolated/mocked; they do **not** establish live Postgres/Supabase tenancy enforcement, browser UX, or end-to-end confirmation/receipt/attachment import.
+The expanded suite includes mocked tests for multi-trip atomic rollback, single-receipt revision conflicts, attachment transaction/lock contracts and manual billing-code stale edits. Tests are isolated/mocked; they do **not** establish live Postgres/Supabase tenancy enforcement, actual database transaction/lock behavior, browser UX, or end-to-end confirmation/receipt/attachment import.
 
 ## Release blockers / follow-ups
 1. Decide and verify safe ownership-based recovery of old local-only trip/profile/template records, including which firm receives them. Never just import old shared-browser keys into whichever user is signed in.
-2. Inventory the remaining upload decision, receipt, attachment, billing and approval write paths, convert them to coherent server revision/transaction semantics, and test concurrent writes before claiming global overwrite protection.
-3. Exercise signed-in user A vs user B, viewer role, two firms, booking upload → trip → generated documents and expense approvals using disposable test records. No live email/calendar sends.
-4. Confirm environment credentials remain server-only, validate deployed row-level isolation, verify restoration/backups, and review security statements before customer onboarding.
-5. The older prototype `AGENTS.md` / source handoff notes describe prior architectures and should not supersede current signed-in firm boundaries.
+2. Validate the expanded bulk-receipt, attachment and billing transaction SQL in a disposable Supabase/Postgres environment (including one stale writer and concurrent requests), before deployment. The in-memory tests check the contract but do not execute PostgreSQL.
+3. Review remaining independent deferred/unassigned and approval workflows for reappearance of stale rows or races; these paths do not all use record-level revision checks.
+4. Exercise signed-in user A vs user B, viewer role, two firms, booking upload → trip → generated documents and expense approvals using disposable test records. No live email/calendar sends.
+5. Confirm environment credentials remain server-only, validate deployed row-level isolation, verify restoration/backups, and review security statements before customer onboarding.
+6. The older prototype `AGENTS.md` / source handoff notes describe prior architectures and should not supersede current signed-in firm boundaries.
 
 Existing Lovable and Git history are preserved. Do not force push or rewrite the synced branch.
