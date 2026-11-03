@@ -584,7 +584,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { name?: unknown; executive?: unknown };
           if (typeof value.name !== "string" || !value.name.trim() ||
               typeof value.executive !== "string" || !value.executive.trim()) {
@@ -600,9 +600,9 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
             route: "Route pending",
             items: [],
           };
-          setTrips((current) => [...current, trip]);
+          await commitTrip(trip);
           setActiveTripId(id);
-          setNotice(`Created “${trip.name}”. Drop in the first confirmation.`);
+          setNotice(`Saved “${trip.name}” to your firm. Drop in the first confirmation.`);
           return { id, name: trip.name, executive: trip.traveler, status: "draft" };
         },
       }, { signal: lifecycle.signal }),
@@ -621,7 +621,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { title?: unknown; date?: unknown; time?: unknown };
           if (typeof value.title !== "string" || !value.title.trim() ||
               typeof value.date !== "string" || !value.date.trim() ||
@@ -637,11 +637,11 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
             time: value.time.trim(),
             source: "Assistant-created appointment",
           };
-          setTrips((current) => current.map((trip) =>
-            trip.id === activeTripId ? { ...trip, items: [...trip.items, item] } : trip,
-          ));
-          rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: activeTrip.id });
-    setNotice("Appointment added.");
+          const current = tripsRef.current.find(trip => trip.id === activeTripId);
+          if (!current) throw new Error("Choose a trip before adding an appointment.");
+          await commitTrip({ ...current, items: [...current.items, item] });
+          rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: current.id });
+          setNotice("Appointment saved to your firm.");
           return { tripId: activeTripId, appointmentId: item.id, status: "added" };
         },
       }, { signal: lifecycle.signal }),
@@ -655,20 +655,24 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
     if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-edited-page"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }
 
-  function addTrip() {
+  async function addTrip() {
+    if (tripSaving) return;
     const name = newTripName.trim() || "New trip";
     const id = Date.now();
-    setTrips((current) => [...current, {
-      id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive", dates: "Dates not set",
-      route: "Route pending", items: [],
-    }]);
-    setActiveTripId(id);
-    setActiveTab("itinerary");
-    setScreen("detail");
-    setNewTripName("");
-    setNewTripOpen(false);
-    rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: id });
-    setNotice(`Created “${name}”. Drop in the first confirmation.`);
+    const draft: Trip = {
+      id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive",
+      dates: "Dates not set", route: "Route pending", items: [],
+    };
+    try {
+      await commitTrip(draft);
+      setActiveTripId(id);
+      setActiveTab("itinerary");
+      setScreen("detail");
+      setNewTripName("");
+      setNewTripOpen(false);
+      rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: id });
+      setNotice(`Saved “${name}” to your firm. Drop in the first confirmation.`);
+    } catch { /* Keep the dialog and draft open; the error is shown inline. */ }
   }
 
   function processFiles(files: FileList | File[], targetId?: number) {
@@ -767,8 +771,9 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
         workingTrips = matchingTrip
           ? workingTrips.map((trip) => trip.id === destination ? destinationTrip : trip)
           : [...workingTrips, destinationTrip];
-        tripsRef.current = workingTrips;
-        setTrips(workingTrips);
+        try { await commitTrip(destinationTrip); }
+        catch (error) { setNotice(`“${file.name}” was not saved: ${error instanceof Error ? error.message : "Please retry the upload."}`); continue; }
+        workingTrips = [...tripsRef.current];
         setActiveTripId(destination);
         setActiveTab("itinerary");
         setScreen("detail");
@@ -801,8 +806,11 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
         id: destination, executiveId: importExecutive?.id, name: "name" in decision ? decision.name : file.name.replace(/\.[^.]+$/, ""), traveler: importExecutive?.name || "Executive", dates: "Dates pending", route: "Details pending",
         items: [newItem], expenseReport: { id: `expenses-${destination}`, createdAt: new Date().toISOString() },
       }];
-      tripsRef.current = workingTrips;
-      setTrips(workingTrips);
+      const pendingTrip = workingTrips.find(t => t.id === destination);
+      if (!pendingTrip) { setNotice("The reviewed trip could not be found. Re-upload the document."); continue; }
+      try { await commitTrip(pendingTrip); }
+      catch (error) { setNotice(`“${file.name}” was not saved: ${error instanceof Error ? error.message : "Please retry the upload."}`); continue; }
+      workingTrips = [...tripsRef.current];
       setAttentionItems((current) => [...current, { id: Date.now() + fileIndex, tripId: destination, title: "Confirmation needs details", detail: `“${file.name}”: ${failure}` }]);
       rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: destination });
       setNotice(`Saved “${file.name}”. Booking details need attention.`);
@@ -812,20 +820,20 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
     }
   }
 
-  function addAppointment() {
-    if (!activeTrip || !appointmentTitle.trim()) return;
+  async function addAppointment() {
+    if (!activeTrip || !appointmentTitle.trim() || tripSaving) return;
     const item: TripItem = {
       id: Date.now(), kind: "Appointment", title: appointmentTitle.trim(),
       detail: "Added manually to this itinerary", date: appointmentDate || "Date pending",
       time: "Time pending", source: "Manual appointment",
     };
-    setTrips((current) => current.map((trip) =>
-      trip.id === activeTrip.id ? { ...trip, items: [...trip.items, item] } : trip,
-    ));
-    setAppointmentTitle("");
-    setAppointmentDate("");
-    setAppointmentOpen(false);
-    setNotice("Appointment added.");
+    try {
+      await commitTrip({ ...activeTrip, items: [...activeTrip.items, item] });
+      setAppointmentTitle("");
+      setAppointmentDate("");
+      setAppointmentOpen(false);
+      setNotice("Appointment saved to your firm.");
+    } catch { /* Keep the appointment editor open on failed save. */ }
   }
 
   async function exportOutput(kind: "itinerary" | "expenses", trip = activeTrip, templates?: ExecutiveTemplates) {
@@ -1110,13 +1118,18 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
     setReportTripId(String((!isWorkspace ? activeTrip : reportTrips[0])?.id ?? "")); setReportType("expenses"); setReportOpen(true);
   }
 
-  function createReport() {
+  async function createReport() {
     const trip = reportTrips.find(trip => String(trip.id) === reportTripId);
-    if (!trip) return;
-    if (reportType === "expenses") setTrips(current => current.map(saved => saved.id === trip.id ? { ...saved, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } } : saved));
+    if (!trip || tripSaving) return;
+    if (reportType === "expenses") {
+      if (trip.expenseReport && !window.confirm("A report already exists for this trip. Replace its draft? The existing report will remain until you confirm.")) return;
+      try {
+        await commitTrip({ ...trip, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } });
+      } catch { return; }
+    }
     rememberEditedPage({ page: reportType, travelerId: executiveForTrip(trip, executives)?.id, tripId: trip.id });
     setActiveTripId(trip.id); setActiveTab(reportType); setScreen("detail"); setReportOpen(false);
-    setNotice(reportType === "expenses" ? "Expense report created. Export when ready." : "Travel itinerary ready. Print or save as PDF.");
+    setNotice(reportType === "expenses" ? "Expense report saved to your firm. Export when ready." : "Travel itinerary ready. Print or save as PDF.");
   }
 
   function dropFiles(files: FileList | File[]) {
@@ -1507,7 +1520,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
         <DialogContent><DialogHeader><DialogTitle>Create report</DialogTitle><DialogDescription>{menuExecutive?.name}</DialogDescription></DialogHeader>
           {reportTrips.length ? <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="report-type">Report</Label><select id="report-type" className="simple-select" value={reportType} onChange={event => setReportType(event.target.value as typeof reportType)}><option value="expenses">Expense report</option><option value="itinerary">Travel itinerary</option></select></div><div className="grid gap-2"><Label htmlFor="report-trip">Trip</Label><select id="report-trip" className="simple-select" value={reportTripId} onChange={event => setReportTripId(event.target.value)}>{reportTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.name}</option>)}</select></div></div> : <p className="py-3 text-sm text-slate-600">Drop a confirmation or add a trip first.</p>}
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={createReport} disabled={!reportTrips.some(trip => String(trip.id) === reportTripId)}>Create report</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void createReport()} disabled={tripSaving || !reportTrips.some(trip => String(trip.id) === reportTripId)}>{tripSaving ? "Saving…" : "Create report"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1520,7 +1533,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
       <Dialog open={newTripOpen} onOpenChange={setNewTripOpen}>
         <DialogContent><DialogHeader><DialogTitle>New trip</DialogTitle><DialogDescription>Name the trip and executive.</DialogDescription></DialogHeader>
           <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="trip-name">Trip name</Label><Input id="trip-name" value={newTripName} onChange={event => setNewTripName(event.target.value)} placeholder="Boston meeting" /></div><div className="grid gap-2"><Label htmlFor="trip-executive-name">Executive</Label><Input id="trip-executive-name" value={newExecutive} onChange={event => setNewExecutive(event.target.value)} /></div></div>
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={addTrip}>Create trip</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void addTrip()} disabled={tripSaving}>{tripSaving ? "Saving…" : "Create trip"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog open={appointmentOpen} onOpenChange={setAppointmentOpen}>
