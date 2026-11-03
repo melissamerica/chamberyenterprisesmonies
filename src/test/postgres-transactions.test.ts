@@ -77,7 +77,7 @@ pgDescribe("disposable PostgreSQL transaction integration", () => {
         returns: /^\s*(select|with)\b/i.test(statement.sql) || /\breturning\b/i.test(statement.sql),
       }));
       const rows = await admin.unsafe("SELECT public.anya_exec($1::jsonb, $2::text) AS result",
-        [JSON.stringify(batch), session.firmId]);
+        [admin.json(batch), session.firmId]);
       const result: unknown = rows[0].result;
       return (typeof result === "string" ? JSON.parse(result) : result) as DatabaseResult[];
     };
