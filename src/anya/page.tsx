@@ -1050,11 +1050,22 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
     }catch(error){setProfileError(error instanceof Error?error.message:"The profile could not save.");}
     finally{profileSaveLock.current=false;setProfileSaving(false);}
   }
-  function loadSampleWorkspace() {
-    const sampleId="sample-alex-morgan";
-    setExecutives(current=>current.some(value=>value.id===sampleId)?current:[...current,{id:sampleId,name:"Alex Morgan",templates:{...defaultTemplates}}]);
-    setTrips(current=>{const merged=[...current,...sampleTrips.filter(sample=>!current.some(trip=>trip.id===sample.id))];tripsRef.current=merged;return merged;});
-    setNotice("Fictional sample workspace loaded. Your existing records were kept.");
+  async function loadSampleWorkspace() {
+    const sampleId = "sample-alex-morgan";
+    try {
+      if (cacheScope.role === "viewer") throw new Error("Your firm role is read-only.");
+      if (!executives.some(value => value.id === sampleId)) {
+        const sample = await persistExecutive({ id: sampleId, name: "Alex Morgan", templates: { ...defaultTemplates }, profile: emptyExecutiveProfile() });
+        setExecutives(current => current.some(value => value.id === sampleId) ? current : [...current, sample]);
+      }
+      for (const draft of sampleTrips.filter(sample => !tripsRef.current.some(trip => trip.id === sample.id))) {
+        commitTrip(await storeTrip(draft));
+      }
+      setSelectedExecutiveId(sampleId);
+      setNotice("Fictional sample workspace saved to your firm. Existing records were kept.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The sample could not save.");
+    }
   }
 
   function openTemplates() {
@@ -1411,6 +1422,10 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
     return consoleShell(<main className="console-page console-home anya-home min-h-screen bg-white px-5 py-10 text-slate-900 sm:px-8 sm:py-16">
       <div className="anya-home-inner mx-auto w-full">
         <div className="anya-home-topline"><p className="anya-home-kicker">YOUR EXECUTIVE ASSISTANT WORKSPACE</p><span>Built around the way you work.</span></div>
+        {legacyDataAvailable && <aside className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950" role="status">
+          <strong>Older browser-only workspace data was found.</strong> It cannot safely be assigned to this signed-in firm automatically, so the original records were left untouched. Save a backup before reviewing their recovery.
+          <Button type="button" variant="outline" size="sm" className="ml-3 mt-2" onClick={downloadLegacyBackup}>Download legacy backup</Button>
+        </aside>
         <section className="anya-home-hero" aria-label="Your travel workspace"><div className="min-w-0"><div className="home-heading"><h1>Every trip,<br/><em>thoughtfully organized.</em></h1><p className="home-subtitle">Itineraries, calendars and expenses. One place to keep the details together.</p><p className="anya-home-intro-copy">Drop in a confirmation. Confirm the trip. Anya turns the booking details into calendar entries, an itinerary and expenses—in your executive’s saved format.</p></div>
         {profilesLoadError&&<p role="alert" className="mb-5 text-sm text-amber-800">{profilesLoadError} <Button variant="outline" size="sm" onClick={()=>void loadExecutiveProfiles()}>Retry profiles</Button></p>}
         <HomeDocumentUpload executives={executives} disabled={!hydrated||profilesLoading||uploadLoading||!!uploadLoadError||!!profilesLoadError} onStart={(executiveId,files)=>{setSelectedExecutiveId(executiveId);setHomeImport({executiveId,files,id:createRecordId()});}} onCreateExecutive={()=>{setExecutiveError("");setNewProfileDraft(emptyExecutiveProfile());setExecutiveName("");setExecutiveOpen(true);}}/>
