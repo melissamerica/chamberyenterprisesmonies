@@ -39,6 +39,8 @@ import { parseLabeledConfirmation, readTravelDocument } from "@/lib/travel-confi
 import { destinationFromSearch, type WorkspaceDestination } from "@/lib/workspace-navigation";
 import { reminderCalendarUrl, reminderTimes, type ReminderCalendar } from "@/lib/attention-reminders";
 import { DecisionQueue } from "@/components/decision-queue";
+import { saveInteractiveTrip } from "@/lib/workspace-trip-client";
+import { scopedWorkspaceCache, legacyWorkspaceExists, LEGACY_WORKSPACE_KEYS } from "@/lib/workspace-cache";
 
 type AttentionItem = { id: number; tripId: number; title: string; detail: string };
 
@@ -281,18 +283,11 @@ async function parseFlightConfirmation(file: File): Promise<ParsedConfirmation |
   };
 }
 
-export default function Home() {
-  const [testWorkspace, setTestWorkspace] = useState(false);
-  useEffect(() => {
-    const syncEntry = () => setTestWorkspace(!!destinationFromSearch(window.location.search));
-    syncEntry();
-    window.addEventListener("popstate", syncEntry);
-    return () => window.removeEventListener("popstate", syncEntry);
-  }, []);
-  return testWorkspace ? <TestWorkspace /> : <ProductHome />;
-}
+export default function Home() { return <ProductHome />; }
 
-export function TestWorkspace() {
+export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; firmId: string; role: "owner" | "admin" | "editor" | "viewer" } }) {
+  const cache = useMemo(() => scopedWorkspaceCache(window.localStorage, cacheScope.userId, cacheScope.firmId), [cacheScope.userId, cacheScope.firmId]);
+  const [legacyDataAvailable, setLegacyDataAvailable] = useState(false);
   const [trips, setTrips] = useState<Trip[]>([]);
   const tripsRef = useRef(trips);
   const [executives, setExecutives] = useState<Executive[]>([]);
@@ -442,14 +437,15 @@ export function TestWorkspace() {
     pendingDestination.current = destinationFromSearch(window.location.search) ?? { page: "home" };
     if(new URLSearchParams(window.location.search).get("itineraryTab")==="attachments")setItineraryTab("attachments");
     try {
-      const tripValue = window.localStorage.getItem("trip-workspace-trips");
-      const publishingValue = window.localStorage.getItem("trip-workspace-calendar-publishing");
-      const profilesValue = window.localStorage.getItem("anya-executives");
-      savedExecutiveId = window.localStorage.getItem("anya-selected-executive");
+      setLegacyDataAvailable(legacyWorkspaceExists(window.localStorage));
+      const tripValue = cache.get("trip-workspace-trips");
+      const publishingValue = cache.get("trip-workspace-calendar-publishing");
+      const profilesValue = cache.get("anya-executives");
+      savedExecutiveId = cache.get("anya-selected-executive");
       if (profilesValue) savedExecutives = (JSON.parse(profilesValue) as Executive[]).filter(profile => profile.id && profile.name).map(profile => ({ ...profile, templates: executiveTemplateTerminology({ ...defaultTemplates, ...profile.templates, itineraryHeading: profile.templates?.itineraryHeading === "{traveler} · Travel itinerary" ? defaultTemplates.itineraryHeading : profile.templates?.itineraryHeading ?? defaultTemplates.itineraryHeading, expenseHeading: profile.templates?.expenseHeading === "{traveler} · Expense report" ? defaultTemplates.expenseHeading : profile.templates?.expenseHeading ?? defaultTemplates.expenseHeading }) }));
       if (tripValue) savedTrips = JSON.parse(tripValue) as Trip[];
       if (publishingValue) savedPublishing = JSON.parse(publishingValue);
-      const dismissedValue = window.localStorage.getItem("trip-workspace-dismissed-attention");
+      const dismissedValue = cache.get("trip-workspace-dismissed-attention");
       const dismissed: unknown = dismissedValue ? JSON.parse(dismissedValue) : [];
       if (Array.isArray(dismissed)) savedDismissedAttentionIds = dismissed.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
     } catch {
@@ -487,7 +483,9 @@ export function TestWorkspace() {
       const response = await fetch("/api/uploads");
       const result = await response.json() as { trips?: UploadTrip[]; exclusions?: UploadExclusion[]; rules?: VendorRule[]; deferred?: DeferredUpload[]; unassigned?: UnassignedUpload[]; error?: string };
       if (!response.ok || !result.trips) throw new Error(result.error || "Saved uploads could not load.");
-      setTrips(current => { const merged = mergeUploadedTrips(current, result.trips!); tripsRef.current = merged; return merged; });
+      // The server is the source of truth. Never resurrect stale browser-only trips.
+      setTrips(result.trips as Trip[]);
+      tripsRef.current = result.trips as Trip[];
       setExecutives(current => [...current, ...result.trips!.filter(trip => !current.some(profile => profile.id === trip.executiveId || profile.name.toLowerCase() === trip.traveler.toLowerCase())).filter((trip, index, all) => all.findIndex(value => value.executiveId === trip.executiveId) === index).map(trip => ({id: trip.executiveId!, name: trip.traveler, templates: {...defaultTemplates}}))]);
       setUploadLoadError("");
       setUploadExclusions(result.exclusions ?? []);
@@ -499,6 +497,40 @@ export function TestWorkspace() {
     finally { setUploadLoading(false); }
   }
   useEffect(() => { if (hydrated) void loadUploads(); }, [hydrated]);
+  useEffect(() => {
+    if (!profilesLoading && !templateLoading && !uploadLoading && executives.length &&
+        !executives.some(executive => executive.id === selectedExecutiveId))
+      setSelectedExecutiveId(executives[0].id);
+  }, [profilesLoading, templateLoading, uploadLoading, executives, selectedExecutiveId]);
+
+  async function storeTrip(trip: Trip): Promise<Trip> {
+    if (cacheScope.role === "viewer") throw new Error("Your firm role is read-only.");
+    if (uploadLoading || uploadLoadError) throw new Error("Load the firm's saved trips before editing. Use Retry if loading failed.");
+    if (!trip.executiveId) throw new Error("Select an existing executive before saving this trip.");
+    return await saveInteractiveTrip(trip);
+  }
+
+  function commitTrip(trip: Trip) {
+    const current = tripsRef.current;
+    const next = current.some(value => value.id === trip.id)
+      ? current.map(value => value.id === trip.id ? trip : value)
+      : [...current, trip];
+    tripsRef.current = next;
+    setTrips(next);
+  }
+
+  function downloadLegacyBackup() {
+    const data = Object.fromEntries(LEGACY_WORKSPACE_KEYS
+      .map(key => [key, window.localStorage.getItem(key)])
+      .filter((entry): entry is [string, string] => entry[1] !== null));
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), data }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "chambery-legacy-browser-backup.json";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   function uploadedTripsSaved(saved: UploadTrip[], kind: "expenses" | "itinerary", notice?: string) {
     setTrips(current => { const merged = [...current.map(trip => saved.find(updated => updated.id === trip.id) ?? trip), ...saved.filter(trip => !current.some(existing => existing.id === trip.id))]; tripsRef.current = merged; return merged; });
@@ -515,10 +547,7 @@ export function TestWorkspace() {
     materialsSaving.current=true;setMaterialsBusy(true);setMaterialsError("");
     const updated={...trip,executiveId:trip.executiveId??executiveForTrip(trip,executives)?.id??executiveIdFor(trip.traveler),items:trip.items.map(item=>item.id===itemId?{...item,...change}:item)};
     try{
-      const response=await fetch("/api/uploads",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({trips:[updated]})});
-      const result=await response.json() as {saved?:boolean;error?:string};
-      if(!response.ok||!result.saved)throw new Error(result.error||"The materials indication could not save. Try again.");
-      setTrips(current=>{const merged=current.map(value=>value.id===tripId?{...value,executiveId:updated.executiveId,items:value.items.map(item=>item.id===itemId?{...item,...change}:item)}:value);tripsRef.current=merged;return merged;});
+      commitTrip(await storeTrip(updated));
       rememberEditedPage({page:"itinerary",travelerId:updated.executiveId,tripId});setNotice("Materials indication saved.");
     }catch(error){setMaterialsError(error instanceof Error?error.message:"The materials indication could not save.");}
     finally{materialsSaving.current=false;setMaterialsBusy(false);}
@@ -562,23 +591,23 @@ export function TestWorkspace() {
   useEffect(() => {
     if (!hydrated || !navigationRestored || screen === "home") return;
     const destination: WorkspaceDestination = templatesOpen ? { page: "templates", travelerId: templateExecutiveId, templateId: editingTemplateId, templateTab } : screen === "templates" ? { page: "templates" } : screen === "billing-codes" ? {page:"billing-codes"} : screen === "unassigned-expenses" ? {page:"unassigned-expenses"} : profileOpen ? { page: "profile", travelerId: profileExecutiveId } : { page: screen === "detail" ? activeTab as "itinerary" | "calendar" | "expenses" : "executive", travelerId: selectedExecutiveId, tripId: activeTrip?.id };
-    try { window.localStorage.setItem("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    try { cache.set("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-    window.localStorage.setItem("anya-executives", JSON.stringify(executives));
-    window.localStorage.setItem("anya-selected-executive", selectedExecutiveId);
-    window.localStorage.setItem("trip-workspace-trips", JSON.stringify(trips));
-    window.localStorage.setItem("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
+    cache.set("anya-executives", JSON.stringify(executives));
+    cache.set("anya-selected-executive", selectedExecutiveId);
+    cache.set("trip-workspace-trips", JSON.stringify(trips));
+    cache.set("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
     } catch { /* Saved custom templates remain available from the server. */ }
   }, [calendarPublish, hydrated, trips, executives, selectedExecutiveId]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
+      cache.set("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
     } catch {
       // Dismissals still apply to the current page when browser storage is unavailable.
     }
@@ -672,16 +701,22 @@ export function TestWorkspace() {
   }, [activeTripId, executives]);
 
   function rememberEditedPage(destination: WorkspaceDestination) {
-    try { window.localStorage.setItem("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    try { cache.set("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }
 
-  function addTrip() {
+  async function addTrip() {
     const name = newTripName.trim() || "New trip";
     const id = Date.now();
-    setTrips((current) => [...current, {
-      id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive", dates: "Dates not set",
-      route: "Route pending", items: [],
-    }]);
+    try {
+      const saved = await storeTrip({
+        id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive", dates: "Dates not set",
+        route: "Route pending", items: [],
+      });
+      commitTrip(saved);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The trip could not save.");
+      return;
+    }
     setActiveTripId(id);
     setActiveTab("itinerary");
     setScreen("detail");
@@ -832,16 +867,20 @@ export function TestWorkspace() {
     }
   }
 
-  function addAppointment() {
+  async function addAppointment() {
     if (!activeTrip || !appointmentTitle.trim()) return;
     const item: TripItem = {
       id: Date.now(), kind: "Appointment", title: appointmentTitle.trim(),
       detail: "Added manually to this itinerary", date: appointmentDate || "Date pending",
       time: "Time pending", source: "Manual appointment",
     };
-    setTrips((current) => current.map((trip) =>
-      trip.id === activeTrip.id ? { ...trip, items: [...trip.items, item] } : trip,
-    ));
+    try {
+      const saved = await storeTrip({ ...activeTrip, items: [...activeTrip.items, item] });
+      commitTrip(saved);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The appointment could not save.");
+      return;
+    }
     setAppointmentTitle("");
     setAppointmentDate("");
     setAppointmentOpen(false);
@@ -1130,10 +1169,22 @@ export function TestWorkspace() {
     setReportTripId(String((!isWorkspace ? activeTrip : reportTrips[0])?.id ?? "")); setReportType("expenses"); setReportOpen(true);
   }
 
-  function createReport() {
+  async function createReport() {
     const trip = reportTrips.find(trip => String(trip.id) === reportTripId);
     if (!trip) return;
-    if (reportType === "expenses") setTrips(current => current.map(saved => saved.id === trip.id ? { ...saved, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } } : saved));
+    if (reportType === "expenses") {
+      if (trip.expenseReport?.approval) {
+        setNotice("This report has an approval record and cannot be replaced.");
+        return;
+      }
+      if (trip.expenseReport && !window.confirm("This trip already has an expense report. Replace its draft? The existing report remains unchanged if you cancel.")) return;
+      try {
+        commitTrip(await storeTrip({ ...trip, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } }));
+      } catch (error) {
+        setNotice(error instanceof Error ? error.message : "The expense report could not save.");
+        return;
+      }
+    }
     rememberEditedPage({ page: reportType, travelerId: executiveForTrip(trip, executives)?.id, tripId: trip.id });
     setActiveTripId(trip.id); setActiveTab(reportType); setScreen("detail"); setReportOpen(false);
     setNotice(reportType === "expenses" ? "Expense report created. Export when ready." : "Travel itinerary ready. Print or save as PDF.");
