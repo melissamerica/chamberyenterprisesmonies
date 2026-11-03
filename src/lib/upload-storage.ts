@@ -45,11 +45,73 @@ export async function saveWorkspaceTrip(trip: UploadTrip, ifMatch: string | null
   const result = await statement.run();
   return result.meta.changes === 1 ? { ...data, updatedAt } : null;
 }
-export async function saveUploadTrips(trips:UploadTrip[]) {
-  for(const trip of trips)await assertExpenseEditable(trip);
-  const updatedAt=new Date().toISOString();const db=uploadDatabase();
-  await db.batch(trips.flatMap(trip=>[db.prepare("INSERT INTO executive_upload_trips (trip_id, executive_id, trip_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(trip_id) DO UPDATE SET executive_id = excluded.executive_id, trip_json = excluded.trip_json, updated_at = excluded.updated_at").bind(String(trip.id),trip.executiveId,JSON.stringify(trip),updatedAt), ...trip.items.filter(item=>item.kind==="Expense"&&item.importKey).map(item=>db.prepare("DELETE FROM executive_unassigned_uploads WHERE id = ? AND executive_id = ?").bind(item.importKey,trip.executiveId))]));
+/**
+ * Atomic multi-trip import. Each supplied trip is an exact revision of the
+ * firm database row, or a create-only draft. The last statement is a database
+ * assertion: on any concurrent change it raises an error, rolling back *every*
+ * write in the same anya_exec transaction. No schema migration is required.
+ */
+export async function saveUploadTrips(trips: UploadTrip[]): Promise<UploadTrip[]> {
+  if (!trips.length || new Set(trips.map(trip => String(trip.id))).size !== trips.length)
+    throw new Error("Select distinct saved trips before importing entries.");
+  for (const trip of trips) {
+    if (!trip.executiveId) throw new Error("Choose an executive before saving the trip.");
+    await assertExpenseEditable(trip);
+  }
+  const db = uploadDatabase();
+  const prepared = trips.map(trip => {
+    const base = new Date(Math.max(Date.now(), (trip.updatedAt ? Date.parse(trip.updatedAt) : 0) + 1)).toISOString();
+    // High-resolution text revision prevents two processes from producing the same value in one millisecond.
+    const digits = Array.from(crypto.getRandomValues(new Uint8Array(6)), value => String(value % 10)).join("");
+    const nextUpdatedAt = base.slice(0, -1) + digits + "Z";
+    const { updatedAt: _old, ...tripData } = trip;
+    return { tripId: String(trip.id), executiveId: trip.executiveId, tripJson: JSON.stringify(tripData),
+      expectedUpdatedAt: trip.updatedAt ?? null, nextUpdatedAt };
+  });
+  const payload = JSON.stringify(prepared);
+  const writeSql = `INSERT INTO executive_upload_trips (trip_id, executive_id, trip_json, updated_at)
+    SELECT row.value->>'tripId', row.value->>'executiveId', row.value->>'tripJson', row.value->>'nextUpdatedAt'
+    FROM jsonb_array_elements(?1::jsonb) AS row(value)
+    WHERE NOT EXISTS (
+      SELECT 1 FROM jsonb_array_elements(?1::jsonb) AS guard(value)
+      LEFT JOIN executive_upload_trips cur ON cur.trip_id = guard.value->>'tripId'
+      WHERE (guard.value->>'expectedUpdatedAt' IS NULL AND cur.trip_id IS NOT NULL)
+         OR (guard.value->>'expectedUpdatedAt' IS NOT NULL
+           AND (cur.trip_id IS NULL OR cur.updated_at <> guard.value->>'expectedUpdatedAt'))
+    )
+    ON CONFLICT(trip_id) DO UPDATE SET executive_id = excluded.executive_id,
+      trip_json = excluded.trip_json, updated_at = excluded.updated_at
+    WHERE executive_upload_trips.updated_at = (
+      SELECT guard.value->>'expectedUpdatedAt' FROM jsonb_array_elements(?1::jsonb) AS guard(value)
+      WHERE guard.value->>'tripId' = excluded.trip_id
+    )
+    RETURNING trip_id`;
+  // All-or-nothing assertion is inside the SAME RPC transaction as the upsert.
+  // A zero denominator raises a database exception, triggering a full rollback.
+  const assertSql = `SELECT 1 / CASE WHEN (
+      SELECT count(*) FROM jsonb_array_elements(?1::jsonb) AS row(value)
+      JOIN executive_upload_trips current ON current.trip_id = row.value->>'tripId'
+        AND current.updated_at = row.value->>'nextUpdatedAt'
+    ) = jsonb_array_length(?1::jsonb) THEN 1 ELSE 0 END AS revision_check`;
+  try {
+    const outcome = await db.batch([db.prepare(writeSql).bind(payload), db.prepare(assertSql).bind(payload)]);
+    if (outcome[0]?.meta.changes !== trips.length) throw new Error("The saved trips changed during this import. Reload and review your selections.");
+  } catch (error) {
+    if (error instanceof Error && /division by zero|saved trips changed/i.test(error.message))
+      throw new Error("The saved trips changed in another session. Nothing was imported. Reload and review before retrying.");
+    throw error;
+  }
+  // Cleanup is safe to retry; imported entries prevent duplicates even if cleanup fails.
+  const cleanup = trips.flatMap(trip => trip.items.filter(item => item.kind === "Expense" && item.importKey)
+    .map(item => db.prepare("DELETE FROM executive_unassigned_uploads WHERE id = ? AND executive_id = ?")
+      .bind(item.importKey, trip.executiveId)));
+  if (cleanup.length) {
+    try { await db.batch(cleanup); }
+    catch (error) { console.error("Non-destructive unassigned receipt cleanup failed", error); }
+  }
+  return trips.map((trip, index) => ({ ...trip, updatedAt: prepared[index].nextUpdatedAt }));
 }
+
 export async function savedUploadExclusions() {
   const result=await uploadDatabase().prepare("SELECT executive_id, row_json, approved_at FROM executive_upload_exclusions ORDER BY approved_at DESC").all<{executive_id:string;row_json:string;approved_at:string}>();
   return result.results.map(row=>({executiveId:row.executive_id,row:JSON.parse(row.row_json) as UploadRow,approvedAt:row.approved_at} satisfies UploadExclusion));
