@@ -135,7 +135,7 @@ describe("individual receipt decisions", () => {
   const row = {
     key: "file-1:0", fileId: "file-1", kind: "expense" as const, source: "receipt.pdf",
     title: "Taxi", date: "2026-11-04", amount: "12", category: "Transportation",
-    detail: "", location: "Denver", tripId: "501", match: "", duplicateChoice: "new" as const,
+    detail: "", location: "Denver", tripId: "501", match: "", selected: true, duplicateChoice: "new" as const,
   };
   it("updates the saved trip revision and rejects a stale duplicate decision", async () => {
     const initial = await saveWorkspaceTrip(draft, null);
