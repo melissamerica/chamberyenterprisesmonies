@@ -17,11 +17,11 @@
 ## Verification
 Run `bun install --frozen-lockfile`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`. GitHub Actions executes these on the pull request. The new tests cover scoped-cache isolation/sign-out, guarded client calls, server create/update/stale-write behavior, verified tenant membership, and viewer-write rejection.
 
-The expanded suite includes mocked tests for multi-trip atomic rollback, single-receipt revision conflicts, attachment transaction/lock contracts and manual billing-code stale edits. Tests are isolated/mocked; they do **not** establish live Postgres/Supabase tenancy enforcement, actual database transaction/lock behavior, browser UX, or end-to-end confirmation/receipt/attachment import.
+The expanded suite contains **38 passing tests**, including **8 executed against disposable PostgreSQL 16**, using the repository's actual 0000 and 0001 migration SQL and the `anya_exec` firm-scoped transactional executor. These integration tests exercise bulk multi-trip saves, stale-version rollback, individual receipt decisions, attachment insert/reassignment, concurrent writers, and firm isolation. The remainder use isolated mocks. This does **not** establish production Supabase deployment/configuration, authenticated browser behavior, or complete end-to-end confirmation/receipt/attachment UI coverage.
 
 ## Release blockers / follow-ups
 1. Decide and verify safe ownership-based recovery of old local-only trip/profile/template records, including which firm receives them. Never just import old shared-browser keys into whichever user is signed in.
-2. Validate the expanded bulk-receipt, attachment and billing transaction SQL in a disposable Supabase/Postgres environment (including one stale writer and concurrent requests), before deployment. The in-memory tests check the contract but do not execute PostgreSQL.
+2. The disposable PostgreSQL transaction tests pass, including concurrent writers and firm isolation. Before release, repeat authenticated workflows against a separate **staging** deployment with the actual Supabase service configuration and backup/recovery controls; do not exercise production records.
 3. Review remaining independent deferred/unassigned and approval workflows for reappearance of stale rows or races; these paths do not all use record-level revision checks.
 4. Exercise signed-in user A vs user B, viewer role, two firms, booking upload → trip → generated documents and expense approvals using disposable test records. No live email/calendar sends.
 5. Confirm environment credentials remain server-only, validate deployed row-level isolation, verify restoration/backups, and review security statements before customer onboarding.
