@@ -126,22 +126,46 @@ export async function savedVendorRules() {
   const result=await uploadDatabase().prepare("SELECT rule_json FROM executive_vendor_rules ORDER BY updated_at DESC").all<{rule_json:string}>();
   return result.results.map(row=>JSON.parse(row.rule_json) as VendorRule);
 }
-export async function saveUploadDecision(executiveId:string,row:UploadRow,trip:UploadTrip|undefined,rule:VendorRule|undefined, later=false, learningStatements:D1PreparedStatement[]=[]) {
+export async function saveUploadDecision(executiveId:string,row:UploadRow,trip:UploadTrip|undefined,rule:VendorRule|undefined,later=false,learningStatements:D1PreparedStatement[]=[]) {
   if(trip)await assertExpenseEditable(trip);
   const db=uploadDatabase(),at=new Date().toISOString();
-  const priorDeferred=await db.prepare("SELECT id FROM executive_deferred_uploads WHERE id = ? AND executive_id = ?").bind(row.key,executiveId).first<{id:string}>();
+  const priorDeferred=await db.prepare("SELECT id FROM executive_deferred_uploads WHERE id = ? AND executive_id = ?")
+    .bind(row.key,executiveId).first<{id:string}>();
   const reviewRow={...row,reviewStatus:trip?"assigned" as const:"pending" as const,reviewTripId:trip?String(trip.id):undefined};
+  const oldRevision=trip?.updatedAt??null;
+  // Use a high-precision text revision to prevent a concurrent writer from
+  // accidentally producing the exact same value during a same-millisecond save.
+  const base=new Date(Math.max(Date.now(),oldRevision?Date.parse(oldRevision)+1:0)).toISOString();
+  const suffix=Array.from(crypto.getRandomValues(new Uint8Array(9)),value=>String(value%10)).join("");
+  const nextUpdatedAt=base.slice(0,-1)+suffix+"Z";
+  const {updatedAt:_previous,...tripData}=trip??{updatedAt:undefined};
+  const tripStatements=trip?[
+    oldRevision
+      ? db.prepare("UPDATE executive_upload_trips SET executive_id = ?, trip_json = ?, updated_at = ? WHERE trip_id = ? AND executive_id = ? AND updated_at = ?")
+          .bind(executiveId,JSON.stringify(tripData),nextUpdatedAt,String(trip.id),executiveId,oldRevision)
+      : db.prepare("INSERT INTO executive_upload_trips (trip_id, executive_id, trip_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING")
+          .bind(String(trip.id),executiveId,JSON.stringify(tripData),nextUpdatedAt),
+    // A stale write raises an error INSIDE the batch transaction, rolling back
+    // the receipt decision, vendor rule and learning feedback too.
+    db.prepare("SELECT 1 / CASE WHEN EXISTS (SELECT 1 FROM executive_upload_trips WHERE trip_id = ? AND executive_id = ? AND updated_at = ?) THEN 1 ELSE 0 END AS revision_check")
+      .bind(String(trip.id),executiveId,nextUpdatedAt),
+  ]:[];
   const statements=later
     ? [db.prepare("INSERT INTO executive_deferred_uploads (id, executive_id, row_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET row_json = excluded.row_json, updated_at = excluded.updated_at").bind(row.key,executiveId,JSON.stringify(reviewRow),at)]
     : trip
-    ? [db.prepare("INSERT INTO executive_upload_trips (trip_id, executive_id, trip_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(trip_id) DO UPDATE SET executive_id = excluded.executive_id, trip_json = excluded.trip_json, updated_at = excluded.updated_at").bind(String(trip.id),executiveId,JSON.stringify(trip),at)]
+    ? tripStatements
     : [db.prepare("INSERT INTO executive_upload_exclusions (id, executive_id, source_file_id, row_json, approved_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET row_json = excluded.row_json, approved_at = excluded.approved_at").bind(row.key,executiveId,row.fileId,JSON.stringify(row),at)];
   if(trip&&priorDeferred)statements.push(db.prepare("UPDATE executive_deferred_uploads SET row_json = ?, updated_at = ? WHERE id = ? AND executive_id = ?").bind(JSON.stringify(reviewRow),at,row.key,executiveId));
   else if(!later&&!trip)statements.push(db.prepare("DELETE FROM executive_deferred_uploads WHERE id = ? AND executive_id = ?").bind(row.key,executiveId));
   if(rule)statements.push(db.prepare("INSERT INTO executive_vendor_rules (id, executive_id, rule_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET rule_json = excluded.rule_json, updated_at = excluded.updated_at").bind(rule.id,executiveId,JSON.stringify(rule),at));
   statements.push(db.prepare("DELETE FROM executive_unassigned_uploads WHERE id = ? AND executive_id = ?").bind(row.key,executiveId));
-  await db.batch([...statements,...learningStatements]);
-  return {trips:trip?[trip]:[],exclusions:trip||later?[]:[{executiveId,row,approvedAt:at}],deferred:later||trip&&priorDeferred?[{executiveId,row:reviewRow,updatedAt:at}]:[],rule};
+  try { await db.batch([...statements,...learningStatements]); }
+  catch(error) {
+    if(error instanceof Error && /division by zero/i.test(error.message))
+      throw new Error("The saved trip changed in another session. Nothing was changed. Reload and review before retrying.");
+    throw error;
+  }
+  return {trips:trip?[{...trip,updatedAt:nextUpdatedAt}]:[],exclusions:trip||later?[]:[{executiveId,row,approvedAt:at}],deferred:later||trip&&priorDeferred?[{executiveId,row:reviewRow,updatedAt:at}]:[],rule};
 }
 export async function removeVendorRule(executiveId:string,id:string) { await uploadDatabase().prepare("DELETE FROM executive_vendor_rules WHERE executive_id = ? AND id = ?").bind(executiveId,id).run(); }
 
