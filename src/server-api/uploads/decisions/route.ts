@@ -27,7 +27,12 @@ export async function PUT(request:Request) {
     let memory:D1PreparedStatement[]=[],learningWarning:string|undefined;
     if(!later){try{memory=await expenseLearningStatements(executiveId,row,trip?"assign":"exclude",trip?.name,body.learning as LearningFeedback|undefined);}catch{learningWarning="The transaction saved, but its learning feedback could not be recorded.";}}
     return NextResponse.json({...await saveUploadDecision(executiveId,row,trip,rule,later,memory),...(learningWarning?{learningWarning}:{})});
-  }catch(error){console.error("Upload decision save failed",error);return NextResponse.json({error:"Your choice could not save. The transaction is still here; try again."},{status:503});}
+  }catch(error){
+    const message=error instanceof Error?error.message:"";
+    const conflict=message.includes("changed in another session");
+    console.error("Upload decision save failed",error);
+    return NextResponse.json({error:conflict?message:"Your choice could not save. The transaction is still here; try again."},{status:conflict?409:503});
+  }
 }
 export async function DELETE(request:Request) {
   let body:{executiveId?:unknown;id?:unknown;reviewKey?:unknown};try{body=await request.json();}catch{return NextResponse.json({error:"Choose a remembered selection to remove."},{status:400});}
