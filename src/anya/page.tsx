@@ -443,7 +443,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
       const tripValue = cache?.get("trip-workspace-trips");
       const publishingValue = cache?.get("trip-workspace-calendar-publishing");
       const profilesValue = cache?.get("anya-executives");
-      savedExecutiveId = cache?.get("anya-selected-executive");
+      savedExecutiveId = cache?.get("anya-selected-executive") ?? null;
       if (profilesValue) savedExecutives = (JSON.parse(profilesValue) as Executive[]).filter(profile => profile.id && profile.name).map(profile => ({ ...profile, templates: executiveTemplateTerminology({ ...defaultTemplates, ...profile.templates, itineraryHeading: profile.templates?.itineraryHeading === "{traveler} · Travel itinerary" ? defaultTemplates.itineraryHeading : profile.templates?.itineraryHeading ?? defaultTemplates.itineraryHeading, expenseHeading: profile.templates?.expenseHeading === "{traveler} · Expense report" ? defaultTemplates.expenseHeading : profile.templates?.expenseHeading ?? defaultTemplates.expenseHeading }) }));
       if (tripValue) savedTrips = JSON.parse(tripValue) as Trip[];
       if (publishingValue) savedPublishing = JSON.parse(publishingValue);
