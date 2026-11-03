@@ -287,7 +287,8 @@ async function parseFlightConfirmation(file: File): Promise<ParsedConfirmation |
 export default function Home() { return <ProductHome />; }
 
 export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; firmId: string; role: "owner" | "admin" | "editor" | "viewer" } }) {
-  const cache = useMemo(() => scopedWorkspaceCache(window.localStorage, cacheScope.userId, cacheScope.firmId), [cacheScope.userId, cacheScope.firmId]);
+  // This component is rendered by TanStack Start on the server too.
+  const cache = useMemo(() => typeof window === "undefined" ? null : scopedWorkspaceCache(window.localStorage, cacheScope.userId, cacheScope.firmId), [cacheScope.userId, cacheScope.firmId]);
   const [legacyDataAvailable, setLegacyDataAvailable] = useState(false);
   const [trips, setTrips] = useState<Trip[]>([]);
   const tripsRef = useRef(trips);
@@ -439,14 +440,14 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
     if(new URLSearchParams(window.location.search).get("itineraryTab")==="attachments")setItineraryTab("attachments");
     try {
       setLegacyDataAvailable(legacyWorkspaceExists(window.localStorage));
-      const tripValue = cache.get("trip-workspace-trips");
-      const publishingValue = cache.get("trip-workspace-calendar-publishing");
-      const profilesValue = cache.get("anya-executives");
-      savedExecutiveId = cache.get("anya-selected-executive");
+      const tripValue = cache?.get("trip-workspace-trips");
+      const publishingValue = cache?.get("trip-workspace-calendar-publishing");
+      const profilesValue = cache?.get("anya-executives");
+      savedExecutiveId = cache?.get("anya-selected-executive");
       if (profilesValue) savedExecutives = (JSON.parse(profilesValue) as Executive[]).filter(profile => profile.id && profile.name).map(profile => ({ ...profile, templates: executiveTemplateTerminology({ ...defaultTemplates, ...profile.templates, itineraryHeading: profile.templates?.itineraryHeading === "{traveler} · Travel itinerary" ? defaultTemplates.itineraryHeading : profile.templates?.itineraryHeading ?? defaultTemplates.itineraryHeading, expenseHeading: profile.templates?.expenseHeading === "{traveler} · Expense report" ? defaultTemplates.expenseHeading : profile.templates?.expenseHeading ?? defaultTemplates.expenseHeading }) }));
       if (tripValue) savedTrips = JSON.parse(tripValue) as Trip[];
       if (publishingValue) savedPublishing = JSON.parse(publishingValue);
-      const dismissedValue = cache.get("trip-workspace-dismissed-attention");
+      const dismissedValue = cache?.get("trip-workspace-dismissed-attention");
       const dismissed: unknown = dismissedValue ? JSON.parse(dismissedValue) : [];
       if (Array.isArray(dismissed)) savedDismissedAttentionIds = dismissed.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
     } catch {
@@ -580,23 +581,23 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
   useEffect(() => {
     if (!hydrated || !navigationRestored || screen === "home") return;
     const destination: WorkspaceDestination = templatesOpen ? { page: "templates", travelerId: templateExecutiveId, templateId: editingTemplateId, templateTab } : screen === "templates" ? { page: "templates" } : screen === "billing-codes" ? {page:"billing-codes"} : screen === "unassigned-expenses" ? {page:"unassigned-expenses"} : profileOpen ? { page: "profile", travelerId: profileExecutiveId } : { page: screen === "detail" ? activeTab as "itinerary" | "calendar" | "expenses" : "executive", travelerId: selectedExecutiveId, tripId: activeTrip?.id };
-    try { cache.set("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    try { cache?.set("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-    cache.set("anya-executives", JSON.stringify(executives));
-    cache.set("anya-selected-executive", selectedExecutiveId);
-    cache.set("trip-workspace-trips", JSON.stringify(trips));
-    cache.set("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
+    cache?.set("anya-executives", JSON.stringify(executives));
+    cache?.set("anya-selected-executive", selectedExecutiveId);
+    cache?.set("trip-workspace-trips", JSON.stringify(trips));
+    cache?.set("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
     } catch { /* Saved custom templates remain available from the server. */ }
   }, [calendarPublish, hydrated, trips, executives, selectedExecutiveId]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-      cache.set("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
+      cache?.set("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
     } catch {
       // Dismissals still apply to the current page when browser storage is unavailable.
     }
@@ -687,7 +688,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
   }, [activeTripId, executives, uploadLoading, uploadLoadError, cacheScope.role]);
 
   function rememberEditedPage(destination: WorkspaceDestination) {
-    try { cache.set("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    try { cache?.set("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }
 
   async function addTrip() {
