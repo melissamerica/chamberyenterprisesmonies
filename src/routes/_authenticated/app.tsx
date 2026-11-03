@@ -26,7 +26,7 @@ function AppPage() {
   return (
     <div className="min-h-screen">
       <FirmBar name={firm.data.name} role={firm.data.role} />
-      <TestWorkspace key={firm.data.firmId} />
+      <TestWorkspace key={`${firm.data.userId}:${firm.data.firmId}`} cacheScope={{ userId: firm.data.userId, firmId: firm.data.firmId, role: firm.data.role }} />
     </div>
   );
 }
