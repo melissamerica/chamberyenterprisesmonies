@@ -602,7 +602,7 @@ export function TestWorkspace({ firmId = "", userId = "", readOnly = false }: { 
     if (!hydrated || !navigationRestored || screen === "home") return;
     const destination: WorkspaceDestination = templatesOpen ? { page: "templates", travelerId: templateExecutiveId, templateId: editingTemplateId, templateTab } : screen === "templates" ? { page: "templates" } : screen === "billing-codes" ? {page:"billing-codes"} : screen === "unassigned-expenses" ? {page:"unassigned-expenses"} : profileOpen ? { page: "profile", travelerId: profileExecutiveId } : { page: screen === "detail" ? activeTab as "itinerary" | "calendar" | "expenses" : "executive", travelerId: selectedExecutiveId, tripId: activeTrip?.id };
     if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-workspace"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
-  }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId]);
+  }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId, firmId, userId]);
 
   // Do not cache sensitive trip, executive or expense records in unscoped localStorage.
   // Server confirmation is required before a firm record is treated as saved.
