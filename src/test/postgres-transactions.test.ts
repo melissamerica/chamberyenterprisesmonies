@@ -43,7 +43,7 @@ vi.mock("@/server/runtime-env", () => {
   } } };
 });
 
-import { saveWorkspaceTrip, saveUploadTrips, savedUploadTrips, saveUploadDecision } from "@/lib/upload-storage";
+import { saveWorkspaceTrip, saveUploadTrips, savedUploadTrips, saveUploadDecision, saveUnassignedUploads, savedUnassignedUploads } from "@/lib/upload-storage";
 import { saveAttachment, reassignAttachment, attachmentTrip } from "@/lib/itinerary-attachment-storage";
 import { approvalById, recordDecision } from "@/lib/expense-approval-storage";
 
@@ -225,6 +225,41 @@ pgDescribe("disposable PostgreSQL transaction integration", () => {
     const trip=(await savedUploadTrips())[0];
     expect(record?.status==="approved"||record?.status==="returned").toBe(true);
     expect(trip.expenseReport?.approval?.status==="approved").toBe(record?.status==="approved");
+  });
+
+  const pendingReceipt=(fileId:string):UploadRow=>({
+    key:`${fileId}:0`,fileId,source:"cab.pdf",kind:"expense",title:"Taxi",date:"2026-11-04",
+    amount:"20",category:"Transportation",detail:"",location:"Denver",tripId:"",
+    match:"",duplicateChoice:"new",selected:false,
+  });
+
+  it("does not resurrect a receipt already assigned to a trip", async () => {
+    const row=pendingReceipt("file-previously-assigned");
+    const first=await saveUnassignedUploads("exec-alex","Alex",[row]);
+    expect(first).toHaveLength(1);
+    const trip=draft(791);
+    trip.items.push({id:79101,kind:"Expense",title:"Taxi",detail:"",date:"2026-11-04",time:"",
+      cost:20,importKey:row.key,sourceFileId:row.fileId});
+    await saveWorkspaceTrip(trip,null);
+    // The import may be delayed in another tab; it must not recreate review entries.
+    await admin.unsafe("DELETE FROM public.executive_unassigned_uploads WHERE id = $1",[row.key]);
+    const saved=await saveUnassignedUploads("exec-alex","Alex",[row]);
+    expect(saved).toHaveLength(0);
+    expect(await savedUnassignedUploads()).toHaveLength(0);
+  });
+
+  it("does not resurrect deferred or excluded receipt decisions", async () => {
+    const deferred=pendingReceipt("file-deferred");
+    const excluded=pendingReceipt("file-excluded");
+    await admin.unsafe(`INSERT INTO public.executive_deferred_uploads
+      (firm_id,id,executive_id,row_json,updated_at) VALUES ($1,$2,$3,$4,$5)`,
+      [session.firmId,deferred.key,"exec-alex",JSON.stringify(deferred),"2026-11-03T15:00:00Z"]);
+    await admin.unsafe(`INSERT INTO public.executive_upload_exclusions
+      (firm_id,id,executive_id,source_file_id,row_json,approved_at) VALUES ($1,$2,$3,$4,$5,$6)`,
+      [session.firmId,excluded.key,"exec-alex",excluded.fileId,JSON.stringify(excluded),"2026-11-03T15:00:00Z"]);
+    const saved=await saveUnassignedUploads("exec-alex","Alex",[deferred,excluded]);
+    expect(saved).toHaveLength(0);
+    expect(await savedUnassignedUploads()).toHaveLength(0);
   });
 
   it("keeps data in a different firm invisible", async () => {
