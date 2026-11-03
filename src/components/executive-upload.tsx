@@ -77,13 +77,15 @@ export function ExecutiveUpload({open,initialMode="expenses",reviewLater,calenda
   async function persistRows(assignments:UploadRow[], working:UploadTrip[], automatic=false) {
     const next=assignedUploadTrips(working,assignments,executive.id);
     const response=await fetch("/api/uploads",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({trips:next})});
-    const result=await response.json()as{error?:string};if(!response.ok)throw new Error(result.error||"The imported entries could not save. Try again.");
+    const result=await response.json()as{error?:string;trips?:UploadTrip[]};
+    if(!response.ok||!Array.isArray(result.trips)||result.trips.length!==next.length)throw new Error(result.error||"The imported entries could not save. Try again.");
+    const confirmed=result.trips;
     onUnassigned([],assignments.filter(row=>row.kind==="expense").map(row=>row.key));
-    const merged=working.map(trip=>next.find(saved=>saved.id===trip.id)??trip);workingTripsRef.current=merged;
+    const merged=working.map(trip=>confirmed.find(saved=>saved.id===trip.id)??trip);workingTripsRef.current=merged;
     const calendarImport=assignments.every(row=>row.kind==="meeting");
     if(automatic&&calendarImport)setCalendarSummary(current=>{const summary=[...current];for(const trip of next){const count=assignments.filter(row=>row.tripId===String(trip.id)).length;const index=summary.findIndex(value=>value.id===trip.id);if(index>=0)summary[index]={...summary[index],count:summary[index].count+count};else summary.push({id:trip.id,name:trip.name,count});}return summary;});
     if(automatic&&!calendarImport)setAutomaticSummary(current=>{const summary=[...current];for(const trip of next){const assigned=assignments.filter(row=>row.tripId===String(trip.id));const prior=summary.findIndex(saved=>saved.id===trip.id);const count=assigned.length,amount=assigned.reduce((sum,row)=>sum+Number(row.amount),0);if(prior>=0)summary[prior]={...summary[prior],count:summary[prior].count+count,amount:summary[prior].amount+amount};else summary.push({id:trip.id,name:trip.name,count,amount});}return summary;});
-    onSaved(next,assignments.some(row=>row.kind==="meeting")?"itinerary":"expenses",automatic?`Automatically added ${assignments.length} ${calendarImport?"calendar entries":assignments.length===1?"expense":"expenses"} to ${next.length===1?next[0].name:`${next.length} trips`}${calendarImport?" itinerary":""}.`:undefined);
+    onSaved(confirmed,assignments.some(row=>row.kind==="meeting")?"itinerary":"expenses",automatic?`Automatically added ${assignments.length} ${calendarImport?"calendar entries":assignments.length===1?"expense":"expenses"} to ${next.length===1?next[0].name:`${next.length} trips`}${calendarImport?" itinerary":""}.`:undefined);
     return merged;
   }
   async function readFiles(list:File[],stored:Record<string,UploadedFile>={}){
