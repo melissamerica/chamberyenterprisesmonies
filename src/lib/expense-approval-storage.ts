@@ -46,6 +46,7 @@ export async function createApproval(trip:UploadTrip,templates:ExecutiveTemplate
     (id,trip_id,executive_id,approver_email,token_hash,send_token_hash,snapshot_json,documents_json,status,clarification,created_at,updated_at)
     SELECT ?,?,?,?,?,?,?,?,?,?,?,?
     FROM executive_upload_trips WHERE trip_id = ? AND executive_id = ? AND updated_at = ?
+    FOR UPDATE
     RETURNING id`)
     .bind(id,String(trip.id),trip.executiveId,approverEmail.toLowerCase(),await sha256(reviewToken),await sha256(deliveryToken),JSON.stringify(snapshot),JSON.stringify(copied),"draft",clarification,at,at,
       String(trip.id),trip.executiveId,trip.updatedAt).all<{id:string}>();
@@ -76,8 +77,9 @@ export async function sendApproval(record:ApprovalRecord,deliveryToken:string){
  try{
  const response=await fetch(config.EXPENSE_APPROVAL_EMAIL_WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:config.EXPENSE_APPROVAL_EMAIL_KEY,approvalId:record.id,messageUrl:`${config.EXPENSE_APPROVAL_PORTAL_URL}/message/${deliveryToken}`,test:false}),signal:AbortSignal.timeout(45000)});
  const result=await response.json()as{ok?:boolean;messageId?:string};if(!response.ok||!result.ok||!result.messageId)throw Error("Gmail did not confirm delivery. Check Sent mail before trying again.");
- await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'pending', message_id = ?, updated_at = ? WHERE id = ? AND status = 'sending'").bind(result.messageId,new Date().toISOString(),record.id).run();
- }catch(error){await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'delivery_unknown', updated_at = ? WHERE id = ?").bind(new Date().toISOString(),record.id).run();throw error;}
+ const confirmed=await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'pending', message_id = ?, updated_at = ? WHERE id = ? AND status = 'sending'").bind(result.messageId,new Date().toISOString(),record.id).run();
+ if(confirmed.meta.changes!==1)throw Error("The approval status changed during delivery. Reload its current status.");
+ }catch(error){await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'delivery_unknown', updated_at = ? WHERE id = ? AND status = 'sending'").bind(new Date().toISOString(),record.id).run();throw error;}
  return (await approvalById(record.id))!;
 }
 export async function recordDecision(record:ApprovalRecord,decision:"approve"|"return",name:string,notes:string){
