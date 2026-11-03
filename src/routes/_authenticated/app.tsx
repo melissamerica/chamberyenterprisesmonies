@@ -29,7 +29,7 @@ function AppPage() {
   return (
     <div className="min-h-screen">
       <FirmBar name={firm.data.name} role={firm.data.role} />
-      <TestWorkspace key={`${firm.data.firmId}:${session.user.id}`} firmId={firm.data.firmId} userId={session.user.id} />
+      <TestWorkspace key={`${firm.data.firmId}:${session.user.id}`} firmId={firm.data.firmId} userId={session.user.id} readOnly={firm.data.role === "viewer"} />
     </div>
   );
 }
