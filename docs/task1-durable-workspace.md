@@ -13,16 +13,20 @@
 - Attaching and reassigning itinerary files no longer pre-save stale trip snapshots. Server-side row locks and transactional metadata changes protect trip versions; failed uploads clean up the stored file.
 - Billing-code assignments check the trip revision, and manual code edits enforce a saved revision; existing billing-code list imports retain their original guarded bulk import.
 - Expense report creation prompts before replacing a draft; an existing approval record is protected.
+- Approval finalization now requires the server's current trip revision and locks its row during draft creation. It no longer rewrites the original trip just to create a draft.
+- Approver decisions use a single transaction. A concurrent decision or missing trip rolls back the approval-status change rather than leaving a falsely approved record; returning a report uses a guarded status transition.
+- Approval delivery-state resolution checks the row count and approval detail reads verify that the requested trip actually belongs to the specified executive.
+- Unassigned receipt imports reject already assigned, deferred, or excluded charges so an older browser tab cannot reintroduce previously resolved receipts. This sequential-state protection is tested; cross-process races in all separate workflow paths still require staging review.
 
 ## Verification
 Run `bun install --frozen-lockfile`, `bunx tsc --noEmit`, `bun run test`, and `bun run build`. GitHub Actions executes these on the pull request. The new tests cover scoped-cache isolation/sign-out, guarded client calls, server create/update/stale-write behavior, verified tenant membership, and viewer-write rejection.
 
-The expanded suite contains **38 passing tests**, including **8 executed against disposable PostgreSQL 16**, using the repository's actual 0000 and 0001 migration SQL and the `anya_exec` firm-scoped transactional executor. These integration tests exercise bulk multi-trip saves, stale-version rollback, individual receipt decisions, attachment insert/reassignment, concurrent writers, and firm isolation. The remainder use isolated mocks. This does **not** establish production Supabase deployment/configuration, authenticated browser behavior, or complete end-to-end confirmation/receipt/attachment UI coverage.
+The expanded suite contains **43 passing tests**, including **13 executed against disposable PostgreSQL 16**, using the repository's actual 0000 and 0001 migration SQL and the `anya_exec` firm-scoped transactional executor. These integration tests exercise bulk multi-trip saves, stale-version rollback, individual receipt decisions, attachment insert/reassignment, concurrent writers, firm isolation, approval decision consistency, and non-resurrection of classified receipts. The remainder use isolated mocks. This does **not** establish production Supabase deployment/configuration, authenticated browser behavior, or complete end-to-end confirmation/receipt/attachment UI coverage.
 
 ## Release blockers / follow-ups
 1. Decide and verify safe ownership-based recovery of old local-only trip/profile/template records, including which firm receives them. Never just import old shared-browser keys into whichever user is signed in.
 2. The disposable PostgreSQL transaction tests pass, including concurrent writers and firm isolation. Before release, repeat authenticated workflows against a separate **staging** deployment with the actual Supabase service configuration and backup/recovery controls; do not exercise production records.
-3. Review remaining independent deferred/unassigned and approval workflows for reappearance of stale rows or races; these paths do not all use record-level revision checks.
+3. Test any remaining independent approval delivery, deferred-review removal, and unassigned receipt reconciliation races in staging; not every auxiliary record type uses revision preconditions.
 4. Exercise signed-in user A vs user B, viewer role, two firms, booking upload → trip → generated documents and expense approvals using disposable test records. No live email/calendar sends.
 5. Confirm environment credentials remain server-only, validate deployed row-level isolation, verify restoration/backups, and review security statements before customer onboarding.
 6. The older prototype `AGENTS.md` / source handoff notes describe prior architectures and should not supersede current signed-in firm boundaries.
