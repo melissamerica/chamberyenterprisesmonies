@@ -63,7 +63,9 @@ function draft(id: number): UploadTrip {
 pgDescribe("disposable PostgreSQL transaction integration", () => {
   beforeAll(async () => {
     admin = postgres(process.env.POSTGRES_TEST_URL!, { max: 1, prepare: false });
-    await admin.unsafe("CREATE ROLE service_role NOLOGIN").simple();
+    // Plain PostgreSQL does not include the built-in Supabase roles.
+    for (const role of ["service_role", "anon", "authenticated"])
+      await admin.unsafe(`CREATE ROLE ${role} NOLOGIN`).simple();
     for (const name of ["0000_migration.sql", "0001_firm_tenancy.sql"]) {
       const migration = readFileSync(`drizzle/migrations/${name}`, "utf8");
       await admin.unsafe(migration).simple();
