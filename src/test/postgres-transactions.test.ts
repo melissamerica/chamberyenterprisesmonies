@@ -62,7 +62,7 @@ function draft(id: number): UploadTrip {
 
 pgDescribe("disposable PostgreSQL transaction integration", () => {
   beforeAll(async () => {
-    admin = postgres(process.env.POSTGRES_TEST_URL!, { max: 1, prepare: false });
+    admin = postgres(process.env.POSTGRES_TEST_URL!, { max: 5, prepare: false });
     // Plain PostgreSQL does not include the built-in Supabase roles.
     for (const role of ["service_role", "anon", "authenticated"])
       await admin.unsafe(`CREATE ROLE ${role} NOLOGIN`).simple();
@@ -149,6 +149,31 @@ pgDescribe("disposable PostgreSQL transaction integration", () => {
     expect(moved.items[0].materialsAttached).toBe(false);
     const results = await admin.unsafe("SELECT entry_id FROM public.itinerary_attachments WHERE id = 'attachment-10'");
     expect(results[0].entry_id).toBe("0");
+  });
+
+  it("allows only one of two simultaneous full-trip batch updates", async () => {
+    const first = await saveWorkspaceTrip(draft(761), null);
+    const second = await saveWorkspaceTrip(draft(762), null);
+    const a = saveUploadTrips([{ ...first!, name: "A-761" }, { ...second!, name: "A-762" }]);
+    const b = saveUploadTrips([{ ...first!, name: "B-761" }, { ...second!, name: "B-762" }]);
+    const outcomes = await Promise.allSettled([a, b]);
+    expect(outcomes.filter(value => value.status === "fulfilled")).toHaveLength(1);
+    expect(outcomes.filter(value => value.status === "rejected")).toHaveLength(1);
+    const stored = await savedUploadTrips();
+    const names = stored.map(value => value.name);
+    expect(names.sort().join(",")).toMatch(/^(A-761,A-762|B-761,B-762)$/);
+  });
+
+  it("allows only one of two concurrent attachment uploads to update a trip", async () => {
+    const initial = await saveWorkspaceTrip(draft(771), null);
+    const outcomes = await Promise.allSettled([
+      saveAttachment(initial!, { id: "concurrent-A" }, 7710, 100),
+      saveAttachment(initial!, { id: "concurrent-B" }, 7710, 100),
+    ]);
+    expect(outcomes.filter(value => value.status === "fulfilled")).toHaveLength(1);
+    expect(outcomes.filter(value => value.status === "rejected")).toHaveLength(1);
+    const rows = await admin.unsafe("SELECT id FROM public.itinerary_attachments WHERE trip_id = '771'");
+    expect(rows).toHaveLength(1);
   });
 
   it("keeps data in a different firm invisible", async () => {
