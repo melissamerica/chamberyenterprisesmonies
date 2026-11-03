@@ -39,6 +39,7 @@ import { parseLabeledConfirmation, readTravelDocument } from "@/lib/travel-confi
 import { destinationFromSearch, type WorkspaceDestination } from "@/lib/workspace-navigation";
 import { reminderCalendarUrl, reminderTimes, type ReminderCalendar } from "@/lib/attention-reminders";
 import { DecisionQueue } from "@/components/decision-queue";
+import { missingById, navigationKey, persistFirmTrip, readLegacyWorkspace, type LegacyWorkspace } from "@/lib/workspace-durability";
 
 type AttentionItem = { id: number; tripId: number; title: string; detail: string };
 
@@ -292,7 +293,7 @@ export default function Home() {
   return testWorkspace ? <TestWorkspace /> : <ProductHome />;
 }
 
-export function TestWorkspace() {
+export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; userId?: string } = {}) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const tripsRef = useRef(trips);
   const [executives, setExecutives] = useState<Executive[]>([]);
@@ -368,6 +369,12 @@ export function TestWorkspace() {
   const [billingReturnToReport, setBillingReturnToReport] = useState(false);
   const [activeTripId, setActiveTripId] = useState(1);
   const [notice, setNotice] = useState("");
+  const [tripSaving, setTripSaving] = useState(false);
+  const [tripSaveError, setTripSaveError] = useState("");
+  const [legacyReview, setLegacyReview] = useState<LegacyWorkspace | null>(null);
+  const [legacyImporting, setLegacyImporting] = useState(false);
+  const [legacyError, setLegacyError] = useState("");
+  const [legacyResult, setLegacyResult] = useState("");
   const [newTripOpen, setNewTripOpen] = useState(false);
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [newTripName, setNewTripName] = useState("");
@@ -432,40 +439,12 @@ export function TestWorkspace() {
       .catch(() => {});
   }, []);
 
+  // Legacy browser data has no account identity. Never hydrate it into a firm automatically.
+  // Current records are loaded from the authenticated firm's APIs below.
   useEffect(() => {
-    let savedTrips: Trip[] | null = null;
-    let savedExecutives: Executive[] | null = null;
-    let savedExecutiveId: string | null = null;
-    let savedPublishing: Record<number, { status: "publishing" | "published" | "error"; url?: string }> | null = null;
-    let savedDismissedAttentionIds: number[] = [];
-    // The shared root URL always opens Home; explicit workspace links still open their requested page.
     pendingDestination.current = destinationFromSearch(window.location.search) ?? { page: "home" };
-    if(new URLSearchParams(window.location.search).get("itineraryTab")==="attachments")setItineraryTab("attachments");
-    try {
-      const tripValue = window.localStorage.getItem("trip-workspace-trips");
-      const publishingValue = window.localStorage.getItem("trip-workspace-calendar-publishing");
-      const profilesValue = window.localStorage.getItem("anya-executives");
-      savedExecutiveId = window.localStorage.getItem("anya-selected-executive");
-      if (profilesValue) savedExecutives = (JSON.parse(profilesValue) as Executive[]).filter(profile => profile.id && profile.name).map(profile => ({ ...profile, templates: executiveTemplateTerminology({ ...defaultTemplates, ...profile.templates, itineraryHeading: profile.templates?.itineraryHeading === "{traveler} · Travel itinerary" ? defaultTemplates.itineraryHeading : profile.templates?.itineraryHeading ?? defaultTemplates.itineraryHeading, expenseHeading: profile.templates?.expenseHeading === "{traveler} · Expense report" ? defaultTemplates.expenseHeading : profile.templates?.expenseHeading ?? defaultTemplates.expenseHeading }) }));
-      if (tripValue) savedTrips = JSON.parse(tripValue) as Trip[];
-      if (publishingValue) savedPublishing = JSON.parse(publishingValue);
-      const dismissedValue = window.localStorage.getItem("trip-workspace-dismissed-attention");
-      const dismissed: unknown = dismissedValue ? JSON.parse(dismissedValue) : [];
-      if (Array.isArray(dismissed)) savedDismissedAttentionIds = dismissed.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
-    } catch {
-      // Start empty when this browser has no saved workspace. Samples are opt-in.
-    }
-    const timer = window.setTimeout(() => {
-      if (savedTrips) { tripsRef.current = savedTrips; setTrips(savedTrips); }
-      const legacyProfiles = profilesFromTrips(savedTrips ?? []);
-      const profiles = savedExecutives?.length ? [...savedExecutives, ...legacyProfiles.filter(profile => !savedExecutives!.some(saved => saved.name.toLowerCase() === profile.name.toLowerCase()))] : legacyProfiles;
-      setExecutives(profiles);
-      setSelectedExecutiveId(profiles.some(profile => profile.id === savedExecutiveId) ? savedExecutiveId! : profiles[0]?.id ?? "");
-      if (savedPublishing) setCalendarPublish(savedPublishing);
-      setDismissedAttentionIds(savedDismissedAttentionIds);
-      setHydrated(true);
-    }, 0);
-    return () => window.clearTimeout(timer);
+    if (new URLSearchParams(window.location.search).get("itineraryTab") === "attachments") setItineraryTab("attachments");
+    setHydrated(true);
   }, []);
 
   useEffect(() => { if (hydrated) void loadCustomTemplates(); }, [hydrated]);
@@ -499,6 +478,24 @@ export function TestWorkspace() {
     finally { setUploadLoading(false); }
   }
   useEffect(() => { if (hydrated) void loadUploads(); }, [hydrated]);
+
+  /** Commit a complete trip only after the firm API confirms it. No browser-only success. */
+  async function commitTrip(trip: Trip): Promise<Trip> {
+    const owner = trip.executiveId || executives.find(e => e.name.trim().toLowerCase() === trip.traveler.trim().toLowerCase())?.id || executiveIdFor(trip.traveler);
+    const owned: Trip = { ...trip, executiveId: owner };
+    setTripSaving(true); setTripSaveError("");
+    try {
+      await persistFirmTrip(owned);
+      const merged = [...tripsRef.current.filter(t => t.id !== owned.id), owned];
+      tripsRef.current = merged;
+      setTrips(merged);
+      return owned;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "The trip could not save to your firm.";
+      setTripSaveError(message);
+      throw error;
+    } finally { setTripSaving(false); }
+  }
 
   function uploadedTripsSaved(saved: UploadTrip[], kind: "expenses" | "itinerary", notice?: string) {
     setTrips(current => { const merged = [...current.map(trip => saved.find(updated => updated.id === trip.id) ?? trip), ...saved.filter(trip => !current.some(existing => existing.id === trip.id))]; tripsRef.current = merged; return merged; });
@@ -562,28 +559,11 @@ export function TestWorkspace() {
   useEffect(() => {
     if (!hydrated || !navigationRestored || screen === "home") return;
     const destination: WorkspaceDestination = templatesOpen ? { page: "templates", travelerId: templateExecutiveId, templateId: editingTemplateId, templateTab } : screen === "templates" ? { page: "templates" } : screen === "billing-codes" ? {page:"billing-codes"} : screen === "unassigned-expenses" ? {page:"unassigned-expenses"} : profileOpen ? { page: "profile", travelerId: profileExecutiveId } : { page: screen === "detail" ? activeTab as "itinerary" | "calendar" | "expenses" : "executive", travelerId: selectedExecutiveId, tripId: activeTrip?.id };
-    try { window.localStorage.setItem("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-workspace"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-    window.localStorage.setItem("anya-executives", JSON.stringify(executives));
-    window.localStorage.setItem("anya-selected-executive", selectedExecutiveId);
-    window.localStorage.setItem("trip-workspace-trips", JSON.stringify(trips));
-    window.localStorage.setItem("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
-    } catch { /* Saved custom templates remain available from the server. */ }
-  }, [calendarPublish, hydrated, trips, executives, selectedExecutiveId]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
-    } catch {
-      // Dismissals still apply to the current page when browser storage is unavailable.
-    }
-  }, [dismissedAttentionIds, hydrated]);
-
+  // Do not cache sensitive trip, executive or expense records in unscoped localStorage.
+  // Server confirmation is required before a firm record is treated as saved.
   useEffect(() => {
     const context = (document as Document & { modelContext?: WebMCPContext }).modelContext;
     if (!context?.registerTool) return;
@@ -672,7 +652,7 @@ export function TestWorkspace() {
   }, [activeTripId, executives]);
 
   function rememberEditedPage(destination: WorkspaceDestination) {
-    try { window.localStorage.setItem("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-edited-page"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }
 
   function addTrip() {
