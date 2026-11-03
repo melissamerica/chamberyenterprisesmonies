@@ -34,8 +34,13 @@ export async function PUT(request:Request){
       if(!trip)return NextResponse.json({error:"This trip was changed in another session. Your edits were not overwritten. Reload and review before saving again.",code:"TRIP_CONFLICT"},{status:409});
       return NextResponse.json({saved:true,trip});
     }
-    await saveUploadTrips(trips);
-    return NextResponse.json({saved:true});
+    const savedTrips = await saveUploadTrips(trips);
+    return NextResponse.json({saved:true,trips:savedTrips});
   }
-  catch(error){console.error("Upload assignment save failed",error);return NextResponse.json({error:"Your selections could not save. They are still here; try again."},{status:503});}
+  catch(error){
+    const message=error instanceof Error?error.message:"";
+    const conflict=message.includes("changed in another session");
+    console.error("Upload assignment save failed",error);
+    return NextResponse.json({error:conflict?message:"Your selections could not save. They are still here; try again."},{status:conflict?409:503});
+  }
 }
