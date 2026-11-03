@@ -56,6 +56,7 @@ type TripItem = {
   materialsAttached?: boolean; materialsFormat?: "digital" | "hardcopy" | "both";
 };
 type Trip = {
+  updatedAt?: string;
   billingCode?: import("@/lib/billing-codes").BillingCodeSelection;
   id: number; name: string; traveler: string; dates: string; route: string;
   items: TripItem[];
@@ -819,11 +820,8 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
         const destinationTrip: Trip = matchingTrip
           ? { ...matchingTrip, items: [...matchingTrip.items, ...uniqueItems], expenseReport: report }
           : { id: destination, ...parsed, name: "name" in decision ? decision.name : parsed.name, executiveId: importExecutive?.id, items: uniqueItems, expenseReport: report };
-        workingTrips = matchingTrip
-          ? workingTrips.map((trip) => trip.id === destination ? destinationTrip : trip)
-          : [...workingTrips, destinationTrip];
-        tripsRef.current = workingTrips;
-        setTrips(workingTrips);
+        commitTrip(await storeTrip(destinationTrip));
+        workingTrips = tripsRef.current;
         setActiveTripId(destination);
         setActiveTab("itinerary");
         setScreen("detail");
@@ -856,8 +854,10 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
         id: destination, executiveId: importExecutive?.id, name: "name" in decision ? decision.name : file.name.replace(/\.[^.]+$/, ""), traveler: importExecutive?.name || "Executive", dates: "Dates pending", route: "Details pending",
         items: [newItem], expenseReport: { id: `expenses-${destination}`, createdAt: new Date().toISOString() },
       }];
-      tripsRef.current = workingTrips;
-      setTrips(workingTrips);
+      const pendingTrip = workingTrips.find(trip => trip.id === destination);
+      if (!pendingTrip) throw new Error("The trip could not be prepared.");
+      commitTrip(await storeTrip(pendingTrip));
+      workingTrips = tripsRef.current;
       setAttentionItems((current) => [...current, { id: Date.now() + fileIndex, tripId: destination, title: "Confirmation needs details", detail: `“${file.name}”: ${failure}` }]);
       rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: destination });
       setNotice(`Saved “${file.name}”. Booking details need attention.`);
