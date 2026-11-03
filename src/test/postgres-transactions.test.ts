@@ -45,6 +45,7 @@ vi.mock("@/server/runtime-env", () => {
 
 import { saveWorkspaceTrip, saveUploadTrips, savedUploadTrips, saveUploadDecision } from "@/lib/upload-storage";
 import { saveAttachment, reassignAttachment, attachmentTrip } from "@/lib/itinerary-attachment-storage";
+import { approvalById, recordDecision } from "@/lib/expense-approval-storage";
 
 const enabled = !!process.env.POSTGRES_TEST_URL;
 const pgDescribe = enabled ? describe : describe.skip;
@@ -174,6 +175,56 @@ pgDescribe("disposable PostgreSQL transaction integration", () => {
     expect(outcomes.filter(value => value.status === "rejected")).toHaveLength(1);
     const rows = await admin.unsafe("SELECT id FROM public.itinerary_attachments WHERE trip_id = '771'");
     expect(rows).toHaveLength(1);
+  });
+
+  async function pendingApproval(tripId: number) {
+    const report = { id: `expense-${tripId}`, createdAt: "2026-11-03T16:00:00.000Z" };
+    const trip: UploadTrip = { ...draft(tripId), expenseReport: report };
+    const saved = await saveWorkspaceTrip(trip, null);
+    const id = `approval-${tripId}`;
+    const snapshot = { trip: saved, templates: {}, reportHash: `hash-${tripId}` };
+    await admin.unsafe(`INSERT INTO public.expense_approval_requests
+      (firm_id,id,trip_id,executive_id,approver_email,token_hash,send_token_hash,
+       snapshot_json,documents_json,status,clarification,created_at,updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending','',$10,$10)`,
+      [session.firmId,id,String(tripId),"exec-alex","approver@example.test",
+       `token-${tripId}`,`delivery-${tripId}`,JSON.stringify(snapshot),"[]",
+       "2026-11-03T16:00:00.000Z"]);
+    const record=await approvalById(id);
+    if(!record)throw Error("Failed to create isolated test approval");
+    return record;
+  }
+
+  it("updates the approval and corresponding trip signature atomically", async () => {
+    const pending=await pendingApproval(781);
+    const approved=await recordDecision(pending,"approve","Taylor Reviewer","");
+    expect(approved.status).toBe("approved");
+    expect(approved.signature_name).toBe("Taylor Reviewer");
+    const trip=(await savedUploadTrips())[0];
+    expect(trip.expenseReport?.approval?.status).toBe("approved");
+    expect(trip.expenseReport?.approval?.reportHash).toBe("hash-781");
+    expect(trip.expenseReport?.id).toBe("expense-781");
+  });
+
+  it("rolls back the approval status if its trip no longer exists", async () => {
+    const pending=await pendingApproval(782);
+    await admin.unsafe("DELETE FROM public.executive_upload_trips WHERE trip_id = $1",[String(782)]);
+    await expect(recordDecision(pending,"approve","Taylor Reviewer","")).rejects.toThrow("Nothing was approved");
+    expect((await approvalById(pending.id))?.status).toBe("pending");
+  });
+
+  it("rejects a second decision without changing the signed report", async () => {
+    const pending=await pendingApproval(783);
+    const outcomes=await Promise.allSettled([
+      recordDecision(pending,"approve","Taylor Reviewer",""),
+      recordDecision(pending,"return","","Please add documentation"),
+    ]);
+    expect(outcomes.filter(outcome=>outcome.status==="fulfilled")).toHaveLength(1);
+    expect(outcomes.filter(outcome=>outcome.status==="rejected")).toHaveLength(1);
+    const record=await approvalById(pending.id);
+    const trip=(await savedUploadTrips())[0];
+    expect(record?.status==="approved"||record?.status==="returned").toBe(true);
+    expect(trip.expenseReport?.approval?.status==="approved").toBe(record?.status==="approved");
   });
 
   it("keeps data in a different firm invisible", async () => {
