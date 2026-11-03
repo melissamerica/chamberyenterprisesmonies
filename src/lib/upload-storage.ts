@@ -20,8 +20,30 @@ export async function removeStoredUpload(id:string) {
   await uploadDatabase().prepare("DELETE FROM executive_upload_files WHERE id = ?").bind(id).run();
 }
 export async function savedUploadTrips() {
-  const result=await uploadDatabase().prepare("SELECT trip_json FROM executive_upload_trips ORDER BY updated_at DESC").all<{trip_json:string}>();
-  return result.results.map(row=>JSON.parse(row.trip_json) as UploadTrip);
+  const result=await uploadDatabase().prepare("SELECT trip_json, updated_at FROM executive_upload_trips ORDER BY updated_at DESC").all<{trip_json:string;updated_at:string}>();
+  return result.results.map(row=>({...JSON.parse(row.trip_json) as UploadTrip, updatedAt:row.updated_at}));
+}
+
+/**
+ * Guarded write for interactive workspace edits. The server is authoritative.
+ * Missing revision means CREATE ONLY; an existing revision must match exactly.
+ * This is additive to the old upload decision API, which still supports its
+ * existing atomic batch workflows.
+ */
+export async function saveWorkspaceTrip(trip: UploadTrip, ifMatch: string | null): Promise<UploadTrip | null> {
+  await assertExpenseEditable(trip);
+  const db = uploadDatabase();
+  const currentTime = Date.now();
+  const previousTime = ifMatch ? Date.parse(ifMatch) : 0;
+  const updatedAt = new Date(Math.max(currentTime, Number.isFinite(previousTime) ? previousTime + 1 : 0)).toISOString();
+  const { updatedAt: _previousRevision, ...data } = trip;
+  const statement = ifMatch === null
+    ? db.prepare("INSERT INTO executive_upload_trips (trip_id, executive_id, trip_json, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(trip_id) DO NOTHING")
+        .bind(String(trip.id), trip.executiveId, JSON.stringify(data), updatedAt)
+    : db.prepare("UPDATE executive_upload_trips SET executive_id = ?, trip_json = ?, updated_at = ? WHERE trip_id = ? AND updated_at = ?")
+        .bind(trip.executiveId, JSON.stringify(data), updatedAt, String(trip.id), ifMatch);
+  const result = await statement.run();
+  return result.meta.changes === 1 ? { ...data, updatedAt } : null;
 }
 export async function saveUploadTrips(trips:UploadTrip[]) {
   for(const trip of trips)await assertExpenseEditable(trip);
