@@ -634,23 +634,20 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { name?: unknown; executive?: unknown };
           if (typeof value.name !== "string" || !value.name.trim() ||
               typeof value.executive !== "string" || !value.executive.trim()) {
             throw new Error("A trip name and executive are required.");
           }
+          const profile = executives.find(profile => profile.name.toLowerCase() === value.executive!.toString().trim().toLowerCase());
+          if (!profile) throw new Error("Create an executive profile before adding a trip.");
           const id = Date.now();
-          const trip: Trip = {
-            id,
-            name: value.name.trim(),
-            traveler: value.executive.trim(),
-            executiveId: executives.find(profile => profile.name.toLowerCase() === value.executive!.toString().trim().toLowerCase())?.id,
-            dates: "Dates not set",
-            route: "Route pending",
-            items: [],
-          };
-          setTrips((current) => [...current, trip]);
+          const trip = await storeTrip({
+            id, name: value.name.trim(), traveler: profile.name, executiveId: profile.id,
+            dates: "Dates not set", route: "Route pending", items: [],
+          });
+          commitTrip(trip);
           setActiveTripId(id);
           setNotice(`Created “${trip.name}”. Drop in the first confirmation.`);
           return { id, name: trip.name, executive: trip.traveler, status: "draft" };
@@ -671,7 +668,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { title?: unknown; date?: unknown; time?: unknown };
           if (typeof value.title !== "string" || !value.title.trim() ||
               typeof value.date !== "string" || !value.date.trim() ||
@@ -687,11 +684,11 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
             time: value.time.trim(),
             source: "Assistant-created appointment",
           };
-          setTrips((current) => current.map((trip) =>
-            trip.id === activeTripId ? { ...trip, items: [...trip.items, item] } : trip,
-          ));
-          rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: activeTrip.id });
-    setNotice("Appointment added.");
+          const current = tripsRef.current.find(trip => trip.id === activeTripId);
+          if (!current) throw new Error("Choose an existing trip.");
+          commitTrip(await storeTrip({ ...current, items: [...current.items, item] }));
+          rememberEditedPage({ page: "itinerary", travelerId: current.executiveId, tripId: current.id });
+          setNotice("Appointment added.");
           return { tripId: activeTripId, appointmentId: item.id, status: "added" };
         },
       }, { signal: lifecycle.signal }),
@@ -699,7 +696,7 @@ export function TestWorkspace({ cacheScope }: { cacheScope: { userId: string; fi
 
     void Promise.all(registrations.map((result) => Promise.resolve(result))).catch(() => {});
     return () => lifecycle.abort();
-  }, [activeTripId, executives]);
+  }, [activeTripId, executives, uploadLoading, uploadLoadError, cacheScope.role]);
 
   function rememberEditedPage(destination: WorkspaceDestination) {
     try { cache.set("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
