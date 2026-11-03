@@ -49,11 +49,17 @@ async function records() {
     request.onerror = () => reject(request.error);
   });
 }
-async function save(record) {
+async function save(record, changes) {
   const db = await ready;
   return new Promise((resolve, reject) => {
     const transaction = db.transaction('work', 'readwrite');
-    transaction.objectStore('work').put(record);
+    const store = transaction.objectStore('work');
+    if (changes) {
+      const request = store.get(record.id);
+      request.onsuccess = () => store.put({ ...request.result, ...changes });
+    } else {
+      store.put(record);
+    }
     transaction.oncomplete = resolve;
     transaction.onabort = () => reject(transaction.error);
   });
@@ -146,7 +152,7 @@ async function render() {
       button.onclick = async () => {
         button.disabled = true;
         try {
-          await save({ ...item, note: input.value.trim() });
+          await save(item, { note: input.value.trim() });
           open('decisions');
           status.textContent = 'Decision note saved.';
         } catch {
@@ -155,6 +161,43 @@ async function render() {
         }
       };
       card.append(label, button);
+    }
+    if (item.reply) {
+      const reply = document.createElement('p');
+      reply.textContent = 'Executive reply: ' + item.reply;
+      card.append(reply);
+    }
+    if (view === 'executive' && !item.reply) {
+      const form = document.createElement('form');
+      const label = document.createElement('label');
+      label.textContent = 'Executive reply';
+      const input = document.createElement('textarea');
+      input.required = true;
+      input.maxLength = 1000;
+      label.append(input);
+      const button = document.createElement('button');
+      button.textContent = 'Save reply for review';
+      form.append(label, button);
+      form.onsubmit = async event => {
+        event.preventDefault();
+        const reply = input.value.trim();
+        if (!reply) {
+          status.textContent = 'Enter a reply before saving.';
+          return;
+        }
+        button.disabled = true;
+        try {
+          await save(item, { reply, state: 'Awaiting assistant review' });
+          if (version === renderVersion) {
+            open('executive');
+            status.textContent = 'Reply saved for review in this browser.';
+          }
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the reply.';
+          button.disabled = false;
+        }
+      };
+      card.append(form);
     }
     if (item.file && view === 'desktop') {
       const button = document.createElement('button');
