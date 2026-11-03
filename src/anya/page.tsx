@@ -293,7 +293,7 @@ export default function Home() {
   return testWorkspace ? <TestWorkspace /> : <ProductHome />;
 }
 
-export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; userId?: string } = {}) {
+export function TestWorkspace({ firmId = "", userId = "", readOnly = false }: { firmId?: string; userId?: string; readOnly?: boolean } = {}) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const tripsRef = useRef(trips);
   const [executives, setExecutives] = useState<Executive[]>([]);
@@ -495,6 +495,52 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
       setTripSaveError(message);
       throw error;
     } finally { setTripSaving(false); }
+  }
+
+  /** Explicit opt-in only. The historical cache is unscoped and is never auto-imported. */
+  function reviewLegacyRecords() {
+    setLegacyReview(readLegacyWorkspace(window.localStorage));
+    setLegacyError("");
+    setLegacyResult("");
+  }
+
+  async function recoverLegacyRecords() {
+    if (!legacyReview || legacyImporting || readOnly || uploadLoading || profilesLoading || uploadLoadError || profilesLoadError) return;
+    setLegacyImporting(true); setLegacyError(""); setLegacyResult("");
+    let profilesAdded = 0;
+    let tripsAdded = 0;
+    const known = [...executives];
+    try {
+      // No overwrites: even a legacy record with a matching name but a different ID is skipped.
+      const newProfiles = missingById(known, legacyReview.executives).filter(
+        profile => !known.some(existing => existing.name.trim().toLowerCase() === profile.name.trim().toLowerCase())
+      );
+      for (const profile of newProfiles) {
+        const saved = await persistExecutive({ ...profile, templates: profile.templates ?? { ...defaultTemplates } });
+        known.push(saved);
+        setExecutives(current => current.some(e => e.id === saved.id) ? current : [...current, saved]);
+        profilesAdded++;
+      }
+      // Old trips can have an executive name but no saved executive ID.
+      for (const trip of missingById(tripsRef.current, legacyReview.trips)) {
+        let executive = known.find(e => e.id === trip.executiveId) ??
+          known.find(e => e.name.trim().toLowerCase() === trip.traveler.trim().toLowerCase());
+        if (!executive) {
+          const candidate: Executive = { id: trip.executiveId || executiveIdFor(trip.traveler), name: trip.traveler, templates: { ...defaultTemplates } };
+          executive = await persistExecutive(candidate);
+          known.push(executive);
+          setExecutives(current => current.some(e => e.id === executive!.id) ? current : [...current, executive!]);
+          profilesAdded++;
+        }
+        await commitTrip({ ...trip, executiveId: executive.id });
+        tripsAdded++;
+      }
+      setLegacyResult(`Imported ${tripsAdded} trip(s) and ${profilesAdded} executive profile(s). Existing firm records were not overwritten. Your original browser backup remains untouched.`);
+      await loadExecutiveProfiles();
+      await loadUploads();
+    } catch (error) {
+      setLegacyError(`Import stopped after ${tripsAdded} trip(s) and ${profilesAdded} profile(s). ${error instanceof Error ? error.message : "Please retry."} Your original browser records are unchanged; retry skips already imported records.`);
+    } finally { setLegacyImporting(false); }
   }
 
   function uploadedTripsSaved(saved: UploadTrip[], kind: "expenses" | "itinerary", notice?: string) {
@@ -1336,7 +1382,19 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
     {auxiliaryUpload?.kind === "attachment" && <AttachmentUploadReview key={auxiliaryUpload.file.name} file={auxiliaryUpload.file} warning={auxiliaryUpload.warning} executives={executives} trips={trips} onSkip={finishAuxiliaryUpload} onSaved={trip => { attachmentTripSaved(trip); setSelectedExecutiveId(trip.executiveId!); setActiveTripId(trip.id); setActiveTab("itinerary"); setItineraryTab("attachments"); setAttachmentEntryId(undefined); setAttachmentRevision(value => value + 1); setScreen("detail"); setNotice(`Saved “${auxiliaryUpload.file.name}” in ${trip.name} → Travel itinerary → Attachments.`); finishAuxiliaryUpload(); }} />}
     {auxiliaryUpload?.kind === "billing" && <DetectedBillingUpload file={auxiliaryUpload.file} executives={executives} onClose={finishAuxiliaryUpload} />}
     {auxiliaryUpload?.kind === "review" && <Dialog open onOpenChange={open => { if(!open)finishAuxiliaryUpload(); }}><DialogContent><DialogHeader><DialogTitle>This file needs a closer look</DialogTitle><DialogDescription>The app could not confidently identify this document. It has not been filed or added to a trip.</DialogDescription></DialogHeader><p className="break-all text-sm font-medium">{auxiliaryUpload.file.name}</p><p className="text-sm text-slate-600">{auxiliaryUpload.warning || "For a travel confirmation or financial document, upload a readable copy with the booking or transaction details. If this is supporting itinerary material, you can choose to save it as an attachment."}</p><DialogFooter><Button variant="outline" onClick={finishAuxiliaryUpload}>Skip file</Button><Button onClick={() => setAuxiliaryUpload({...auxiliaryUpload,kind:"attachment"})}>This is itinerary material</Button></DialogFooter></DialogContent></Dialog>}
-    {travelImportReview && <TravelImportReview key={travelImportReview.filename} request={travelImportReview} onDecide={decision => { const resolve = travelImportResolve.current; travelImportResolve.current = null; setTravelImportReview(null); resolve?.(decision); }} />}</div></div>;
+    {travelImportReview && <TravelImportReview key={travelImportReview.filename} request={travelImportReview} onDecide={decision => { const resolve = travelImportResolve.current; travelImportResolve.current = null; setTravelImportReview(null); resolve?.(decision); }} />}
+    <Dialog open={legacyReview !== null} onOpenChange={open => { if (!open && !legacyImporting) setLegacyReview(null); }}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Review older browser records</DialogTitle>
+          <DialogDescription>These records were saved before accounts were separated. They are not automatically assigned to this firm. Import only if you recognize them as belonging here.</DialogDescription></DialogHeader>
+        <p className="text-sm text-slate-700">{legacyReview?.trips.length ?? 0} trip(s) and {legacyReview?.executives.length ?? 0} executive profile(s) found in this browser.</p>
+        <p className="text-sm text-slate-600">Import adds only missing IDs; existing firm records are not overwritten. The original browser backup is retained. Custom template layouts are not migrated by this action.</p>
+        {legacyError && <p role="alert" className="text-sm text-red-700">{legacyError}</p>}
+        {legacyResult && <p role="status" className="text-sm text-slate-700">{legacyResult}</p>}
+        <DialogFooter><Button variant="outline" disabled={legacyImporting} onClick={() => setLegacyReview(null)}>Close</Button>
+          <Button disabled={legacyImporting || readOnly || uploadLoading || profilesLoading || !!uploadLoadError || !!profilesLoadError || !legacyReview || (!legacyReview.trips.length && !legacyReview.executives.length)} onClick={() => void recoverLegacyRecords()}>{legacyImporting ? "Importing…" : "Import missing records into this firm"}</Button></DialogFooter>
+      </DialogContent>
+    </Dialog></div></div>;
   if (screen === "decision-queue" && selectedExecutive) return consoleShell(<DecisionQueue executive={{ id: selectedExecutive.id, name: selectedExecutive.name }} onBack={() => setScreen("home")} />);
   if (screen === "billing-codes") return consoleShell(<><BillingCodeLibrary executives={executives} returnToReport={billingReturnToReport} onBack={() => { if (billingReturnToReport && activeTrip) { setActiveTab("expenses"); setScreen("detail"); window.history.replaceState(null, "", `?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}&trip=${activeTrip.id}`); } else { setScreen("home"); window.history.replaceState(null, "", "?view=home"); } }} /></>);
   if(screen==="unassigned-expenses")return consoleShell(<><UnassignedExpenses receipts={allUnassignedExpenses} executives={executives} loading={uploadLoading} error={uploadLoadError} onRetry={()=>void loadUploads()} onBack={()=>{setActiveTab("expenses");setScreen(activeTrip?"detail":"executive");window.history.replaceState(null,"",`?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}${activeTrip?`&trip=${activeTrip.id}`:""}`);}} onReview={receipt=>{setSelectedExecutiveId(receipt.executiveId);setReviewLater(false);setCalendarReview(false);setUploadFocusRow(receipt.row.key);setUploadOpen(true);}}/></>);
@@ -1384,7 +1442,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
           </section>
         </div>
         <div className="sample-invitation"><div><strong>Take Anya for a test trip.</strong><p>Explore fictional bookings and expenses for Alex Morgan.</p></div><Button type="button" variant="outline" disabled={!hydrated||uploadLoading||profilesLoading||sampleTrips.every(sample=>trips.some(trip=>trip.id===sample.id))} onClick={loadSampleWorkspace}>Load sample workspace</Button></div>
-        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small></div>
+        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small><button type="button" className="text-sm underline underline-offset-4" onClick={reviewLegacyRecords}>Review older browser records</button></div>
 
       </div>
 
@@ -1539,7 +1597,7 @@ export function TestWorkspace({ firmId = "", userId = "" }: { firmId?: string; u
       <Dialog open={appointmentOpen} onOpenChange={setAppointmentOpen}>
         <DialogContent><DialogHeader><DialogTitle>Add appointment</DialogTitle><DialogDescription>Add a meeting, dinner, or event.</DialogDescription></DialogHeader>
           <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="appointment-title">Appointment</Label><Input id="appointment-title" value={appointmentTitle} onChange={event => setAppointmentTitle(event.target.value)} placeholder="Team dinner" /></div><div className="grid gap-2"><Label htmlFor="appointment-date">Date</Label><Input id="appointment-date" type="date" value={appointmentDate} onChange={event => setAppointmentDate(event.target.value)} /></div></div>
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={addAppointment} disabled={!appointmentTitle.trim()}>Add</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void addAppointment()} disabled={tripSaving || !appointmentTitle.trim()}>{tripSaving ? "Saving…" : "Add"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </main>
