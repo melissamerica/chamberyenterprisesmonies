@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal } from "@/components/ui/dropdown-menu";
-import { executiveTemplateTerminology, calendarFormatFor, calendarFormatChange, calendarTemplatePreview, defaultTemplates, executiveIdFor, executiveForTrip, fillTemplate, mergeTemplateKind, reservationTemplateTitle, templateFields, validateCustomTemplate, type Executive, type ExecutiveTemplates, type TemplateKind, type ExecutiveProfile, type SavedCustomTemplate } from "@/lib/executive-profiles";
+import { calendarFormatFor, calendarFormatChange, calendarTemplatePreview, defaultTemplates, executiveIdFor, executiveForTrip, fillTemplate, mergeTemplateKind, reservationTemplateTitle, templateFields, validateCustomTemplate, type Executive, type ExecutiveTemplates, type TemplateKind, type ExecutiveProfile, type SavedCustomTemplate } from "@/lib/executive-profiles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnassignedExpenses } from "@/components/unassigned-expenses";
 import { ExpenseApproval } from "@/components/expense-approval";
@@ -109,9 +109,6 @@ const sampleTrips: Trip[] = [
   },
 ];
 
-function profilesFromTrips(trips: Trip[]): Executive[] {
-  return [...new Set(trips.filter(trip => !trip.executiveId).map(trip => trip.traveler))].map(name => ({ id: executiveIdFor(name), name, templates: { ...defaultTemplates } }));
-}
 
 function iconFor(kind: ItemKind) {
   if (kind === "Flight") return <Plane className="size-4" />;
@@ -478,6 +475,7 @@ export function TestWorkspace({ firmId = "", userId = "", readOnly = false }: { 
     finally { setUploadLoading(false); }
   }
   useEffect(() => { if (hydrated) void loadUploads(); }, [hydrated]);
+  useEffect(() => { if (!selectedExecutiveId && executives.length) setSelectedExecutiveId(executives[0].id); }, [selectedExecutiveId, executives]);
 
   /** Commit a complete trip only after the firm API confirms it. No browser-only success. */
   async function commitTrip(trip: Trip): Promise<Trip> {
@@ -512,10 +510,8 @@ export function TestWorkspace({ firmId = "", userId = "", readOnly = false }: { 
     const known = [...executives];
     try {
       // No overwrites: even a legacy record with a matching name but a different ID is skipped.
-      const newProfiles = missingById(known, legacyReview.executives).filter(
-        profile => !known.some(existing => existing.name.trim().toLowerCase() === profile.name.trim().toLowerCase())
-      );
-      for (const profile of newProfiles) {
+      for (const profile of missingById(known, legacyReview.executives)) {
+        if (known.some(existing => existing.name.trim().toLowerCase() === profile.name.trim().toLowerCase())) continue;
         const saved = await persistExecutive({ ...profile, templates: profile.templates ?? { ...defaultTemplates } });
         known.push(saved);
         setExecutives(current => current.some(e => e.id === saved.id) ? current : [...current, saved]);
