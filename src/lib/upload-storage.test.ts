@@ -10,6 +10,10 @@ vi.mock("@/server/runtime-env", () => ({
     DB: {
       prepare(sql: string) {
         return {
+          async all() {
+            if (!sql.startsWith("SELECT trip_json")) throw new Error("Unexpected read");
+            return { results: [...state.rows.values()].map(row => ({ trip_json: row.json, updated_at: row.revision })) };
+          },
           bind(...args: unknown[]) {
             return {
               async first() { return null; }, // No pending approval lock in these tests.
