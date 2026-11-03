@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { clearWorkspaceCacheForUser } from "@/lib/workspace-cache";
 import { ChamberyWordmark } from "./brand";
 import { roleLabels, canManageMembers, type FirmRole } from "@/lib/firm-roles";
 
@@ -9,6 +10,8 @@ export function FirmBar({ name, role }: { name: string; role: FirmRole }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   async function signOut() {
+    const { data } = await supabase.auth.getUser();
+    if (data.user && typeof window !== "undefined") clearWorkspaceCacheForUser(window.localStorage, data.user.id);
     await qc.cancelQueries();
     qc.clear();
     await supabase.auth.signOut();
