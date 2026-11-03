@@ -36,4 +36,4 @@ Deferred (per Melissa, save for later):
 ## Mobile EA workspace (new Nov 1)
 - Brainstorming phase — Melissa: "Don't build yet." No code changes until she approves scope.
 - Note: /app redirects to sign-in without a session; workspace mobile layout not yet visually verified (only cheap read-only checks allowed meanwhile).
-- [ ] Resume v4: remove founder role, show AI work as project section
+- [x] Resume v4: remove founder role, show AI work as project section
