@@ -144,11 +144,33 @@ async function render() {
       <button data-next="decisions">Decisions, Decisions</button><button data-next="dump">Doc Dump</button><button data-next="call">Call Alec</button></section>
       <section><h2>Alec’s Work</h2>
       <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 105h265M34 103V57h58v46m-53-54 52-2m-47-7 39-3m28 62 17-46 55 3-7 46zm22-34 29 2m-34 9 31 3m-36 8 32 2m39 13V72l23 2 9 7h36v22zm8-65 18-15m-8 31 29-10M64 22l15-7m82 19 20-13m-71 11 14-13m112 33 26-4"/></svg>
-      <button data-next="accountability">Manage Alec</button><button data-next="needs-review">Needs Review</button><button data-next="desktop">Desktop Review</button><button data-next="call-setup">Call me setup</button><button data-next="create-decision">Submit a decision as a demo teammate</button></section>
+      <button data-next="accountability">Manage Alec</button><button data-next="needs-review">Needs Review</button><button data-next="desktop">Desktop Review</button><button data-next="call-setup">Call me setup</button><button data-next="create-decision">Submit a decision as a demo teammate</button><button data-next="sent-decisions">View Casey’s decision replies</button></section>
     </div>`;
     screen.querySelectorAll('[data-next]').forEach(button => {
       button.onclick = () => open(button.dataset.next);
     });
+    return;
+  }
+  if (view === 'sent-decisions') {
+    const items = await records();
+    if (version !== renderVersion) return;
+    screen.innerHTML = '<h1>Decision replies</h1><p>Casey Chen · demo sender view</p>';
+    const replies = items.filter(item => item.sender === 'Casey Chen' && item.selectedSolution);
+    if (!replies.length) screen.insertAdjacentHTML('beforeend', '<p>No replies yet.</p>');
+    for (const item of replies) {
+      const card = document.createElement('article');
+      const question = document.createElement('h2');
+      question.textContent = item.title;
+      const answer = document.createElement('p');
+      answer.textContent = 'Selected solution: ' + item.selectedSolution;
+      card.append(question, answer);
+      if (item.responseNote) {
+        const note = document.createElement('p');
+        note.textContent = 'Reply note: ' + item.responseNote;
+        card.append(note);
+      }
+      screen.append(card);
+    }
     return;
   }
   if (view === 'create-decision') {
@@ -426,11 +448,13 @@ async function render() {
       }
       const originalSender = item.sender ?? 'Jordan Lee (demo)';
       const fields = form.querySelector('div');
+      const replyNote = '<label>Reply note (optional)<textarea maxlength="1000"></textarea></label>';
+      fields.innerHTML = replyNote;
       const button = form.querySelector('button');
       choice.onchange = () => {
         fields.innerHTML = choice.value === 'Bunt'
           ? '<label>Bunt to<select required><option value="">Choose a handoff</option><option>Pick a date to discuss</option><option>Delegate</option><option>Send back with instructions</option></select></label><section></section>'
-          : '';
+          : replyNote;
         const action = fields.querySelector('select');
         if (!action) return;
         action.onchange = () => {
@@ -462,6 +486,25 @@ async function render() {
           return;
         }
         const owner = contact?.value || (action?.value ? originalSender : item.owner);
+        if (choice.value !== 'Bunt') {
+          button.disabled = true;
+          try {
+            await save(item, {
+              disposition: [choice.value, note].filter(Boolean).join(' · '),
+              selectedSolution: choice.value,
+              responseNote: note,
+              state: 'Answered'
+            });
+            if (version === renderVersion) {
+              open('decisions');
+              status.textContent = 'Reply saved for the sender in this demo.';
+            }
+          } catch {
+            if (version === renderVersion) status.textContent = 'Could not save the reply.';
+            button.disabled = false;
+          }
+          return;
+        }
         const disposition = [choice.value, action?.value, date, note].filter(Boolean).join(' · ');
         if (!window.confirm('Save this demo response?\n\n' + disposition + '\nOwner: ' + owner)) return;
         button.disabled = true;
