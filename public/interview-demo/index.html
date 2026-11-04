@@ -130,6 +130,16 @@ main:has(.my-work) > nav, main:has(.my-work) > p:first-child { display:none; }
 .my-work .work-tile span:last-child { margin-left:0; }
 .my-work .work-tile svg { width:2.75rem; height:2.75rem; }
 .my-work .call-tile img { width:4.25rem; height:4.25rem; }
+.my-work .work-tile { border-radius:1.65rem; }
+.my-work [data-next="decisions"] { background:linear-gradient(145deg,#fff,var(--chambery-blush)); }
+.my-work [data-next="dump"] { background:linear-gradient(145deg,#fff,color-mix(in oklab,var(--chambery-moss) 15%,var(--chambery-cream))); }
+.my-work [data-next="dump"] span:first-child { background:var(--chambery-cream); transform:rotate(5deg); }
+.my-work [data-next="decisions"] span:first-child { transform:rotate(-5deg); }
+.my-work .call-tile img { box-shadow:0 0 0 .32rem #ffffff24,0 .45rem .8rem #13271950; }
+@media (prefers-reduced-motion:no-preference) {
+  .my-work .call-tile img { transition:transform .22s ease; }
+  .my-work .call-tile:is(:hover,:focus-visible,:active) img { transform:rotate(-9deg) scale(1.08); }
+}
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
