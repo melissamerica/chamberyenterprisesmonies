@@ -124,10 +124,10 @@ async function render() {
       button.disabled = true;
       try {
         if (file.size > 10 * 1024 * 1024) throw new Error('Choose a file up to 10 MB.');
-        const sample = file.type.startsWith('text/') || /\\.(txt|csv|md)$/i.test(file.name)
+        const sample = file.type.startsWith('text/') || /\.(txt|csv|md)$/i.test(file.name)
           ? await file.slice(0, 65536).text() : '';
-        const invoice = /\\binvoice\\b/i.test(sample);
-        const receipt = /\\breceipt\\b/i.test(sample);
+        const invoice = /\binvoice\b/i.test(sample);
+        const receipt = /\breceipt\b/i.test(sample);
         const meeting = /\b(meeting|agenda|minutes|board prep|budget review)\b/i.test(sample);
         const budget = /\bbudget review\b/i.test(sample);
         const board = /\bboard prep\b/i.test(sample);
