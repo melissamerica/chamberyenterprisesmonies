@@ -34,6 +34,8 @@ main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none
 @keyframes mascot-file { 65%, 100% { transform: translateX(4rem); } }
 @keyframes envelope-file { 65% { transform: translate(4.8rem, -.65rem); opacity: 1; } 100% { transform: translate(5.5rem, .45rem) scale(.4); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .file-animation { display: none; } }
+.decision-card { touch-action: pan-y; }
+.decision-card fieldset { margin: .6rem 0; }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
@@ -82,7 +84,9 @@ async function save(record, changes) {
 }
 let view = 'alec';
 let renderVersion = 0;
+const passedThisReview = new Set();
 function open(next) {
+  if (next === 'decisions' && view !== next) passedThisReview.clear();
   view = next;
   status.textContent = '';
   render().catch(() => { status.textContent = 'Could not open browser storage.'; });
@@ -183,7 +187,16 @@ async function render() {
   if (view === 'accountability') {
     screen.insertAdjacentHTML('beforeend', '<h2>Alec’s Work</h2>');
   }
-  for (const item of items) {
+  const now = new Date();
+  const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  const visibleItems = view === 'decisions'
+    ? items.filter(item => item.kind === 'Decision' && !item.disposition &&
+        !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).slice(0, 1)
+    : items;
+  if (view === 'decisions' && !visibleItems.length) {
+    screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
+  }
+  for (const item of visibleItems) {
     if ((view === 'executive' || view === 'decisions') && item.kind !== 'Decision') continue;
     const card = document.createElement('article');
     const heading = document.createElement('h2');
@@ -217,6 +230,53 @@ async function render() {
         }
       };
       card.append(label, button);
+    }
+    if (view === 'decisions') {
+      card.classList.add('decision-card');
+      const pass = document.createElement('button');
+      pass.textContent = 'Pass for now';
+      const panel = document.createElement('form');
+      panel.hidden = true;
+      panel.innerHTML = '<button type="button">Next review</button><label>Revisit date<input type="date" required></label><label><input type="checkbox" checked> Include sender in demo update</label><button>Save revisit date</button><p>Demo only. No messages are sent.</p>';
+      const date = panel.querySelector('input[type=date]');
+      date.min = today;
+      const nextReview = panel.querySelector('button');
+      const submit = panel.querySelector('button[type=submit], button:not([type])');
+      const reveal = () => {
+        panel.hidden = false;
+        nextReview.focus();
+      };
+      pass.onclick = reveal;
+      nextReview.onclick = () => {
+        passedThisReview.add(item.id);
+        open('decisions');
+      };
+      panel.onsubmit = async event => {
+        event.preventDefault();
+        nextReview.disabled = true;
+        submit.disabled = true;
+        try {
+          await save(item, { revisitDate: date.value, updateSender: panel.querySelector('input[type=checkbox]').checked });
+          passedThisReview.add(item.id);
+          if (version === renderVersion) open('decisions');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the revisit date.';
+          nextReview.disabled = false;
+          submit.disabled = false;
+        }
+      };
+      let start;
+      card.addEventListener('touchstart', event => {
+        start = event.touches.length === 1 && !event.target.closest('button, input, select, textarea, label')
+          ? event.touches[0] : undefined;
+      }, { passive: true });
+      card.addEventListener('touchcancel', () => { start = undefined; });
+      card.addEventListener('touchend', event => {
+        const end = event.changedTouches[0];
+        if (start && start.clientX - end.clientX > 60 && Math.abs(start.clientY - end.clientY) < 35) reveal();
+        start = undefined;
+      }, { passive: true });
+      card.append(pass, panel);
     }
     if (item.kind === 'Decision' && view === 'decisions' && !item.disposition) {
       const form = document.createElement('form');
