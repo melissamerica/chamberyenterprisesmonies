@@ -43,6 +43,8 @@ main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none
 <button data-view="alec">Alec Mobile</button>
 <button data-view="executive">Executive Mobile</button>
 <button data-view="desktop">Desktop Review</button>
+<button data-view="call-setup">Call me setup</button>
+<button data-view="needs-review">Needs Review</button>
 </nav>
 <section id="screen"></section>
 <p id="status" role="status"></p>
@@ -114,6 +116,62 @@ async function render() {
     screen.querySelectorAll('[data-next]').forEach(button => {
       button.onclick = () => open(button.dataset.next);
     });
+    return;
+  }
+  if (view === 'call-setup' || view === 'needs-review') {
+    const items = await records();
+    if (version !== renderVersion) return;
+    if (view === 'needs-review') {
+      screen.innerHTML = '<h1>Needs Review</h1><p>Demo events Alec has brought to your queue.</p>';
+      const queued = items.filter(item => item.kind === 'Call event' && item.state === 'Needs review');
+      if (!queued.length) screen.insertAdjacentHTML('beforeend', '<p>Nothing needs review yet.</p>');
+      for (const item of queued) {
+        const card = document.createElement('article');
+        card.textContent = item.title;
+        screen.append(card);
+      }
+      return;
+    }
+    const settings = items.find(item => item.id === 'call-settings');
+    screen.innerHTML = '<h1>Call me setup</h1><p>Alec calls for selected events. Other events go to Needs Review. This demo records the route without placing a call.</p><form id="call-rules"><fieldset><legend>Call me when…</legend><label><input type="checkbox" name="flight"> A flight is interrupted</label><label><input type="checkbox" name="meeting"> A meeting is canceled</label><p>A VIP emails me. Choose demo contacts:</p><label><input type="checkbox" name="jordan"> Jordan Lee</label><label><input type="checkbox" name="casey"> Casey Chen</label></fieldset><label>How Alec briefs me<select name="style"><option value="headline">Headline and recommendation</option><option value="context">Context and options</option></select></label><button>Save preferences</button></form><h2>Try a demo event</h2><form id="call-event"><label>Sample event<select name="scenario"><option value="flight">Flight interruption</option><option value="meeting">Meeting cancellation</option><option value="jordan">Email from Jordan Lee</option><option value="casey">Email from Casey Chen</option></select></label><button>Route demo event</button></form>';
+    const rules = screen.querySelector('#call-rules');
+    for (const key of ['flight', 'meeting', 'jordan', 'casey']) {
+      rules.elements.namedItem(key).checked = settings?.selected.includes(key) ?? false;
+    }
+    const style = rules.elements.namedItem('style');
+    style.value = settings?.style ?? 'headline';
+    rules.onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(rules);
+      const selected = ['flight', 'meeting', 'jordan', 'casey'].filter(key => data.has(key));
+      try {
+        await save({ id: 'call-settings', kind: 'Call settings', selected, style: style.value });
+        if (version === renderVersion) status.textContent = 'Preferences saved.';
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not save preferences.';
+      }
+    };
+    const sample = screen.querySelector('#call-event');
+    sample.onsubmit = async event => {
+      event.preventDefault();
+      const select = sample.elements.namedItem('scenario');
+      const scenario = select.value;
+      const title = select.selectedOptions[0].textContent;
+      const button = sample.querySelector('button');
+      button.disabled = true;
+      try {
+        const preferences = (await records()).find(item => item.id === 'call-settings');
+        const callback = preferences?.selected.includes(scenario) ?? false;
+        await save({ id: crypto.randomUUID(), kind: 'Call event', title, owner: 'Alec', state: callback ? 'Callback selected · demo' : 'Needs review' });
+        if (version === renderVersion) {
+          status.textContent = callback ? 'Would call you. No call placed in this demo.' : 'Added to Needs Review.';
+        }
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not route the demo event.';
+      } finally {
+        button.disabled = false;
+      }
+    };
     return;
   }
   if (view === 'call') {
@@ -192,7 +250,7 @@ async function render() {
   const visibleItems = view === 'decisions'
     ? items.filter(item => item.kind === 'Decision' && !item.disposition &&
         !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).slice(0, 1)
-    : items;
+    : items.filter(item => item.kind !== 'Call settings');
   if (view === 'decisions' && !visibleItems.length) {
     screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
   }
