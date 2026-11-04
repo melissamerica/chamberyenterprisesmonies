@@ -152,15 +152,15 @@ async function render() {
     return;
   }
   if (view === 'create-decision') {
-    screen.innerHTML = '<h1>New decision</h1><p>From Casey Chen to you · fictional project</p><form><label>Question<textarea name="question" required maxlength="300"></textarea></label><label>Proposed solution<input name="first" required maxlength="120"></label><label>Alternative solution (optional)<input name="second" maxlength="120"></label><label>My recommendation (optional)<textarea name="recommendation" maxlength="500"></textarea></label><button>Submit decision</button></form>';
+    screen.innerHTML = '<h1>New decision</h1><p>From Casey Chen to you · fictional project</p><form><label>Question<textarea name="question" required maxlength="300"></textarea></label><label>Solution 1<input name="first" required maxlength="120"></label><label>Solution 2<input name="second" required maxlength="120"></label><label>Solution 3 (optional)<input name="third" maxlength="120"></label><label>My recommendation (optional)<textarea name="recommendation" maxlength="500"></textarea></label><button>Submit decision</button></form>';
     const form = screen.querySelector('form');
     form.onsubmit = async event => {
       event.preventDefault();
       const data = new FormData(form);
       const title = data.get('question').trim();
-      const options = ['first', 'second'].map(key => data.get(key).trim()).filter(Boolean);
-      if (!title || !data.get('first').trim() || options.some(option => option.toLowerCase() === 'bunt') || new Set(options.map(option => option.toLowerCase())).size !== options.length) {
-        status.textContent = 'Enter a question and a proposed solution. Any alternative must be different. Bunt is reserved for the receiver.';
+      const options = ['first', 'second', 'third'].map(key => data.get(key).trim()).filter(Boolean);
+      if (!title || !data.get('first').trim() || !data.get('second').trim() || options.some(option => option.toLowerCase() === 'bunt') || new Set(options.map(option => option.toLowerCase())).size !== options.length) {
+        status.textContent = 'Enter a question and at least two distinct solutions. A single proposal belongs in a note. Bunt is reserved for the receiver.';
         return;
       }
       const button = form.querySelector('button');
