@@ -161,6 +161,38 @@ main:has(.my-work) > nav, main:has(.my-work) > p:first-child { display:none; }
 @media (prefers-reduced-motion:no-preference) {
   .my-work .work-tile { transition:transform .13s ease, box-shadow .13s ease; }
 }
+/* Handset styling stays with the mobile entry and My Work. */
+main:has(.mobile-picker, .my-work) {
+  position:relative; isolation:isolate;
+  max-width:28rem; padding:0; min-height:100svh;
+  background:var(--chambery-cream);
+}
+main:has(.mobile-picker, .my-work)::after {
+  content:""; position:absolute; z-index:2; bottom:.65rem; left:50%;
+  width:6.4rem; height:.28rem; border-radius:999px;
+  background:#28352d; opacity:.65; transform:translateX(-50%);
+  pointer-events:none;
+}
+.my-work { padding:1.35rem 1.15rem 2.8rem; }
+@media (min-width:641px) {
+  body:has(.mobile-picker, .my-work) {
+    background:radial-gradient(ellipse at top,#46564c,#171e1a 72%);
+    padding:1.25rem 0;
+  }
+  main:has(.mobile-picker, .my-work) {
+    width:min(26rem,calc(100% - 2rem));
+    min-height:min(50rem,calc(100svh - 2.5rem));
+    border:.55rem solid #19211d; border-radius:2.85rem; overflow:hidden;
+    box-shadow:0 0 0 1px #7f9084,0 22px 60px #0008;
+  }
+  main:has(.mobile-picker, .my-work)::before {
+    content:""; position:absolute; top:.7rem; left:50%; z-index:2;
+    width:4.3rem; height:.75rem; border-radius:999px;
+    background:#19211d; transform:translateX(-50%); pointer-events:none;
+  }
+  .mobile-picker { min-height:min(50rem,calc(100svh - 3.6rem)); }
+  .my-work { padding-top:2rem; }
+}
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
