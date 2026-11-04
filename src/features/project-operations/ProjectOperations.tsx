@@ -11,7 +11,7 @@ import {
   addTravelCommitment, decideApproval, dollars, parseLabeledTravel,
   portfolioTotals, prepareClientInvoiceDraft, projectFinancials,
   reconcileReservation, statusReport, updateTimeSuggestion,
-  type ProjectOpsData, type TimeSuggestion,
+  type ProjectOpsData,
 } from "./model";
 
 type Tab = "portfolio" | "project" | "time" | "travel" | "approvals" | "reports";
@@ -70,7 +70,7 @@ export function ProjectOperations({ firmId, canEdit }: { firmId: string; canEdit
       const parsed = parseLabeledTravel(confirmation);
       const project = data.projects.find((p) => p.code.toLowerCase() === parsed.projectCode.toLowerCase());
       if (!project) throw new Error("Project code not found in this demonstration portfolio.");
-      setData((old) => addTravelCommitment(old, {
+      setData(addTravelCommitment(data, {
         projectId: project.id, category: parsed.category, description: parsed.description,
         reservationRef: parsed.reservationRef, committedCents: parsed.committedCents,
         sourceDocument: fileName || "manual-demo.txt", date: parsed.date, clientReimbursable: true,
@@ -80,9 +80,10 @@ export function ProjectOperations({ firmId, canEdit }: { firmId: string; canEdit
   }
   function reconcile(ref: string, expenseId: string) {
     handleError(() => {
-      const amount = Number(actualEdits[expenseId]);
-      if (!Number.isFinite(amount) || amount < 0 || !/^\d+(\.\d{1,2})?$/.test(actualEdits[expenseId] ?? "")) throw new Error("Enter a valid actual charge in dollars.");
-      setData((old) => reconcileReservation(old, current.id, ref, Math.round(amount * 100)));
+      const entered = actualEdits[expenseId] ?? ((data.travel.find((e) => e.id === expenseId)?.committedCents ?? 0) / 100).toFixed(2);
+      const amount = Number(entered);
+      if (!Number.isFinite(amount) || amount < 0 || !/^\d+(\.\d{1,2})?$/.test(entered)) throw new Error("Enter a valid actual charge in dollars.");
+      setData(reconcileReservation(data, current.id, ref, Math.round(amount * 100)));
     }, "Reservation reconciled; the commitment is replaced by the actual charge.");
   }
   function saveTimeReview() {
@@ -96,7 +97,7 @@ export function ProjectOperations({ firmId, canEdit }: { firmId: string; canEdit
     }, "Employee time selections reviewed for this synthetic project. No timesheet was submitted.");
   }
   function approval(id: string, decision: "approved" | "rejected") {
-    handleError(() => setData((old) => decideApproval(old, id, decision)), `Demo request ${decision}. No financial transaction was sent.`);
+    handleError(() => setData(decideApproval(data, id, decision)), `Demo request ${decision}. No financial transaction was sent.`);
   }
   function downloadStatus() {
     const file = new Blob([statusReport(data, current.id)], { type: "text/plain;charset=utf-8" });
