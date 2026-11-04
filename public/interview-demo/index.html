@@ -114,12 +114,13 @@ async function render() {
     return;
   }
   if (view === 'dump') {
-    screen.innerHTML = '<h1>Doc Dump</h1><p>Use synthetic files only. Text files are checked for invoice or receipt wording. Other files go to manual review.</p><form><label for="file">Document</label><input id="file" type="file" required><p><button>Save to Desktop Review</button></p></form>';
+    screen.innerHTML = '<h1>Doc Dump</h1><p>Use a synthetic document for this demo.</p><form><label for="file">Document</label><input id="file" type="file" required><p><button>Drop document</button></p></form>';
     const form = screen.querySelector('form');
     form.onsubmit = async event => {
       event.preventDefault();
       const file = form.querySelector('input').files[0];
       const button = form.querySelector('button');
+      status.textContent = '';
       button.disabled = true;
       try {
         if (file.size > 10 * 1024 * 1024) throw new Error('Choose a file up to 10 MB.');
@@ -127,11 +128,38 @@ async function render() {
           ? await file.slice(0, 65536).text() : '';
         const invoice = /\\binvoice\\b/i.test(sample);
         const receipt = /\\breceipt\\b/i.test(sample);
-        const suggestion = invoice === receipt ? 'Manual review' : invoice ? 'Possible invoice' : 'Possible receipt';
-        await save({ id: crypto.randomUUID(), kind: 'Document', title: file.name, owner: 'Desktop reviewer', state: 'Needs review', suggestion, file });
-        if (view === 'dump') {
+        const meeting = /\b(meeting|agenda|minutes|board prep|budget review)\b/i.test(sample);
+        const budget = /\bbudget review\b/i.test(sample);
+        const board = /\bboard prep\b/i.test(sample);
+        const suggestion = meeting
+          ? (budget === board ? 'Meeting clarification' : budget ? 'Budget review' : 'Board prep')
+          : invoice === receipt ? 'Manual review' : invoice ? 'Possible invoice' : 'Possible receipt';
+        const record = { id: crypto.randomUUID(), kind: 'Document', title: file.name, owner: 'Desktop reviewer', state: 'Intake complete', suggestion, file };
+        if (suggestion === 'Meeting clarification' && version === renderVersion) {
+          screen.innerHTML = '<h1>Doc Dump</h1><form><fieldset><legend>Is this for the budget review or board prep?</legend><label><input type="radio" name="meeting" value="Budget review" required> Budget review</label><label><input type="radio" name="meeting" value="Board prep"> Board prep</label></fieldset><button>Continue</button></form>';
+          const question = screen.querySelector('form');
+          question.onsubmit = async event => {
+            event.preventDefault();
+            const submit = question.querySelector('button');
+            submit.disabled = true;
+            try {
+              await save({ ...record, suggestion: new FormData(question).get('meeting') });
+              if (version === renderVersion) {
+                open('dump');
+                status.textContent = 'Complete';
+              }
+            } catch {
+              if (version === renderVersion) status.textContent = 'Could not save the document. Try again.';
+              submit.disabled = false;
+            }
+          };
+          return;
+        }
+        if (suggestion === 'Meeting clarification') return;
+        await save({ ...record, state: suggestion === 'Manual review' ? 'Queued for review' : record.state });
+        if (version === renderVersion) {
           form.reset();
-          status.textContent = 'Saved in this browser. Open Desktop Review to see the document.';
+          status.textContent = 'Complete';
         }
       } catch (error) {
         if (view === 'dump') status.textContent = error.message || 'Could not save the document.';
