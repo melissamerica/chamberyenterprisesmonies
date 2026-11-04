@@ -27,6 +27,14 @@ main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none
 .alec-home .manage { width: 100%; margin-top: 1rem; }
 .alec-home output { display: block; font-size: 1.9rem; font-variant-numeric: tabular-nums; color: #c4efa5; }
 .alec-home footer { margin-top: 1.5rem; color: #b5c4b4; font-family: Georgia, serif; }
+.file-animation { position: relative; width: 11rem; height: 4.5rem; margin: 1rem 0; }
+.file-animation img { position: absolute; width: 4.5rem; animation: mascot-file .85s ease-in-out both; }
+.file-animation svg { position: absolute; width: 1.9rem; }
+.file-animation .folder { right: .35rem; bottom: .4rem; color: #496549; }
+.file-animation .envelope { left: 2.9rem; bottom: 1.05rem; color: #925529; animation: envelope-file .85s ease-in-out both; }
+@keyframes mascot-file { 65%, 100% { transform: translateX(4rem); } }
+@keyframes envelope-file { 65% { transform: translate(4.8rem, -.65rem); opacity: 1; } 100% { transform: translate(5.5rem, .45rem) scale(.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .file-animation { display: none; } }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
@@ -90,6 +98,15 @@ function open(next) {
 document.querySelectorAll('nav button').forEach(button => {
   button.onclick = () => open(button.dataset.view);
 });
+function showIntakeComplete() {
+  const scene = document.createElement('div');
+  scene.className = 'file-animation';
+  scene.setAttribute('aria-hidden', 'true');
+  scene.innerHTML = '<img alt="" src="data:image/webp;base64,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"><svg class="envelope" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" fill="#fff4df" stroke="currentColor" stroke-width="2"/><path d="m3 7 9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg><svg class="folder" viewBox="0 0 24 24"><path d="M2 19V5h7l3 3h10v11z" fill="currentColor"/></svg>';
+  screen.append(scene);
+  status.textContent = 'Complete';
+  setTimeout(() => scene.remove(), 950);
+}
 async function render() {
   const version = ++renderVersion;
   document.querySelectorAll('nav button').forEach(button => {
@@ -146,7 +163,7 @@ async function render() {
               await save({ ...record, suggestion: new FormData(question).get('meeting') });
               if (version === renderVersion) {
                 open('dump');
-                status.textContent = 'Complete';
+                showIntakeComplete();
               }
             } catch {
               if (version === renderVersion) status.textContent = 'Could not save the document. Try again.';
@@ -159,7 +176,7 @@ async function render() {
         await save({ ...record, state: suggestion === 'Manual review' ? 'Queued for review' : record.state });
         if (version === renderVersion) {
           form.reset();
-          status.textContent = 'Complete';
+          showIntakeComplete();
         }
       } catch (error) {
         if (view === 'dump') status.textContent = error.message || 'Could not save the document.';
