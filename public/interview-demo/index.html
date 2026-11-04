@@ -173,6 +173,11 @@ async function render() {
     }
     return;
   }
+  if (view === 'decision-compose') {
+    screen.innerHTML = '<h1>Decisions, Decisions</h1><p>Your incoming decisions will be here when you return.</p><button type="button">Create a decision</button>';
+    screen.querySelector('button').onclick = () => open('create-decision');
+    return;
+  }
   if (view === 'create-decision') {
     screen.innerHTML = '<h1>New decision</h1><p>From Casey Chen to you · fictional project</p><form><label>Question<textarea name="question" required maxlength="300"></textarea></label><label>Solution 1<input name="first" required maxlength="120"></label><label>Solution 2<input name="second" required maxlength="120"></label><label>Solution 3 (optional)<input name="third" maxlength="120"></label><label>My recommendation (optional)<textarea name="recommendation" maxlength="500"></textarea></label><button>Submit decision</button></form>';
     const form = screen.querySelector('form');
@@ -351,6 +356,12 @@ async function render() {
     : items.filter(item => item.kind !== 'Call settings');
   if (view === 'decisions' && !visibleItems.length) {
     screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
+  }
+  if (view === 'decisions') {
+    const compose = document.createElement('button');
+    compose.textContent = visibleItems.length ? 'Review all later' : 'Create a decision';
+    compose.onclick = () => open(visibleItems.length ? 'decision-compose' : 'create-decision');
+    screen.append(compose);
   }
   for (const item of visibleItems) {
     if ((view === 'executive' || view === 'decisions') && item.kind !== 'Decision') continue;
