@@ -77,12 +77,43 @@ main:has(.workspace-picker) > nav, main:has(.workspace-picker) > p:first-child {
 }
 body { background:var(--chambery-cream); color:var(--chambery-ink); font-family:Figtree,system-ui,sans-serif; }
 h1, .workspace-picker button { font-family:Marcellus,Optima,Georgia,serif; }
-.mobile-picker { position:relative; }
-.mobile-picker button { display:grid; align-content:center; justify-items:center; gap:1rem; border-color:var(--chambery-hairline); font-size:clamp(1.25rem,6vw,2.2rem); }
-.mobile-picker button:first-child { background:var(--chambery-cream); }
-.mobile-picker button:last-child { background:color-mix(in oklab,var(--chambery-moss) 14%,var(--chambery-cream)); }
-.mobile-picker img { width:2.6rem; height:2.6rem; object-fit:cover; border-radius:50%; }
-.mobile-picker button:first-child img { outline:3px solid var(--chambery-blush); }
+main:has(.mobile-picker) { max-width:34rem; padding:0; }
+.mobile-picker {
+  min-height:100svh; isolation:isolate;
+  background:var(--chambery-cream);
+}
+.mobile-picker button {
+  position:relative; overflow:hidden; isolation:isolate;
+  display:grid; align-content:center; justify-items:center; gap:1.25rem;
+  min-width:0; padding:.8rem; border:0;
+  font-size:clamp(1.3rem,6vw,2.35rem); line-height:1.12;
+  -webkit-tap-highlight-color:transparent;
+  transition:filter .2s ease;
+}
+.mobile-picker button:first-child {
+  background:radial-gradient(ellipse at 24% 20%,white 0%,transparent 60%),
+    linear-gradient(154deg,var(--chambery-cream),var(--chambery-blush));
+}
+.mobile-picker button:last-child {
+  color:var(--chambery-cream);
+  border-left:1px solid oklch(0.78 0.065 116);
+  background:radial-gradient(ellipse at 86% 18%,oklch(0.56 0.105 126),transparent 62%),
+    linear-gradient(153deg,oklch(0.39 0.075 142),oklch(0.23 0.038 150));
+}
+.mobile-picker button::before {
+  content:""; position:absolute; z-index:-1; inset:1rem .65rem;
+  border:1px solid currentColor; opacity:.14; pointer-events:none;
+}
+.mobile-picker img {
+  width:clamp(3rem,13vw,4.2rem); height:clamp(3rem,13vw,4.2rem);
+  object-fit:cover; border-radius:50%; border:2px solid var(--chambery-cream);
+  box-shadow:0 8px 20px #17261d35;
+}
+.mobile-picker button:first-child img { outline:1px solid oklch(0.74 0.07 345); }
+.mobile-picker button:hover { filter:brightness(1.06); }
+.mobile-picker button:active { filter:brightness(.93); }
+.mobile-picker button:focus-visible { outline:3px solid currentColor; outline-offset:-7px; }
+@media (prefers-reduced-motion:reduce) { .mobile-picker button { transition:none; } }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
