@@ -36,10 +36,20 @@ main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none
 @media (prefers-reduced-motion: reduce) { .file-animation { display: none; } }
 .decision-card { touch-action: pan-y; }
 .decision-card fieldset { margin: .6rem 0; }
+main:has(.desktop-workspace) { max-width: 76rem; }
+.desktop-workspace { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border:1px solid #566956; margin-top:1rem; }
+.desktop-workspace section { padding:clamp(1rem,4vw,3rem); }
+.desktop-workspace section:first-child { background:#f8f1e5; }
+.desktop-workspace section:last-child { background:#dbe4d5; border-left:1px solid #566956; }
+.desktop-workspace h2 { font:2.2rem Georgia,serif; }
+.desktop-workspace svg { display:block; width:100%; height:9rem; color:#576453; }
+.desktop-workspace button { display:block; margin:.6rem 0; }
+@media(max-width:640px) { .desktop-workspace {grid-template-columns:1fr;} .desktop-workspace section:last-child {border-left:0;border-top:1px solid #566956;} }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
 <nav aria-label="Demo workspaces">
+<button data-view="workspace">Alec Desktop</button>
 <button data-view="alec">Alec Mobile</button>
 <button data-view="executive">Executive Mobile</button>
 <button data-view="desktop">Desktop Review</button>
@@ -84,7 +94,7 @@ async function save(record, changes) {
     transaction.onabort = () => reject(transaction.error);
   });
 }
-let view = 'alec';
+let view = 'workspace';
 let renderVersion = 0;
 const passedThisReview = new Set();
 function open(next) {
@@ -111,6 +121,47 @@ async function render() {
     if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
+  if (view === 'workspace') {
+    screen.innerHTML = `<h1>Alec Desktop</h1><div class="desktop-workspace">
+      <section><h2>My Work</h2>
+      <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 98h273M25 20h66v61H25zM57 20v60M25 52h65M91 88h144m-130 1-9 29m126-29 9 29M118 75h28v12h-28zm28 2q14-1 10 6l-10 1M165 85q1-24 19-34l9-3m0 0q-15-7-12-24t19-12q15 1 16 18l-5 18q19 15 14 37m-29-35 11 19 18 9m-30-68q-23 3-19 23l-6 18m9 34-10 31"/></svg>
+      <button data-next="decisions">Decisions, Decisions</button><button data-next="dump">Doc Dump</button><button data-next="call">Call Alec</button></section>
+      <section><h2>Alec’s Work</h2>
+      <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 105h265M34 103V57h58v46m-53-54 52-2m-47-7 39-3m28 62 17-46 55 3-7 46zm22-34 29 2m-34 9 31 3m-36 8 32 2m39 13V72l23 2 9 7h36v22zm8-65 18-15m-8 31 29-10M64 22l15-7m82 19 20-13m-71 11 14-13m112 33 26-4"/></svg>
+      <button data-next="accountability">Manage Alec</button><button data-next="needs-review">Needs Review</button><button data-next="desktop">Desktop Review</button><button data-next="call-setup">Call me setup</button><button data-next="create-decision">Submit a decision as a demo teammate</button></section>
+    </div>`;
+    screen.querySelectorAll('[data-next]').forEach(button => {
+      button.onclick = () => open(button.dataset.next);
+    });
+    return;
+  }
+  if (view === 'create-decision') {
+    screen.innerHTML = '<h1>New decision</h1><p>From Casey Chen to you · fictional project</p><form><label>Question<textarea name="question" required maxlength="300"></textarea></label><label>First suggested answer<input name="first" required maxlength="120"></label><label>Second suggested answer<input name="second" required maxlength="120"></label><label>My recommendation (optional)<textarea name="recommendation" maxlength="500"></textarea></label><button>Submit decision</button></form>';
+    const form = screen.querySelector('form');
+    form.onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const title = data.get('question').trim();
+      const options = ['first', 'second'].map(key => data.get(key).trim());
+      if (!title || options.some(option => !option || option.toLowerCase() === 'bunt') || options[0].toLowerCase() === options[1].toLowerCase()) {
+        status.textContent = 'Enter a question and two distinct answers. Bunt is added automatically for the receiver.';
+        return;
+      }
+      const button = form.querySelector('button');
+      button.disabled = true;
+      try {
+        await save({ id: crypto.randomUUID(), kind: 'Decision', title, options, sender: 'Casey Chen', owner: 'You', state: 'Needs review', createdAt: Date.now(), recommendation: data.get('recommendation').trim() });
+        if (version === renderVersion) {
+          open('workspace');
+          status.textContent = 'Decision submitted. Open Decisions, Decisions to review it.';
+        }
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not submit the decision.';
+        button.disabled = false;
+      }
+    };
+    return;
+  }
   if (view === 'alec') {
     screen.innerHTML = '<div class="alec-home"><small>INTERVIEW DEMO</small><h1>Alec</h1><h2>Your Work</h2><button class="action" data-next="decisions">Decisions, Decisions</button><button class="action call" data-next="call">Call Alec</button><button class="action" data-next="dump">Doc Dump</button><button class="manage" data-next="accountability">Manage Alec</button><footer>Chambery.</footer></div>';
     screen.querySelectorAll('[data-next]').forEach(button => {
@@ -258,7 +309,7 @@ async function render() {
   const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
   const visibleItems = view === 'decisions'
     ? items.filter(item => item.kind === 'Decision' && !item.disposition &&
-        !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).slice(0, 1)
+        !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).sort((first, second) => (first.createdAt ?? 0) - (second.createdAt ?? 0)).slice(0, 1)
     : items.filter(item => item.kind !== 'Call settings');
   if (view === 'decisions' && !visibleItems.length) {
     screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
@@ -271,6 +322,11 @@ async function render() {
     const detail = document.createElement('p');
     detail.textContent = [item.kind, item.state, item.owner, item.suggestion].filter(Boolean).join(' · ');
     card.append(heading, detail);
+    if (item.sender || item.recommendation) {
+      const context = document.createElement('p');
+      context.textContent = [item.sender && 'From ' + item.sender, item.recommendation && 'Teammate recommendation: ' + item.recommendation].filter(Boolean).join(' · ');
+      card.append(context);
+    }
     if (item.note) {
       const note = document.createElement('p');
       note.textContent = item.note;
@@ -349,6 +405,10 @@ async function render() {
       const form = document.createElement('form');
       form.innerHTML = '<label>Response<select required><option value="">Choose an option</option><option>Use a one-page briefing</option><option>Use the full briefing</option><option>Bunt</option></select></label><div></div><button>Save response</button><p>Demo only. Saves locally without sending messages or invitations.</p>';
       const choice = form.querySelector('select');
+      if (item.options) {
+        choice.replaceChildren(new Option('Choose an option', ''), ...item.options.map(option => new Option(option, option)), new Option('Bunt', 'Bunt'));
+      }
+      const originalSender = item.sender ?? 'Jordan Lee (demo)';
       const fields = form.querySelector('div');
       const button = form.querySelector('button');
       choice.onchange = () => {
@@ -360,10 +420,10 @@ async function render() {
         action.onchange = () => {
           const details = fields.querySelector('section');
           const note = '<label>Note<textarea maxlength="1000"></textarea></label>';
-          const sender = '<p>Original sender: Jordan Lee (demo)</p>';
+          const sender = '<p>Original sender: ' + originalSender + '</p>';
           switch (action.value) {
             case 'Pick a date to discuss':
-              details.innerHTML = '<label>Discussion date<input type="date" required></label><p>Copy: Jordan Lee (demo)</p>' + note;
+              details.innerHTML = '<label>Discussion date<input type="date" required></label><p>Copy: ' + originalSender + '</p>' + note;
               break;
             case 'Delegate':
               details.innerHTML = '<label>Demo contact<select required><option value="">Choose a contact</option><option>Casey Chen</option><option>Riley Morgan</option></select></label>' + note;
@@ -385,7 +445,7 @@ async function render() {
           status.textContent = 'Add instructions for the sender.';
           return;
         }
-        const owner = contact?.value || (action?.value ? 'Jordan Lee (demo)' : item.owner);
+        const owner = contact?.value || (action?.value ? originalSender : item.owner);
         const disposition = [choice.value, action?.value, date, note].filter(Boolean).join(' · ');
         if (!window.confirm('Save this demo response?\n\n' + disposition + '\nOwner: ' + owner)) return;
         button.disabled = true;
@@ -457,6 +517,6 @@ async function render() {
     screen.append(card);
   }
 }
-open('alec');
+open('workspace');
 </script>
 </html>
