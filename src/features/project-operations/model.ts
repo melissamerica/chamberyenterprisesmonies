@@ -193,8 +193,8 @@ export function prepareClientInvoiceDraft(data: ProjectOpsData, projectId: strin
 export function decideApproval(data: ProjectOpsData, id: string, status: Exclude<ApprovalState, "pending">): ProjectOpsData {
   const approval = data.approvals.find((a) => a.id === id);
   if (!approval || approval.status !== "pending") throw new Error("Approval is not pending");
-  const invoices = approval.sourceType === "vendor" && status === "approved"
-    ? data.invoices.map((i) => i.id === approval.sourceId ? { ...i, status: "approved" as const } : i)
+  const invoices = approval.sourceType === "vendor"
+    ? data.invoices.map((i) => i.id === approval.sourceId ? { ...i, status } : i)
     : data.invoices;
   return {
     ...data, invoices,
