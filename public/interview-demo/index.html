@@ -145,7 +145,7 @@ async function render() {
   screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
   screen.querySelector('h1').textContent = titles[view];
   if (view === 'decisions') {
-    screen.insertAdjacentHTML('beforeend', '<p>Decide and Bunt actions are pending definition. Review the decision and save a note.</p>');
+    screen.insertAdjacentHTML('beforeend', '<p>Choose a response or Bunt to hand off the decision.</p>');
   }
   const items = await records();
   if (version !== renderVersion) return;
@@ -191,6 +191,65 @@ async function render() {
         }
       };
       card.append(label, button);
+    }
+    if (item.kind === 'Decision' && view === 'decisions' && !item.disposition) {
+      const form = document.createElement('form');
+      form.innerHTML = '<label>Response<select required><option value="">Choose an option</option><option>Use a one-page briefing</option><option>Use the full briefing</option><option>Bunt</option></select></label><div></div><button>Save response</button><p>Demo only. Saves locally without sending messages or invitations.</p>';
+      const choice = form.querySelector('select');
+      const fields = form.querySelector('div');
+      const button = form.querySelector('button');
+      choice.onchange = () => {
+        fields.innerHTML = choice.value === 'Bunt'
+          ? '<label>Bunt to<select required><option value="">Choose a handoff</option><option>Pick a date to discuss</option><option>Delegate</option><option>Send back with instructions</option></select></label><section></section>'
+          : '';
+        const action = fields.querySelector('select');
+        if (!action) return;
+        action.onchange = () => {
+          const details = fields.querySelector('section');
+          const note = '<label>Note<textarea maxlength="1000"></textarea></label>';
+          const sender = '<p>Original sender: Jordan Lee (demo)</p>';
+          switch (action.value) {
+            case 'Pick a date to discuss':
+              details.innerHTML = '<label>Discussion date<input type="date" required></label><p>Copy: Jordan Lee (demo)</p>' + note;
+              break;
+            case 'Delegate':
+              details.innerHTML = '<label>Demo contact<select required><option value="">Choose a contact</option><option>Casey Chen</option><option>Riley Morgan</option></select></label>' + note;
+              break;
+            case 'Send back with instructions':
+              details.innerHTML = sender + note.replace('<textarea', '<textarea required');
+              break;
+            default:
+              details.replaceChildren();
+          }
+        };
+      };
+      form.onsubmit = async event => {
+        event.preventDefault();
+        const [action, contact] = fields.querySelectorAll('select');
+        const date = fields.querySelector('input')?.value;
+        const note = fields.querySelector('textarea')?.value.trim();
+        if (action?.value === 'Send back with instructions' && !note) {
+          status.textContent = 'Add instructions for the sender.';
+          return;
+        }
+        const owner = contact?.value || (action?.value ? 'Jordan Lee (demo)' : item.owner);
+        const disposition = [choice.value, action?.value, date, note].filter(Boolean).join(' · ');
+        if (!window.confirm('Save this demo response?\n\n' + disposition + '\nOwner: ' + owner)) return;
+        button.disabled = true;
+        try {
+          await save(item, { disposition, owner, state: action?.value ? 'Bunted · handoff saved' : 'Response saved' });
+          if (version === renderVersion) open('accountability');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the response.';
+          button.disabled = false;
+        }
+      };
+      card.append(form);
+    }
+    if (item.disposition) {
+      const outcome = document.createElement('p');
+      outcome.textContent = item.disposition;
+      card.append(outcome);
     }
     if (item.reply) {
       const reply = document.createElement('p');
