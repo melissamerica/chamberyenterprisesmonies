@@ -314,7 +314,7 @@ async function render() {
   screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
   screen.querySelector('h1').textContent = titles[view];
   if (view === 'decisions') {
-    screen.insertAdjacentHTML('beforeend', '<p>Choose a response or Bunt to hand off the decision.</p>');
+    screen.insertAdjacentHTML('beforeend', '<p><strong>Enforces a culture of solutions</strong></p><p>Choose a response or Bunt to hand off the decision.</p>');
   }
   const items = await records();
   if (version !== renderVersion) return;
