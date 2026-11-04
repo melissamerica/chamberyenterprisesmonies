@@ -18,6 +18,15 @@ article, form { background: #fff; border-radius: .8rem; padding: 1rem; margin: .
 label, textarea, select { display: block; margin-bottom: .6rem; }
 textarea { width: 100%; }
 :focus-visible { outline: 3px solid #8d4e30; outline-offset: 3px; }
+main:has(.alec-home) { max-width: 27rem; min-height: 100svh; background: #0b0e0b; color: #f2f4ef; }
+main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none; }
+.alec-home { text-align: center; }
+.alec-home h2 { font-size: 1rem; font-weight: 500; }
+.alec-home .action, .alec-home .manage { border-radius: 999px; text-align: center; background: #191e19; color: #f2f4ef; border-color: #626c61; }
+.alec-home .call { border-color: #b4ed71; box-shadow: 0 0 14px #a7e66545; }
+.alec-home .manage { width: 100%; margin-top: 1rem; }
+.alec-home output { display: block; font-size: 1.9rem; font-variant-numeric: tabular-nums; color: #c4efa5; }
+.alec-home footer { margin-top: 1.5rem; color: #b5c4b4; font-family: Georgia, serif; }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
@@ -64,6 +73,13 @@ async function save(record, changes) {
     transaction.onabort = () => reject(transaction.error);
   });
 }
+function estimatedMinutes(item) {
+  return item.kind === 'Document' && item.suggestion !== 'Manual review' ? 2 : 0;
+}
+function formatTime(minutes) {
+  const hours = Math.floor(minutes / 60);
+  return hours ? hours + 'h ' + minutes % 60 + 'm' : minutes + 'm';
+}
 let view = 'alec';
 let renderVersion = 0;
 function open(next) {
@@ -81,10 +97,16 @@ async function render() {
     else button.removeAttribute('aria-current');
   });
   if (view === 'alec') {
-    screen.innerHTML = '<h1>Alec Mobile</h1><h2>Your Work</h2><button class="action" data-next="decisions">Decisions, Decisions</button><button class="action" data-next="dump">Doc Dump</button><button class="action" data-next="call">Call Alec</button><h2>Alec’s Work</h2><button data-next="accountability">View status and ownership</button>';
+    screen.innerHTML = '<div class="alec-home"><small>INTERVIEW DEMO</small><h1>Alec</h1><p>Time Alec saved you<output aria-label="Estimated time saved">…</output><small>Estimated · this demo</small></p><h2>Your Work</h2><button class="action" data-next="decisions">Decisions, Decisions</button><button class="action call" data-next="call">Call Alec</button><button class="action" data-next="dump">Doc Dump</button><button class="manage" data-next="accountability">Manage Alec</button><footer>Chambery.</footer></div>';
     screen.querySelectorAll('[data-next]').forEach(button => {
       button.onclick = () => open(button.dataset.next);
     });
+    const items = await records();
+    if (version === renderVersion) {
+      screen.querySelector('output').textContent = formatTime(
+        items.reduce((total, item) => total + estimatedMinutes(item), 0)
+      );
+    }
     return;
   }
   if (view === 'call') {
@@ -119,7 +141,7 @@ async function render() {
     };
     return;
   }
-  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', accountability: 'Alec’s Work' };
+  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', accountability: 'Manage Alec' };
   screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
   screen.querySelector('h1').textContent = titles[view];
   if (view === 'decisions') {
@@ -127,6 +149,9 @@ async function render() {
   }
   const items = await records();
   if (version !== renderVersion) return;
+  if (view === 'accountability') {
+    screen.insertAdjacentHTML('beforeend', '<h2>Alec’s Work</h2><p>Each document with a routing suggestion adds an estimated 2 minutes. Manual review and user actions add 0 minutes.</p>');
+  }
   for (const item of items) {
     if ((view === 'executive' || view === 'decisions') && item.kind !== 'Decision') continue;
     const card = document.createElement('article');
@@ -135,6 +160,11 @@ async function render() {
     const detail = document.createElement('p');
     detail.textContent = [item.kind, item.state, item.owner, item.suggestion].filter(Boolean).join(' · ');
     card.append(heading, detail);
+    if (view === 'accountability') {
+      const time = document.createElement('p');
+      time.textContent = 'Estimated time saved: ' + formatTime(estimatedMinutes(item));
+      card.append(time);
+    }
     if (item.note) {
       const note = document.createElement('p');
       note.textContent = item.note;
