@@ -66,6 +66,8 @@ main:has(.desktop-workspace) { max-width: 76rem; }
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
 <nav aria-label="Demo workspaces">
 <button data-view="workspace">Alec Desktop</button>
+<button data-view="archives">Archives</button>
+<label>Demo role<select id="decision-role"><option>Exec</option><option>Casey Chen</option><option>Bob</option></select></label>
 <button data-view="alec">Alec Mobile</button>
 <button data-view="executive">Executive Mobile</button>
 <button data-view="desktop">Desktop Review</button>
@@ -113,6 +115,8 @@ async function save(record, changes) {
 let view = 'workspace';
 let renderVersion = 0;
 const passedThisReview = new Set();
+const role = document.querySelector('#decision-role');
+role.onchange = () => { passedThisReview.clear(); open(view); };
 function open(next) {
   if (next === 'decisions' && view !== next) passedThisReview.clear();
   view = next;
@@ -193,7 +197,7 @@ async function render() {
       const button = form.querySelector('button');
       button.disabled = true;
       try {
-        await save({ id: crypto.randomUUID(), kind: 'Decision', title, options, sender: 'Casey Chen', owner: 'You', state: 'Needs review', createdAt: Date.now(), recommendation: data.get('recommendation').trim() });
+        await save({ id: crypto.randomUUID(), kind: 'Decision', title, options, sender: 'Casey Chen', holder: 'Exec', from: 'Casey Chen', owner: 'Exec', state: 'Needs review', createdAt: Date.now(), recommendation: data.get('recommendation').trim() });
         if (version === renderVersion) {
           open('workspace');
           status.textContent = 'Decision submitted. Open Decisions, Decisions to review it.';
@@ -337,7 +341,7 @@ async function render() {
     };
     return;
   }
-  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', accountability: 'Manage Alec' };
+  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', archives: 'Archives', accountability: 'Manage Alec' };
   screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
   screen.querySelector('h1').textContent = titles[view];
   if (view === 'decisions') {
@@ -351,9 +355,11 @@ async function render() {
   const now = new Date();
   const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
   const visibleItems = view === 'decisions'
-    ? items.filter(item => item.kind === 'Decision' && !item.disposition &&
+    ? items.filter(item => item.kind === 'Decision' && !item.retired && (item.holder ?? 'Exec') === role.value && (!item.disposition || item.holder) &&
         !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).sort((first, second) => (first.createdAt ?? 0) - (second.createdAt ?? 0)).slice(0, 1)
-    : items.filter(item => item.kind !== 'Call settings');
+    : items.filter(item => view === 'archives'
+        ? item.retired && [item.sender, item.holder, item.from].includes(role.value)
+        : item.kind !== 'Call settings' && !item.retired);
   if (view === 'decisions' && !visibleItems.length) {
     screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
   }
@@ -371,6 +377,31 @@ async function render() {
     const detail = document.createElement('p');
     detail.textContent = [item.kind, item.state, item.owner, item.suggestion].filter(Boolean).join(' · ');
     card.append(heading, detail);
+    for (const entry of item.history ?? []) {
+      const line = document.createElement('p');
+      line.textContent = entry.actor + ': ' + entry.text;
+      card.append(line);
+    }
+    const actor = role.value;
+    if (!item.retired && item.kind === 'Decision' && ['decisions', 'accountability'].includes(view) &&
+        [item.sender, item.holder ?? 'Exec', item.from].includes(actor)) {
+      const retire = document.createElement('form');
+      retire.innerHTML = '<label>Retirement note (optional)<input maxlength="1000"></label><button>Retire</button>';
+      retire.onsubmit = async event => {
+        event.preventDefault();
+        const button = retire.querySelector('button');
+        button.disabled = true;
+        try {
+          const note = retire.querySelector('input').value.trim();
+          await save(item, { retired: true, state: 'Retired', history: [...(item.history ?? []), { actor, text: note ? 'Retired · ' + note : 'Retired' }] });
+          if (version === renderVersion) open('archives');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not retire the decision.';
+          button.disabled = false;
+        }
+      };
+      card.append(retire);
+    }
     if (item.sender || item.recommendation) {
       const context = document.createElement('p');
       context.textContent = [item.sender && 'From ' + item.sender, item.recommendation && 'Teammate recommendation: ' + item.recommendation].filter(Boolean).join(' · ');
@@ -457,7 +488,8 @@ async function render() {
       if (item.options) {
         choice.replaceChildren(new Option('Choose an option', ''), ...item.options.map(option => new Option(option, option)), new Option('Bunt', 'Bunt'));
       }
-      const originalSender = item.sender ?? 'Jordan Lee (demo)';
+      choice.add(new Option('Reply to sender', 'Reply to sender'));
+      const originalSender = item.from ?? item.sender ?? 'Jordan Lee (demo)';
       const fields = form.querySelector('div');
       const replyNote = '<label>Reply note (optional)<textarea maxlength="1000"></textarea></label>';
       fields.innerHTML = replyNote;
@@ -477,7 +509,7 @@ async function render() {
               details.innerHTML = '<label>Discussion date<input type="date" required></label><p>Copy: ' + originalSender + '</p>' + note;
               break;
             case 'Delegate':
-              details.innerHTML = '<label>Demo contact<select required><option value="">Choose a contact</option><option>Casey Chen</option><option>Riley Morgan</option></select></label>' + note;
+              details.innerHTML = '<label>Demo contact<select required><option value="">Choose a contact</option><option>Casey Chen</option><option>Bob</option><option>Exec</option></select></label>' + note;
               break;
             case 'Send back with instructions':
               details.innerHTML = sender + note.replace('<textarea', '<textarea required');
@@ -498,13 +530,19 @@ async function render() {
         }
         const owner = contact?.value || (action?.value ? originalSender : item.owner);
         if (choice.value !== 'Bunt') {
+          if (choice.value === 'Reply to sender' && !note) {
+            status.textContent = 'Enter a reply.';
+            return;
+          }
           button.disabled = true;
           try {
             await save(item, {
+              holder: originalSender, from: actor, owner: originalSender, revisitDate: null,
+              history: [...(item.history ?? []), { actor, text: [choice.value, note].filter(Boolean).join(' · ') }],
               disposition: [choice.value, note].filter(Boolean).join(' · '),
-              selectedSolution: choice.value,
+              selectedSolution: choice.value === 'Reply to sender' ? item.selectedSolution : choice.value,
               responseNote: note,
-              state: 'Answered'
+              state: 'Reply received'
             });
             if (version === renderVersion) {
               open('decisions');
@@ -520,7 +558,10 @@ async function render() {
         if (!window.confirm('Save this demo response?\n\n' + disposition + '\nOwner: ' + owner)) return;
         button.disabled = true;
         try {
-          await save(item, { disposition, owner, state: action?.value ? 'Bunted · handoff saved' : 'Response saved' });
+          const holder = date ? actor : owner;
+          await save(item, { disposition, holder, from: date ? originalSender : actor, owner: holder, revisitDate: date || null, state: 'Bunted · handoff saved',
+            history: [...(item.history ?? []), { actor, text: disposition }] });
+          if (date) passedThisReview.add(item.id);
           if (version === renderVersion) open('accountability');
         } catch {
           if (version === renderVersion) status.textContent = 'Could not save the response.';
