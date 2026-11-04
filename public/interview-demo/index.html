@@ -19,7 +19,7 @@ label, textarea, select { display: block; margin-bottom: .6rem; }
 textarea { width: 100%; }
 :focus-visible { outline: 3px solid #8d4e30; outline-offset: 3px; }
 main:has(.alec-home) { max-width: 27rem; min-height: 100svh; background: #0b0e0b; color: #f2f4ef; }
-main:has(.alec-home) > nav, main:has(.alec-home) > p:first-child { display: none; }
+main:has(.alec-home) > p:first-child { display: none; }
 .alec-home { text-align: center; }
 .alec-home h2 { font-size: 1rem; font-weight: 500; }
 .alec-home .action, .alec-home .manage { border-radius: 999px; text-align: center; background: #191e19; color: #f2f4ef; border-color: #626c61; }
@@ -61,6 +61,12 @@ main:has(.desktop-workspace) { max-width: 76rem; }
 @media (prefers-reduced-motion:reduce) {
   .desktop-workspace section:first-child, .desktop-workspace section:last-child { animation:none; }
 }
+main:has(.workspace-picker) { max-width:76rem; }
+main:has(.workspace-picker) > nav, main:has(.workspace-picker) > p:first-child { display:none; }
+.workspace-picker { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); min-height:calc(100svh - 2.5rem); }
+.workspace-picker button { border-radius:0; font:clamp(1.2rem,4vw,2.4rem) Georgia,serif; padding:.65rem; }
+.workspace-picker button:first-child { background:#f8f1e5; border-right:0; }
+.workspace-picker button:last-child { background:#dbe4d5; }
 </style>
 <main>
 <p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
@@ -141,7 +147,15 @@ async function render() {
     if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
     else button.removeAttribute('aria-current');
   });
-  if (view === 'workspace') {
+  if (view === 'workspace' || view === 'alec') {
+    const mobile = view === 'alec';
+    screen.innerHTML = '<div class="workspace-picker" aria-label="Choose a workspace"><button>My Work</button><button>Alec’s Work</button></div>';
+    const [mine, alec] = screen.querySelectorAll('button');
+    mine.onclick = () => open(mobile ? 'mobile-my-work' : 'desktop-my-work');
+    alec.onclick = () => open(mobile ? 'accountability' : 'desktop-alec-work');
+    return;
+  }
+  if (view === 'desktop-my-work' || view === 'desktop-alec-work') {
     screen.innerHTML = `<h1>Alec Desktop</h1><div class="desktop-workspace">
       <section><h2>My Work</h2>
       <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 98h273M25 20h66v61H25zM57 20v60M25 52h65M91 88h144m-130 1-9 29m126-29 9 29M118 75h28v12h-28zm28 2q14-1 10 6l-10 1M165 85q1-24 19-34l9-3m0 0q-15-7-12-24t19-12q15 1 16 18l-5 18q19 15 14 37m-29-35 11 19 18 9m-30-68q-23 3-19 23l-6 18m9 34-10 31"/></svg>
@@ -150,6 +164,9 @@ async function render() {
       <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 105h265M34 103V57h58v46m-53-54 52-2m-47-7 39-3m28 62 17-46 55 3-7 46zm22-34 29 2m-34 9 31 3m-36 8 32 2m39 13V72l23 2 9 7h36v22zm8-65 18-15m-8 31 29-10M64 22l15-7m82 19 20-13m-71 11 14-13m112 33 26-4"/></svg>
       <button data-next="accountability">Manage Alec</button><button data-next="needs-review">Needs Review</button><button data-next="desktop">Desktop Review</button><button data-next="call-setup">Call me setup</button><button data-next="create-decision">Submit a decision as a demo teammate</button><button data-next="sent-decisions">View Casey’s decision replies</button></section>
     </div>`;
+    const sections = screen.querySelectorAll('.desktop-workspace section');
+    sections[view === 'desktop-my-work' ? 1 : 0].remove();
+    screen.querySelector('.desktop-workspace').style.gridTemplateColumns = '1fr';
     screen.querySelectorAll('[data-next]').forEach(button => {
       button.onclick = () => open(button.dataset.next);
     });
@@ -209,7 +226,7 @@ async function render() {
     };
     return;
   }
-  if (view === 'alec') {
+  if (view === 'mobile-my-work') {
     screen.innerHTML = '<div class="alec-home"><small>INTERVIEW DEMO</small><h1>Alec</h1><h2>Your Work</h2><button class="action" data-next="decisions">Decisions, Decisions</button><button class="action call" data-next="call">Call Alec</button><button class="action" data-next="dump">Doc Dump</button><button class="manage" data-next="accountability">Manage Alec</button><footer>Chambery.</footer></div>';
     screen.querySelectorAll('[data-next]').forEach(button => {
       button.onclick = () => open(button.dataset.next);
