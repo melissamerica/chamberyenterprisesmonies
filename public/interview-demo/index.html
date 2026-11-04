@@ -127,7 +127,12 @@ async function render() {
       if (!queued.length) screen.insertAdjacentHTML('beforeend', '<p>Nothing needs review yet.</p>');
       for (const item of queued) {
         const card = document.createElement('article');
-        card.textContent = item.title;
+        const title = document.createElement('h2');
+        title.textContent = item.title;
+        card.append(title);
+        const reason = document.createElement('p');
+        reason.textContent = item.routeReason ?? 'No callback rule matched when this event was routed.';
+        card.append(reason);
         screen.append(card);
       }
       return;
@@ -162,9 +167,13 @@ async function render() {
       try {
         const preferences = (await records()).find(item => item.id === 'call-settings');
         const callback = preferences?.selected.includes(scenario) ?? false;
-        await save({ id: crypto.randomUUID(), kind: 'Call event', title, owner: 'Alec', state: callback ? 'Callback selected · demo' : 'Needs review' });
+        const rule = { flight: 'flight interruptions', meeting: 'meeting cancellations', jordan: 'emails from Jordan Lee', casey: 'emails from Casey Chen' }[scenario];
+        const routeReason = preferences
+          ? 'Your saved Call me preferences ' + (callback ? 'include ' : 'do not include ') + rule + '.'
+          : 'You haven’t saved any Call me preferences yet.';
+        await save({ id: crypto.randomUUID(), kind: 'Call event', title, owner: 'Alec', routeReason, state: callback ? 'Callback selected · demo' : 'Needs review' });
         if (version === renderVersion) {
-          status.textContent = callback ? 'Would call you. No call placed in this demo.' : 'Added to Needs Review.';
+          status.textContent = callback ? 'Would call you. No call placed in this demo. ' + routeReason : 'Added to Needs Review. ' + routeReason;
         }
       } catch {
         if (version === renderVersion) status.textContent = 'Could not route the demo event.';
