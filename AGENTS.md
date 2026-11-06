@@ -19,3 +19,10 @@
 - Use docs/app-understanding.md as a source-navigation map before proposing workspace changes, then inspect the cited implementation and latest decisions; it separates current functionality from staged code and future intent to prevent repeating discovery or treating plans as shipped.
 - Use docs/app-action-inventory.md for detailed current action/read/review/write/output paths and docs/project-history.md for provenance; verify relevant source before relying on line references because edits can move them.
 - Maintain source-backed action knowledge with affected behavior changes; distinguish browser writes, server writes, source inspection, executed tests and observed UI so continuity does not depend on chat summaries.
+
+## Approved-work safeguards and data authority
+- Before any new implementation, present a specific plan and obtain explicit approval. Approval is only for the stated scope. Never merge to main, publish, enable live sends or change approved branding without separate approval.
+- Firm workspace trip writes go through the authenticated `/api/uploads` tenant-bound API. A client must receive `{saved:true}` before saying that a manual trip, travel import, appointment or report was saved.
+- Do not restore, merge, upload or delete historical `trip-workspace-trips`/`anya-executives` browser data automatically. It is unscoped and may belong to another account. `src/lib/workspace-durability.ts` supplies opt-in recovery helpers; legacy data remains untouched.
+- Browser navigation preferences must be firm/user-scoped and cleared on sign-out. Do not use browser storage as the source of truth for business data.
+- Review `docs/workspace-durability-phase1.md` and run its tests/acceptance checks before merging the staged durability change; it does not claim to solve cancellation alerts, concurrent edits or legacy template migration.

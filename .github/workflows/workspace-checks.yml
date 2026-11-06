@@ -1,0 +1,37 @@
+name: Workspace regression tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'bun.lock'
+      - '.github/workflows/workspace-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install exact locked dependencies
+        id: install
+        run: bun install --frozen-lockfile
+      - name: Run unit and route tests
+        run: bun run test
+      - name: Type-check
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: bunx --no-install tsc --noEmit
+      - name: Lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: bun run lint
+      - name: Build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: bun run build

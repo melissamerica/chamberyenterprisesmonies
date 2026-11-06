@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal } from "@/components/ui/dropdown-menu";
-import { executiveTemplateTerminology, calendarFormatFor, calendarFormatChange, calendarTemplatePreview, defaultTemplates, executiveIdFor, executiveForTrip, fillTemplate, mergeTemplateKind, reservationTemplateTitle, templateFields, validateCustomTemplate, type Executive, type ExecutiveTemplates, type TemplateKind, type ExecutiveProfile, type SavedCustomTemplate } from "@/lib/executive-profiles";
+import { calendarFormatFor, calendarFormatChange, calendarTemplatePreview, defaultTemplates, executiveIdFor, executiveForTrip, fillTemplate, mergeTemplateKind, reservationTemplateTitle, templateFields, validateCustomTemplate, type Executive, type ExecutiveTemplates, type TemplateKind, type ExecutiveProfile, type SavedCustomTemplate } from "@/lib/executive-profiles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnassignedExpenses } from "@/components/unassigned-expenses";
 import { ExpenseApproval } from "@/components/expense-approval";
@@ -39,6 +39,7 @@ import { parseLabeledConfirmation, readTravelDocument } from "@/lib/travel-confi
 import { destinationFromSearch, type WorkspaceDestination } from "@/lib/workspace-navigation";
 import { reminderCalendarUrl, reminderTimes, type ReminderCalendar } from "@/lib/attention-reminders";
 import { DecisionQueue } from "@/components/decision-queue";
+import { missingById, navigationKey, persistFirmTrip, readLegacyWorkspace, type LegacyWorkspace } from "@/lib/workspace-durability";
 
 type AttentionItem = { id: number; tripId: number; title: string; detail: string };
 
@@ -108,9 +109,6 @@ const sampleTrips: Trip[] = [
   },
 ];
 
-function profilesFromTrips(trips: Trip[]): Executive[] {
-  return [...new Set(trips.filter(trip => !trip.executiveId).map(trip => trip.traveler))].map(name => ({ id: executiveIdFor(name), name, templates: { ...defaultTemplates } }));
-}
 
 function iconFor(kind: ItemKind) {
   if (kind === "Flight") return <Plane className="size-4" />;
@@ -292,7 +290,7 @@ export default function Home() {
   return testWorkspace ? <TestWorkspace /> : <ProductHome />;
 }
 
-export function TestWorkspace() {
+export function TestWorkspace({ firmId = "", userId = "", readOnly = false }: { firmId?: string; userId?: string; readOnly?: boolean } = {}) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const tripsRef = useRef(trips);
   const [executives, setExecutives] = useState<Executive[]>([]);
@@ -368,6 +366,12 @@ export function TestWorkspace() {
   const [billingReturnToReport, setBillingReturnToReport] = useState(false);
   const [activeTripId, setActiveTripId] = useState(1);
   const [notice, setNotice] = useState("");
+  const [tripSaving, setTripSaving] = useState(false);
+  const [tripSaveError, setTripSaveError] = useState("");
+  const [legacyReview, setLegacyReview] = useState<LegacyWorkspace | null>(null);
+  const [legacyImporting, setLegacyImporting] = useState(false);
+  const [legacyError, setLegacyError] = useState("");
+  const [legacyResult, setLegacyResult] = useState("");
   const [newTripOpen, setNewTripOpen] = useState(false);
   const [appointmentOpen, setAppointmentOpen] = useState(false);
   const [newTripName, setNewTripName] = useState("");
@@ -432,40 +436,12 @@ export function TestWorkspace() {
       .catch(() => {});
   }, []);
 
+  // Legacy browser data has no account identity. Never hydrate it into a firm automatically.
+  // Current records are loaded from the authenticated firm's APIs below.
   useEffect(() => {
-    let savedTrips: Trip[] | null = null;
-    let savedExecutives: Executive[] | null = null;
-    let savedExecutiveId: string | null = null;
-    let savedPublishing: Record<number, { status: "publishing" | "published" | "error"; url?: string }> | null = null;
-    let savedDismissedAttentionIds: number[] = [];
-    // The shared root URL always opens Home; explicit workspace links still open their requested page.
     pendingDestination.current = destinationFromSearch(window.location.search) ?? { page: "home" };
-    if(new URLSearchParams(window.location.search).get("itineraryTab")==="attachments")setItineraryTab("attachments");
-    try {
-      const tripValue = window.localStorage.getItem("trip-workspace-trips");
-      const publishingValue = window.localStorage.getItem("trip-workspace-calendar-publishing");
-      const profilesValue = window.localStorage.getItem("anya-executives");
-      savedExecutiveId = window.localStorage.getItem("anya-selected-executive");
-      if (profilesValue) savedExecutives = (JSON.parse(profilesValue) as Executive[]).filter(profile => profile.id && profile.name).map(profile => ({ ...profile, templates: executiveTemplateTerminology({ ...defaultTemplates, ...profile.templates, itineraryHeading: profile.templates?.itineraryHeading === "{traveler} · Travel itinerary" ? defaultTemplates.itineraryHeading : profile.templates?.itineraryHeading ?? defaultTemplates.itineraryHeading, expenseHeading: profile.templates?.expenseHeading === "{traveler} · Expense report" ? defaultTemplates.expenseHeading : profile.templates?.expenseHeading ?? defaultTemplates.expenseHeading }) }));
-      if (tripValue) savedTrips = JSON.parse(tripValue) as Trip[];
-      if (publishingValue) savedPublishing = JSON.parse(publishingValue);
-      const dismissedValue = window.localStorage.getItem("trip-workspace-dismissed-attention");
-      const dismissed: unknown = dismissedValue ? JSON.parse(dismissedValue) : [];
-      if (Array.isArray(dismissed)) savedDismissedAttentionIds = dismissed.filter((id): id is number => typeof id === "number" && Number.isFinite(id));
-    } catch {
-      // Start empty when this browser has no saved workspace. Samples are opt-in.
-    }
-    const timer = window.setTimeout(() => {
-      if (savedTrips) { tripsRef.current = savedTrips; setTrips(savedTrips); }
-      const legacyProfiles = profilesFromTrips(savedTrips ?? []);
-      const profiles = savedExecutives?.length ? [...savedExecutives, ...legacyProfiles.filter(profile => !savedExecutives!.some(saved => saved.name.toLowerCase() === profile.name.toLowerCase()))] : legacyProfiles;
-      setExecutives(profiles);
-      setSelectedExecutiveId(profiles.some(profile => profile.id === savedExecutiveId) ? savedExecutiveId! : profiles[0]?.id ?? "");
-      if (savedPublishing) setCalendarPublish(savedPublishing);
-      setDismissedAttentionIds(savedDismissedAttentionIds);
-      setHydrated(true);
-    }, 0);
-    return () => window.clearTimeout(timer);
+    if (new URLSearchParams(window.location.search).get("itineraryTab") === "attachments") setItineraryTab("attachments");
+    setHydrated(true);
   }, []);
 
   useEffect(() => { if (hydrated) void loadCustomTemplates(); }, [hydrated]);
@@ -499,6 +475,69 @@ export function TestWorkspace() {
     finally { setUploadLoading(false); }
   }
   useEffect(() => { if (hydrated) void loadUploads(); }, [hydrated]);
+  useEffect(() => { if (!selectedExecutiveId && executives.length) setSelectedExecutiveId(executives[0].id); }, [selectedExecutiveId, executives]);
+
+  /** Commit a complete trip only after the firm API confirms it. No browser-only success. */
+  async function commitTrip(trip: Trip): Promise<Trip> {
+    const owner = trip.executiveId || executives.find(e => e.name.trim().toLowerCase() === trip.traveler.trim().toLowerCase())?.id || executiveIdFor(trip.traveler);
+    const owned: Trip = { ...trip, executiveId: owner };
+    setTripSaving(true); setTripSaveError("");
+    try {
+      await persistFirmTrip(owned);
+      const merged = [...tripsRef.current.filter(t => t.id !== owned.id), owned];
+      tripsRef.current = merged;
+      setTrips(merged);
+      return owned;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "The trip could not save to your firm.";
+      setTripSaveError(message);
+      throw error;
+    } finally { setTripSaving(false); }
+  }
+
+  /** Explicit opt-in only. The historical cache is unscoped and is never auto-imported. */
+  function reviewLegacyRecords() {
+    setLegacyReview(readLegacyWorkspace(window.localStorage));
+    setLegacyError("");
+    setLegacyResult("");
+  }
+
+  async function recoverLegacyRecords() {
+    if (!legacyReview || legacyImporting || readOnly || uploadLoading || profilesLoading || uploadLoadError || profilesLoadError) return;
+    setLegacyImporting(true); setLegacyError(""); setLegacyResult("");
+    let profilesAdded = 0;
+    let tripsAdded = 0;
+    const known = [...executives];
+    try {
+      // No overwrites: even a legacy record with a matching name but a different ID is skipped.
+      for (const profile of missingById(known, legacyReview.executives)) {
+        if (known.some(existing => existing.name.trim().toLowerCase() === profile.name.trim().toLowerCase())) continue;
+        const saved = await persistExecutive({ ...profile, templates: profile.templates ?? { ...defaultTemplates } });
+        known.push(saved);
+        setExecutives(current => current.some(e => e.id === saved.id) ? current : [...current, saved]);
+        profilesAdded++;
+      }
+      // Old trips can have an executive name but no saved executive ID.
+      for (const trip of missingById(tripsRef.current, legacyReview.trips)) {
+        let executive = known.find(e => e.id === trip.executiveId) ??
+          known.find(e => e.name.trim().toLowerCase() === trip.traveler.trim().toLowerCase());
+        if (!executive) {
+          const candidate: Executive = { id: trip.executiveId || executiveIdFor(trip.traveler), name: trip.traveler, templates: { ...defaultTemplates } };
+          executive = await persistExecutive(candidate);
+          known.push(executive);
+          setExecutives(current => current.some(e => e.id === executive!.id) ? current : [...current, executive!]);
+          profilesAdded++;
+        }
+        await commitTrip({ ...trip, executiveId: executive.id });
+        tripsAdded++;
+      }
+      setLegacyResult(`Imported ${tripsAdded} trip(s) and ${profilesAdded} executive profile(s). Existing firm records were not overwritten. Your original browser backup remains untouched.`);
+      await loadExecutiveProfiles();
+      await loadUploads();
+    } catch (error) {
+      setLegacyError(`Import stopped after ${tripsAdded} trip(s) and ${profilesAdded} profile(s). ${error instanceof Error ? error.message : "Please retry."} Your original browser records are unchanged; retry skips already imported records.`);
+    } finally { setLegacyImporting(false); }
+  }
 
   function uploadedTripsSaved(saved: UploadTrip[], kind: "expenses" | "itinerary", notice?: string) {
     setTrips(current => { const merged = [...current.map(trip => saved.find(updated => updated.id === trip.id) ?? trip), ...saved.filter(trip => !current.some(existing => existing.id === trip.id))]; tripsRef.current = merged; return merged; });
@@ -562,28 +601,11 @@ export function TestWorkspace() {
   useEffect(() => {
     if (!hydrated || !navigationRestored || screen === "home") return;
     const destination: WorkspaceDestination = templatesOpen ? { page: "templates", travelerId: templateExecutiveId, templateId: editingTemplateId, templateTab } : screen === "templates" ? { page: "templates" } : screen === "billing-codes" ? {page:"billing-codes"} : screen === "unassigned-expenses" ? {page:"unassigned-expenses"} : profileOpen ? { page: "profile", travelerId: profileExecutiveId } : { page: screen === "detail" ? activeTab as "itinerary" | "calendar" | "expenses" : "executive", travelerId: selectedExecutiveId, tripId: activeTrip?.id };
-    try { window.localStorage.setItem("anya-last-workspace", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
-  }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId]);
+    if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-workspace"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+  }, [hydrated, navigationRestored, screen, selectedExecutiveId, activeTrip?.id, activeTab, templatesOpen, templateExecutiveId, editingTemplateId, templateTab, profileOpen, profileExecutiveId, firmId, userId]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-    window.localStorage.setItem("anya-executives", JSON.stringify(executives));
-    window.localStorage.setItem("anya-selected-executive", selectedExecutiveId);
-    window.localStorage.setItem("trip-workspace-trips", JSON.stringify(trips));
-    window.localStorage.setItem("trip-workspace-calendar-publishing", JSON.stringify(calendarPublish));
-    } catch { /* Saved custom templates remain available from the server. */ }
-  }, [calendarPublish, hydrated, trips, executives, selectedExecutiveId]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem("trip-workspace-dismissed-attention", JSON.stringify(dismissedAttentionIds));
-    } catch {
-      // Dismissals still apply to the current page when browser storage is unavailable.
-    }
-  }, [dismissedAttentionIds, hydrated]);
-
+  // Do not cache sensitive trip, executive or expense records in unscoped localStorage.
+  // Server confirmation is required before a firm record is treated as saved.
   useEffect(() => {
     const context = (document as Document & { modelContext?: WebMCPContext }).modelContext;
     if (!context?.registerTool) return;
@@ -604,7 +626,7 @@ export function TestWorkspace() {
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { name?: unknown; executive?: unknown };
           if (typeof value.name !== "string" || !value.name.trim() ||
               typeof value.executive !== "string" || !value.executive.trim()) {
@@ -620,9 +642,9 @@ export function TestWorkspace() {
             route: "Route pending",
             items: [],
           };
-          setTrips((current) => [...current, trip]);
+          await commitTrip(trip);
           setActiveTripId(id);
-          setNotice(`Created “${trip.name}”. Drop in the first confirmation.`);
+          setNotice(`Saved “${trip.name}” to your firm. Drop in the first confirmation.`);
           return { id, name: trip.name, executive: trip.traveler, status: "draft" };
         },
       }, { signal: lifecycle.signal }),
@@ -641,7 +663,7 @@ export function TestWorkspace() {
           additionalProperties: false,
         },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
-        execute(input) {
+        async execute(input) {
           const value = input as { title?: unknown; date?: unknown; time?: unknown };
           if (typeof value.title !== "string" || !value.title.trim() ||
               typeof value.date !== "string" || !value.date.trim() ||
@@ -657,11 +679,11 @@ export function TestWorkspace() {
             time: value.time.trim(),
             source: "Assistant-created appointment",
           };
-          setTrips((current) => current.map((trip) =>
-            trip.id === activeTripId ? { ...trip, items: [...trip.items, item] } : trip,
-          ));
-          rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: activeTrip.id });
-    setNotice("Appointment added.");
+          const current = tripsRef.current.find(trip => trip.id === activeTripId);
+          if (!current) throw new Error("Choose a trip before adding an appointment.");
+          await commitTrip({ ...current, items: [...current.items, item] });
+          rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: current.id });
+          setNotice("Appointment saved to your firm.");
           return { tripId: activeTripId, appointmentId: item.id, status: "added" };
         },
       }, { signal: lifecycle.signal }),
@@ -672,23 +694,27 @@ export function TestWorkspace() {
   }, [activeTripId, executives]);
 
   function rememberEditedPage(destination: WorkspaceDestination) {
-    try { window.localStorage.setItem("anya-last-edited-page", JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
+    if (firmId && userId) try { window.localStorage.setItem(navigationKey(firmId, userId, "last-edited-page"), JSON.stringify(destination)); } catch { /* Navigation still works without browser preferences. */ }
   }
 
-  function addTrip() {
+  async function addTrip() {
+    if (tripSaving) return;
     const name = newTripName.trim() || "New trip";
     const id = Date.now();
-    setTrips((current) => [...current, {
-      id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive", dates: "Dates not set",
-      route: "Route pending", items: [],
-    }]);
-    setActiveTripId(id);
-    setActiveTab("itinerary");
-    setScreen("detail");
-    setNewTripName("");
-    setNewTripOpen(false);
-    rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: id });
-    setNotice(`Created “${name}”. Drop in the first confirmation.`);
+    const draft: Trip = {
+      id, name, executiveId: selectedExecutive?.id, traveler: newExecutive.trim() || selectedExecutive?.name || "Executive",
+      dates: "Dates not set", route: "Route pending", items: [],
+    };
+    try {
+      await commitTrip(draft);
+      setActiveTripId(id);
+      setActiveTab("itinerary");
+      setScreen("detail");
+      setNewTripName("");
+      setNewTripOpen(false);
+      rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: id });
+      setNotice(`Saved “${name}” to your firm. Drop in the first confirmation.`);
+    } catch { /* Keep the dialog and draft open; the error is shown inline. */ }
   }
 
   function processFiles(files: FileList | File[], targetId?: number) {
@@ -787,8 +813,9 @@ export function TestWorkspace() {
         workingTrips = matchingTrip
           ? workingTrips.map((trip) => trip.id === destination ? destinationTrip : trip)
           : [...workingTrips, destinationTrip];
-        tripsRef.current = workingTrips;
-        setTrips(workingTrips);
+        try { await commitTrip(destinationTrip); }
+        catch (error) { setNotice(`“${file.name}” was not saved: ${error instanceof Error ? error.message : "Please retry the upload."}`); continue; }
+        workingTrips = [...tripsRef.current];
         setActiveTripId(destination);
         setActiveTab("itinerary");
         setScreen("detail");
@@ -821,8 +848,11 @@ export function TestWorkspace() {
         id: destination, executiveId: importExecutive?.id, name: "name" in decision ? decision.name : file.name.replace(/\.[^.]+$/, ""), traveler: importExecutive?.name || "Executive", dates: "Dates pending", route: "Details pending",
         items: [newItem], expenseReport: { id: `expenses-${destination}`, createdAt: new Date().toISOString() },
       }];
-      tripsRef.current = workingTrips;
-      setTrips(workingTrips);
+      const pendingTrip = workingTrips.find(t => t.id === destination);
+      if (!pendingTrip) { setNotice("The reviewed trip could not be found. Re-upload the document."); continue; }
+      try { await commitTrip(pendingTrip); }
+      catch (error) { setNotice(`“${file.name}” was not saved: ${error instanceof Error ? error.message : "Please retry the upload."}`); continue; }
+      workingTrips = [...tripsRef.current];
       setAttentionItems((current) => [...current, { id: Date.now() + fileIndex, tripId: destination, title: "Confirmation needs details", detail: `“${file.name}”: ${failure}` }]);
       rememberEditedPage({ page: "itinerary", travelerId: selectedExecutive?.id, tripId: destination });
       setNotice(`Saved “${file.name}”. Booking details need attention.`);
@@ -832,20 +862,20 @@ export function TestWorkspace() {
     }
   }
 
-  function addAppointment() {
-    if (!activeTrip || !appointmentTitle.trim()) return;
+  async function addAppointment() {
+    if (!activeTrip || !appointmentTitle.trim() || tripSaving) return;
     const item: TripItem = {
       id: Date.now(), kind: "Appointment", title: appointmentTitle.trim(),
       detail: "Added manually to this itinerary", date: appointmentDate || "Date pending",
       time: "Time pending", source: "Manual appointment",
     };
-    setTrips((current) => current.map((trip) =>
-      trip.id === activeTrip.id ? { ...trip, items: [...trip.items, item] } : trip,
-    ));
-    setAppointmentTitle("");
-    setAppointmentDate("");
-    setAppointmentOpen(false);
-    setNotice("Appointment added.");
+    try {
+      await commitTrip({ ...activeTrip, items: [...activeTrip.items, item] });
+      setAppointmentTitle("");
+      setAppointmentDate("");
+      setAppointmentOpen(false);
+      setNotice("Appointment saved to your firm.");
+    } catch { /* Keep the appointment editor open on failed save. */ }
   }
 
   async function exportOutput(kind: "itinerary" | "expenses", trip = activeTrip, templates?: ExecutiveTemplates) {
@@ -1130,13 +1160,18 @@ export function TestWorkspace() {
     setReportTripId(String((!isWorkspace ? activeTrip : reportTrips[0])?.id ?? "")); setReportType("expenses"); setReportOpen(true);
   }
 
-  function createReport() {
+  async function createReport() {
     const trip = reportTrips.find(trip => String(trip.id) === reportTripId);
-    if (!trip) return;
-    if (reportType === "expenses") setTrips(current => current.map(saved => saved.id === trip.id ? { ...saved, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } } : saved));
+    if (!trip || tripSaving) return;
+    if (reportType === "expenses") {
+      if (trip.expenseReport && !window.confirm("A report already exists for this trip. Replace its draft? The existing report will remain until you confirm.")) return;
+      try {
+        await commitTrip({ ...trip, expenseReport: { id: `expenses-${trip.id}-${Date.now()}`, createdAt: new Date().toISOString() } });
+      } catch { return; }
+    }
     rememberEditedPage({ page: reportType, travelerId: executiveForTrip(trip, executives)?.id, tripId: trip.id });
     setActiveTripId(trip.id); setActiveTab(reportType); setScreen("detail"); setReportOpen(false);
-    setNotice(reportType === "expenses" ? "Expense report created. Export when ready." : "Travel itinerary ready. Print or save as PDF.");
+    setNotice(reportType === "expenses" ? "Expense report saved to your firm. Export when ready." : "Travel itinerary ready. Print or save as PDF.");
   }
 
   function dropFiles(files: FileList | File[]) {
@@ -1343,7 +1378,19 @@ export function TestWorkspace() {
     {auxiliaryUpload?.kind === "attachment" && <AttachmentUploadReview key={auxiliaryUpload.file.name} file={auxiliaryUpload.file} warning={auxiliaryUpload.warning} executives={executives} trips={trips} onSkip={finishAuxiliaryUpload} onSaved={trip => { attachmentTripSaved(trip); setSelectedExecutiveId(trip.executiveId!); setActiveTripId(trip.id); setActiveTab("itinerary"); setItineraryTab("attachments"); setAttachmentEntryId(undefined); setAttachmentRevision(value => value + 1); setScreen("detail"); setNotice(`Saved “${auxiliaryUpload.file.name}” in ${trip.name} → Travel itinerary → Attachments.`); finishAuxiliaryUpload(); }} />}
     {auxiliaryUpload?.kind === "billing" && <DetectedBillingUpload file={auxiliaryUpload.file} executives={executives} onClose={finishAuxiliaryUpload} />}
     {auxiliaryUpload?.kind === "review" && <Dialog open onOpenChange={open => { if(!open)finishAuxiliaryUpload(); }}><DialogContent><DialogHeader><DialogTitle>This file needs a closer look</DialogTitle><DialogDescription>The app could not confidently identify this document. It has not been filed or added to a trip.</DialogDescription></DialogHeader><p className="break-all text-sm font-medium">{auxiliaryUpload.file.name}</p><p className="text-sm text-slate-600">{auxiliaryUpload.warning || "For a travel confirmation or financial document, upload a readable copy with the booking or transaction details. If this is supporting itinerary material, you can choose to save it as an attachment."}</p><DialogFooter><Button variant="outline" onClick={finishAuxiliaryUpload}>Skip file</Button><Button onClick={() => setAuxiliaryUpload({...auxiliaryUpload,kind:"attachment"})}>This is itinerary material</Button></DialogFooter></DialogContent></Dialog>}
-    {travelImportReview && <TravelImportReview key={travelImportReview.filename} request={travelImportReview} onDecide={decision => { const resolve = travelImportResolve.current; travelImportResolve.current = null; setTravelImportReview(null); resolve?.(decision); }} />}</div></div>;
+    {travelImportReview && <TravelImportReview key={travelImportReview.filename} request={travelImportReview} onDecide={decision => { const resolve = travelImportResolve.current; travelImportResolve.current = null; setTravelImportReview(null); resolve?.(decision); }} />}
+    <Dialog open={legacyReview !== null} onOpenChange={open => { if (!open && !legacyImporting) setLegacyReview(null); }}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Review older browser records</DialogTitle>
+          <DialogDescription>These records were saved before accounts were separated. They are not automatically assigned to this firm. Import only if you recognize them as belonging here.</DialogDescription></DialogHeader>
+        <p className="text-sm text-slate-700">{legacyReview?.trips.length ?? 0} trip(s) and {legacyReview?.executives.length ?? 0} executive profile(s) found in this browser.</p>
+        <p className="text-sm text-slate-600">Import adds only missing IDs; existing firm records are not overwritten. The original browser backup is retained. Custom template layouts are not migrated by this action.</p>
+        {legacyError && <p role="alert" className="text-sm text-red-700">{legacyError}</p>}
+        {legacyResult && <p role="status" className="text-sm text-slate-700">{legacyResult}</p>}
+        <DialogFooter><Button variant="outline" disabled={legacyImporting} onClick={() => setLegacyReview(null)}>Close</Button>
+          <Button disabled={legacyImporting || readOnly || uploadLoading || profilesLoading || !!uploadLoadError || !!profilesLoadError || !legacyReview || (!legacyReview.trips.length && !legacyReview.executives.length)} onClick={() => void recoverLegacyRecords()}>{legacyImporting ? "Importing…" : "Import missing records into this firm"}</Button></DialogFooter>
+      </DialogContent>
+    </Dialog></div></div>;
   if (screen === "decision-queue" && selectedExecutive) return consoleShell(<DecisionQueue executive={{ id: selectedExecutive.id, name: selectedExecutive.name }} onBack={() => setScreen("home")} />);
   if (screen === "billing-codes") return consoleShell(<><BillingCodeLibrary executives={executives} returnToReport={billingReturnToReport} onBack={() => { if (billingReturnToReport && activeTrip) { setActiveTab("expenses"); setScreen("detail"); window.history.replaceState(null, "", `?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}&trip=${activeTrip.id}`); } else { setScreen("home"); window.history.replaceState(null, "", "?view=home"); } }} /></>);
   if(screen==="unassigned-expenses")return consoleShell(<><UnassignedExpenses receipts={allUnassignedExpenses} executives={executives} loading={uploadLoading} error={uploadLoadError} onRetry={()=>void loadUploads()} onBack={()=>{setActiveTab("expenses");setScreen(activeTrip?"detail":"executive");window.history.replaceState(null,"",`?view=expenses&executive=${encodeURIComponent(selectedExecutiveId)}${activeTrip?`&trip=${activeTrip.id}`:""}`);}} onReview={receipt=>{setSelectedExecutiveId(receipt.executiveId);setReviewLater(false);setCalendarReview(false);setUploadFocusRow(receipt.row.key);setUploadOpen(true);}}/></>);
@@ -1391,7 +1438,7 @@ export function TestWorkspace() {
           </section>
         </div>
         <div className="sample-invitation"><div><strong>Take Anya for a test trip.</strong><p>Explore fictional bookings and expenses for Alex Morgan.</p></div><Button type="button" variant="outline" disabled={!hydrated||uploadLoading||profilesLoading||sampleTrips.every(sample=>trips.some(trip=>trip.id===sample.id))} onClick={loadSampleWorkspace}>Load sample workspace</Button></div>
-        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small></div>
+        <div className="home-note"><span>Anya · The EA’s Assistant · by Lissa</span><small>Live calendar and email sends are disabled.</small><button type="button" className="text-sm underline underline-offset-4" onClick={reviewLegacyRecords}>Review older browser records</button></div>
 
       </div>
 
@@ -1527,7 +1574,7 @@ export function TestWorkspace() {
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
         <DialogContent><DialogHeader><DialogTitle>Create report</DialogTitle><DialogDescription>{menuExecutive?.name}</DialogDescription></DialogHeader>
           {reportTrips.length ? <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="report-type">Report</Label><select id="report-type" className="simple-select" value={reportType} onChange={event => setReportType(event.target.value as typeof reportType)}><option value="expenses">Expense report</option><option value="itinerary">Travel itinerary</option></select></div><div className="grid gap-2"><Label htmlFor="report-trip">Trip</Label><select id="report-trip" className="simple-select" value={reportTripId} onChange={event => setReportTripId(event.target.value)}>{reportTrips.map(trip => <option key={trip.id} value={trip.id}>{trip.name}</option>)}</select></div></div> : <p className="py-3 text-sm text-slate-600">Drop a confirmation or add a trip first.</p>}
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={createReport} disabled={!reportTrips.some(trip => String(trip.id) === reportTripId)}>Create report</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void createReport()} disabled={tripSaving || !reportTrips.some(trip => String(trip.id) === reportTripId)}>{tripSaving ? "Saving…" : "Create report"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1540,13 +1587,13 @@ export function TestWorkspace() {
       <Dialog open={newTripOpen} onOpenChange={setNewTripOpen}>
         <DialogContent><DialogHeader><DialogTitle>New trip</DialogTitle><DialogDescription>Name the trip and executive.</DialogDescription></DialogHeader>
           <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="trip-name">Trip name</Label><Input id="trip-name" value={newTripName} onChange={event => setNewTripName(event.target.value)} placeholder="Boston meeting" /></div><div className="grid gap-2"><Label htmlFor="trip-executive-name">Executive</Label><Input id="trip-executive-name" value={newExecutive} onChange={event => setNewExecutive(event.target.value)} /></div></div>
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={addTrip}>Create trip</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void addTrip()} disabled={tripSaving}>{tripSaving ? "Saving…" : "Create trip"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
       <Dialog open={appointmentOpen} onOpenChange={setAppointmentOpen}>
         <DialogContent><DialogHeader><DialogTitle>Add appointment</DialogTitle><DialogDescription>Add a meeting, dinner, or event.</DialogDescription></DialogHeader>
           <div className="grid gap-4 py-2"><div className="grid gap-2"><Label htmlFor="appointment-title">Appointment</Label><Input id="appointment-title" value={appointmentTitle} onChange={event => setAppointmentTitle(event.target.value)} placeholder="Team dinner" /></div><div className="grid gap-2"><Label htmlFor="appointment-date">Date</Label><Input id="appointment-date" type="date" value={appointmentDate} onChange={event => setAppointmentDate(event.target.value)} /></div></div>
-          <DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={addAppointment} disabled={!appointmentTitle.trim()}>Add</Button></DialogFooter>
+          {tripSaveError && <p role="alert" className="text-sm text-destructive">{tripSaveError}</p>}<DialogFooter><DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose><Button onClick={() => void addAppointment()} disabled={tripSaving || !appointmentTitle.trim()}>{tripSaving ? "Saving…" : "Add"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </main>

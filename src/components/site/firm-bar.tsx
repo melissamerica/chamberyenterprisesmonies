@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChamberyWordmark } from "./brand";
+import { clearUserNavigation } from "@/lib/workspace-durability";
 import { roleLabels, canManageMembers, type FirmRole } from "@/lib/firm-roles";
 
 export function FirmBar({ name, role }: { name: string; role: FirmRole }) {
@@ -11,7 +12,9 @@ export function FirmBar({ name, role }: { name: string; role: FirmRole }) {
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
+    const { data } = await supabase.auth.getUser();
     await supabase.auth.signOut();
+    if (data.user && typeof window !== "undefined") clearUserNavigation(window.localStorage, data.user.id);
     navigate({ to: "/auth", replace: true });
   }
   return (
