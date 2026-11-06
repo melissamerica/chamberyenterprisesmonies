@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e9ede2">
+<title>Chambery ExecOS | Interview Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;600;700&display=swap">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #e9ede2; color: #202b23; font: 1rem/1.5 system-ui, sans-serif; }
+main { width: min(100%, 42rem); margin: auto; padding: 1.25rem; }
+h1 { font: 3rem Georgia, serif; margin: .5rem 0; }
+nav { display: flex; gap: .5rem; flex-wrap: wrap; }
+button, input, textarea, select { font: inherit; max-width: 100%; }
+button { min-height: 48px; padding: .65rem 1rem; border: 1px solid #4c604e; border-radius: .65rem; background: white; color: inherit; cursor: pointer; }
+button[aria-current="page"], .action { background: #314838; color: white; }
+.action { display: block; width: 100%; margin: .75rem 0; text-align: left; min-height: 64px; font-weight: bold; }
+article, form { background: #fff; border-radius: .8rem; padding: 1rem; margin: .75rem 0; overflow-wrap: anywhere; }
+label, textarea, select { display: block; margin-bottom: .6rem; }
+textarea { width: 100%; }
+:focus-visible { outline: 3px solid #8d4e30; outline-offset: 3px; }
+main:has(.alec-home) { max-width: 27rem; min-height: 100svh; background: #0b0e0b; color: #f2f4ef; }
+main:has(.alec-home) > p:first-child { display: none; }
+.alec-home { text-align: center; }
+.alec-home h2 { font-size: 1rem; font-weight: 500; }
+.alec-home .action, .alec-home .manage { border-radius: 999px; text-align: center; background: #191e19; color: #f2f4ef; border-color: #626c61; }
+.alec-home .call { border-color: #b4ed71; box-shadow: 0 0 14px #a7e66545; }
+.alec-home .manage { width: 100%; margin-top: 1rem; }
+.alec-home footer { margin-top: 1.5rem; color: #b5c4b4; font-family: Georgia, serif; }
+.file-animation { position: relative; width: 11rem; height: 4.5rem; margin: 1rem 0; }
+.file-animation img { position: absolute; width: 4.5rem; animation: mascot-file .85s ease-in-out both; }
+.file-animation svg { position: absolute; width: 1.9rem; }
+.file-animation .folder { right: .35rem; bottom: .4rem; color: #496549; }
+.file-animation .envelope { left: 2.9rem; bottom: 1.05rem; color: #925529; animation: envelope-file .85s ease-in-out both; }
+@keyframes mascot-file { 65%, 100% { transform: translateX(4rem); } }
+@keyframes envelope-file { 65% { transform: translate(4.8rem, -.65rem); opacity: 1; } 100% { transform: translate(5.5rem, .45rem) scale(.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .file-animation { display: none; } }
+.decision-card { touch-action: pan-y; }
+.decision-card fieldset { margin: .6rem 0; }
+main:has(.desktop-workspace) { max-width: 76rem; }
+.desktop-workspace { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border:1px solid #566956; margin-top:1rem; }
+.desktop-workspace section { padding:clamp(1rem,4vw,3rem); }
+.desktop-workspace section:first-child { background:#f8f1e5; }
+.desktop-workspace section:last-child { background:#dbe4d5; border-left:1px solid #566956; }
+.desktop-workspace h2 { font:2.2rem Georgia,serif; }
+.desktop-workspace svg { display:block; width:100%; height:9rem; color:#576453; }
+.desktop-workspace button { display:block; margin:.6rem 0; }
+@media(max-width:640px) { .desktop-workspace {grid-template-columns:1fr;} .desktop-workspace section:last-child {border-left:0;border-top:1px solid #566956;} }
+@media (min-width:641px) {
+  .desktop-workspace { border:0; }
+  .desktop-workspace section { position:relative; border:1px solid #566956; }
+  .desktop-workspace section:first-child { z-index:1; border-right:0; animation:puzzle-left .55s ease-out both; }
+  .desktop-workspace section:last-child { animation:puzzle-right .55s ease-out both; }
+  .desktop-workspace section:first-child::after {
+    content:""; position:absolute; top:36%; right:-1.2rem; width:1.25rem; height:2.45rem;
+    border:1px solid #566956; border-left:0; border-radius:0 100% 100% 0; background:#f8f1e5;
+    pointer-events:none;
+  }
+}
+@keyframes puzzle-left { from { transform:translateX(-.8rem); } }
+@keyframes puzzle-right { from { transform:translateX(.8rem); } }
+@media (prefers-reduced-motion:reduce) {
+  .desktop-workspace section:first-child, .desktop-workspace section:last-child { animation:none; }
+}
+main:has(.workspace-picker) { max-width:76rem; }
+main:has(.workspace-picker) > nav, main:has(.workspace-picker) > p:first-child { display:none; }
+.workspace-picker { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); min-height:calc(100svh - 2.5rem); }
+.workspace-picker button { border-radius:0; font:clamp(1.2rem,4vw,2.4rem) Georgia,serif; padding:.65rem; }
+.workspace-picker button:first-child { background:#f8f1e5; border-right:0; }
+.workspace-picker button:last-child { background:#dbe4d5; }
+:root {
+  --chambery-cream: oklch(0.985 0.005 75);
+  --chambery-ink: oklch(0.24 0.025 150);
+  --chambery-blush: oklch(0.95 0.025 340);
+  --chambery-moss: oklch(0.6 0.13 125);
+  --chambery-hairline: oklch(0.91 0.018 40);
+}
+body { background:var(--chambery-cream); color:var(--chambery-ink); font-family:Figtree,system-ui,sans-serif; }
+h1, .workspace-picker button { font-family:Marcellus,Optima,Georgia,serif; }
+main:has(.mobile-picker) { max-width:34rem; padding:0; }
+.mobile-picker {
+  min-height:100svh; isolation:isolate;
+  background:var(--chambery-cream);
+}
+.mobile-picker button {
+  position:relative; overflow:hidden; isolation:isolate;
+  display:grid; align-content:center; justify-items:center; gap:1.25rem;
+  min-width:0; padding:.8rem; border:0;
+  font-size:clamp(1.3rem,6vw,2.35rem); line-height:1.12;
+  -webkit-tap-highlight-color:transparent;
+  transition:filter .2s ease;
+}
+.mobile-picker button:first-child {
+  background:radial-gradient(ellipse at 24% 20%,white 0%,transparent 60%),
+    linear-gradient(154deg,var(--chambery-cream),var(--chambery-blush));
+}
+.mobile-picker button:last-child {
+  color:var(--chambery-cream);
+  border-left:1px solid oklch(0.78 0.065 116);
+  background:radial-gradient(ellipse at 86% 18%,oklch(0.56 0.105 126),transparent 62%),
+    linear-gradient(153deg,oklch(0.39 0.075 142),oklch(0.23 0.038 150));
+}
+.mobile-picker button::before {
+  content:""; position:absolute; z-index:-1; inset:1rem .65rem;
+  border:1px solid currentColor; opacity:.14; pointer-events:none;
+}
+.mobile-picker img {
+  width:clamp(3rem,13vw,4.2rem); height:clamp(3rem,13vw,4.2rem);
+  object-fit:cover; border-radius:50%; border:2px solid var(--chambery-cream);
+  box-shadow:0 8px 20px #17261d35;
+}
+.mobile-picker button:first-child img { outline:1px solid oklch(0.74 0.07 345); }
+.mobile-picker button:hover { filter:brightness(1.06); }
+.mobile-picker button:active { filter:brightness(.93); }
+.mobile-picker button:focus-visible { outline:3px solid currentColor; outline-offset:-7px; }
+@media (prefers-reduced-motion:reduce) { .mobile-picker button { transition:none; } }
+.my-work { max-width:30rem; margin:auto; padding:1rem 0; }
+.my-work header { margin:1.8rem 0 1.25rem; }
+.my-work h1 { margin:.25rem 0; font-size:clamp(2.4rem,9vw,3.4rem); }
+.my-work .back { min-height:44px; border:0; padding:.5rem 0; background:transparent; }
+.my-work .work-tile { display:flex; align-items:center; gap:1rem; width:100%; min-height:76px; margin:.7rem 0; text-align:left; border:1px solid var(--chambery-hairline); border-radius:1.1rem; background:linear-gradient(145deg,white,var(--chambery-cream)); box-shadow:0 8px 20px -15px #243d29; font-weight:700; }
+.my-work .work-tile span:first-child { display:grid; place-items:center; flex:none; width:2.6rem; height:2.6rem; border-radius:.75rem; background:var(--chambery-blush); }
+.my-work .work-tile svg { width:1.25rem; height:1.25rem; }
+.my-work .work-tile span:last-child { margin-left:auto; }
+.my-work .call-tile { background:linear-gradient(145deg,oklch(.44 .08 140),oklch(.25 .035 150)); color:white; }
+.my-work .call-tile img { width:2.6rem; height:2.6rem; object-fit:cover; border-radius:50%; border:1px solid white; }
+main:has(.my-work) > nav, main:has(.my-work) > p:first-child { display:none; }
+.my-work .work-tile { justify-content:center; min-height:clamp(6rem,22vw,8rem); }
+.my-work .work-tile span:first-child { width:4rem; height:4rem; border-radius:1rem; }
+.my-work .work-tile span:last-child { margin-left:0; }
+.my-work .work-tile svg { width:2.75rem; height:2.75rem; }
+.my-work .call-tile img { width:4.25rem; height:4.25rem; }
+.my-work .work-tile { border-radius:1.65rem; }
+.my-work [data-next="decisions"] { background:linear-gradient(145deg,#fff,var(--chambery-blush)); }
+.my-work [data-next="dump"] { background:linear-gradient(145deg,#fff,color-mix(in oklab,var(--chambery-moss) 15%,var(--chambery-cream))); }
+.my-work [data-next="dump"] span:first-child { background:var(--chambery-cream); transform:rotate(5deg); }
+.my-work [data-next="decisions"] span:first-child { transform:rotate(-5deg); }
+.my-work .call-tile img { box-shadow:0 0 0 .32rem #ffffff24,0 .45rem .8rem #13271950; }
+@media (prefers-reduced-motion:no-preference) {
+  .my-work .call-tile img { transition:transform .22s ease; }
+  .my-work .call-tile:is(:hover,:focus-visible,:active) img { transform:rotate(-9deg) scale(1.08); }
+}
+.my-work .work-tile {
+  --button-edge: oklch(.75 .045 345);
+  position:relative;
+  margin-bottom:1rem;
+  box-shadow:inset 0 2px 0 #ffffffb8, inset 0 -3px 8px #26382412,
+    0 5px 0 var(--button-edge), 0 9px 13px #243d2929;
+}
+.my-work [data-next="dump"] { --button-edge:oklch(.73 .055 133); }
+.my-work .call-tile {
+  --button-edge:oklch(.20 .032 150);
+  border-color:oklch(.49 .076 140);
+  box-shadow:inset 0 2px 0 #ffffff40, inset 0 -3px 8px #10241640,
+    0 5px 0 var(--button-edge), 0 9px 13px #243d2940;
+}
+.my-work .work-tile:active {
+  transform:translateY(4px);
+  box-shadow:inset 0 2px 4px #243d2940, 0 1px 0 var(--button-edge);
+}
+@media (prefers-reduced-motion:no-preference) {
+  .my-work .work-tile { transition:transform .13s ease, box-shadow .13s ease; }
+}
+/* Handset styling stays with the mobile entry and My Work. */
+main:has(.mobile-picker, .my-work) {
+  position:relative; isolation:isolate;
+  max-width:28rem; padding:0; min-height:100svh;
+  background:var(--chambery-cream);
+}
+main:has(.mobile-picker, .my-work)::after {
+  content:""; position:absolute; z-index:2; bottom:.65rem; left:50%;
+  width:6.4rem; height:.28rem; border-radius:999px;
+  background:#28352d; opacity:.65; transform:translateX(-50%);
+  pointer-events:none;
+}
+.my-work { padding:1.35rem 1.15rem 2.8rem; }
+@media (min-width:641px) {
+  body:has(.mobile-picker, .my-work) {
+    background:radial-gradient(ellipse at top,#46564c,#171e1a 72%);
+    padding:1.25rem 0;
+  }
+  main:has(.mobile-picker, .my-work) {
+    width:min(26rem,calc(100% - 2rem));
+    min-height:min(50rem,calc(100svh - 2.5rem));
+    border:.55rem solid #19211d; border-radius:2.85rem; overflow:hidden;
+    box-shadow:0 0 0 1px #7f9084,0 22px 60px #0008;
+  }
+  main:has(.mobile-picker, .my-work)::before {
+    content:""; position:absolute; top:.7rem; left:50%; z-index:2;
+    width:4.3rem; height:.75rem; border-radius:999px;
+    background:#19211d; transform:translateX(-50%); pointer-events:none;
+  }
+  .mobile-picker { min-height:min(50rem,calc(100svh - 3.6rem)); }
+  .my-work { padding-top:2rem; }
+}
+
+:root { --paper:#f5f3ee; --linen:#ebe8e0; --charcoal:#292a28; --rule:#d9d4ca; }
+body { background:var(--paper); color:var(--charcoal); }
+main:has(.mobile-picker,.my-work), .mobile-picker { background:var(--paper); }
+.mobile-picker button { color:var(--charcoal); border-radius:0; gap:1.25rem; }
+.mobile-picker button:first-child { background:linear-gradient(155deg,#fcfbf8,var(--paper)); }
+.mobile-picker button:last-child { color:var(--charcoal); border-left:1px solid var(--rule); background:linear-gradient(155deg,#f4f1ea,var(--linen)); }
+.mobile-picker button::before { inset:1.3rem .7rem; opacity:.13; }
+.panel-mark { display:grid; place-items:center; width:2.65rem; height:2.65rem; border:1px solid var(--rule); border-radius:50%; font:1rem Marcellus,Georgia,serif; }
+.my-work header { margin:2rem 0 1.5rem; }
+.my-work .work-tile, .my-work [data-next="dump"], .my-work [data-next="decisions"], .my-work .call-tile {
+  --button-edge:#d6d0c4; border:1px solid #dedad1; border-radius:1.15rem;
+  color:var(--charcoal); background:linear-gradient(155deg,#fffdfa,#efebe2);
+  box-shadow:inset 0 1px 0 #fff,0 3px 0 var(--button-edge),0 7px 14px #292a2812;
+}
+.my-work .work-tile span:first-child, .my-work [data-next="dump"] span:first-child, .my-work [data-next="decisions"] span:first-child { background:none; transform:none; }
+.my-work .work-tile svg { width:2.25rem; height:2.25rem; stroke-width:1.2; }
+.my-work .work-tile:active { transform:translateY(2px); box-shadow:inset 0 1px 4px #292a2820,0 1px 0 var(--button-edge); }
+@media (min-width:641px) {
+  body:has(.mobile-picker,.my-work) { background:radial-gradient(ellipse at top,#66645e,#292a28 75%); }
+  main:has(.mobile-picker,.my-work) { border-color:#252624; }
+}
+</style>
+<main>
+<p>CHAMBERY ENTERPRISES · SYNTHETIC INTERVIEW DEMO</p>
+<nav aria-label="Demo workspaces">
+<button data-view="workspace">Alec Desktop</button>
+<button data-view="archives">Archives</button>
+<label>Demo role<select id="decision-role"><option>Exec</option><option>Casey Chen</option><option>Bob</option></select></label>
+<button data-view="alec">Alec Mobile</button>
+<button data-view="executive">Executive Mobile</button>
+<button data-view="desktop">Desktop Review</button>
+<button data-view="call-setup">Call me setup</button>
+<button data-view="needs-review">Needs Review</button>
+</nav>
+<section id="screen"></section>
+<p id="status" role="status"></p>
+</main>
+<script type="module">
+const screen = document.querySelector('#screen');
+const status = document.querySelector('#status');
+const seed = { id: 'sample', kind: 'Decision', title: 'Approve the November briefing format', owner: 'Executive office', state: 'Needs review' };
+const ready = new Promise((resolve, reject) => {
+  const request = indexedDB.open('chambery-interview-demo-v1', 1);
+  request.onupgradeneeded = () => {
+    request.result.createObjectStore('work', { keyPath: 'id' }).add(seed);
+  };
+  request.onsuccess = () => resolve(request.result);
+  request.onerror = () => reject(request.error);
+});
+async function records() {
+  const db = await ready;
+  return new Promise((resolve, reject) => {
+    const request = db.transaction('work').objectStore('work').getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function save(record, changes) {
+  const db = await ready;
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('work', 'readwrite');
+    const store = transaction.objectStore('work');
+    if (changes) {
+      const request = store.get(record.id);
+      request.onsuccess = () => store.put({ ...request.result, ...changes });
+    } else {
+      store.put(record);
+    }
+    transaction.oncomplete = resolve;
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
+const entryView = new URLSearchParams(location.search).get('view') === 'mobile' || matchMedia('(max-width: 640px)').matches ? 'alec' : 'workspace';
+let view = entryView;
+let renderVersion = 0;
+const passedThisReview = new Set();
+const role = document.querySelector('#decision-role');
+role.onchange = () => { passedThisReview.clear(); open(view); };
+function open(next) {
+  if (next === 'decisions' && view !== next) passedThisReview.clear();
+  view = next;
+  status.textContent = '';
+  render().catch(() => { status.textContent = 'Could not open browser storage.'; });
+}
+document.querySelectorAll('nav button').forEach(button => {
+  button.onclick = () => open(button.dataset.view);
+});
+function showIntakeComplete() {
+  status.textContent = 'Complete';
+}
+async function render() {
+  const version = ++renderVersion;
+  document.querySelectorAll('nav button').forEach(button => {
+    if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
+  if (view === 'workspace' || view === 'alec') {
+    const mobile = view === 'alec';
+    screen.innerHTML = '<div class="workspace-picker" aria-label="Choose a workspace"><button>My Work</button><button>Alec’s Work</button></div>';
+    const [mine, alec] = screen.querySelectorAll('button');
+    if (mobile) {
+      screen.firstElementChild.classList.add('mobile-picker');
+      mine.insertAdjacentHTML('afterbegin', '<span aria-hidden="true" class="panel-mark">I</span>');
+      alec.insertAdjacentHTML('afterbegin', '<span aria-hidden="true" class="panel-mark">II</span>');
+    }
+    mine.onclick = () => open(mobile ? 'mobile-my-work' : 'desktop-my-work');
+    alec.onclick = () => open(mobile ? 'accountability' : 'desktop-alec-work');
+    return;
+  }
+  if (view === 'desktop-my-work' || view === 'desktop-alec-work') {
+    screen.innerHTML = `<h1>Alec Desktop</h1><div class="desktop-workspace">
+      <section><h2>My Work</h2>
+      <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 98h273M25 20h66v61H25zM57 20v60M25 52h65M91 88h144m-130 1-9 29m126-29 9 29M118 75h28v12h-28zm28 2q14-1 10 6l-10 1M165 85q1-24 19-34l9-3m0 0q-15-7-12-24t19-12q15 1 16 18l-5 18q19 15 14 37m-29-35 11 19 18 9m-30-68q-23 3-19 23l-6 18m9 34-10 31"/></svg>
+      <button data-next="decisions">Decisions, Decisions</button><button data-next="dump">Doc Dump</button><button data-next="call">Call Alec</button></section>
+      <section><h2>Alec’s Work</h2>
+      <svg aria-hidden="true" viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 105h265M34 103V57h58v46m-53-54 52-2m-47-7 39-3m28 62 17-46 55 3-7 46zm22-34 29 2m-34 9 31 3m-36 8 32 2m39 13V72l23 2 9 7h36v22zm8-65 18-15m-8 31 29-10M64 22l15-7m82 19 20-13m-71 11 14-13m112 33 26-4"/></svg>
+      <button data-next="accountability">Manage Alec</button><button data-next="needs-review">Needs Review</button><button data-next="desktop">Desktop Review</button><button data-next="call-setup">Call me setup</button><button data-next="create-decision">Submit a decision as a demo teammate</button><button data-next="sent-decisions">View Casey’s decision replies</button></section>
+    </div>`;
+    const sections = screen.querySelectorAll('.desktop-workspace section');
+    sections[view === 'desktop-my-work' ? 1 : 0].remove();
+    screen.querySelector('.desktop-workspace').style.gridTemplateColumns = '1fr';
+    screen.querySelectorAll('[data-next]').forEach(button => {
+      button.onclick = () => open(button.dataset.next);
+    });
+    return;
+  }
+  if (view === 'sent-decisions') {
+    const items = await records();
+    if (version !== renderVersion) return;
+    screen.innerHTML = '<h1>Decision replies</h1><p>Casey Chen · demo sender view</p>';
+    const replies = items.filter(item => item.sender === 'Casey Chen' && item.selectedSolution);
+    if (!replies.length) screen.insertAdjacentHTML('beforeend', '<p>No replies yet.</p>');
+    for (const item of replies) {
+      const card = document.createElement('article');
+      const question = document.createElement('h2');
+      question.textContent = item.title;
+      const answer = document.createElement('p');
+      answer.textContent = 'Selected solution: ' + item.selectedSolution;
+      card.append(question, answer);
+      if (item.responseNote) {
+        const note = document.createElement('p');
+        note.textContent = 'Reply note: ' + item.responseNote;
+        card.append(note);
+      }
+      screen.append(card);
+    }
+    return;
+  }
+  if (view === 'decision-compose') {
+    screen.innerHTML = '<h1>Decisions, Decisions</h1><p>Your incoming decisions will be here when you return.</p><button type="button">Create a decision</button>';
+    screen.querySelector('button').onclick = () => open('create-decision');
+    return;
+  }
+  if (view === 'create-decision') {
+    screen.innerHTML = '<h1>New decision</h1><p>From Casey Chen to you · fictional project</p><form><label>Question<textarea name="question" required maxlength="300"></textarea></label><label>Solution 1<input name="first" required maxlength="120"></label><label>Solution 2<input name="second" required maxlength="120"></label><label>Solution 3 (optional)<input name="third" maxlength="120"></label><label>My recommendation (optional)<textarea name="recommendation" maxlength="500"></textarea></label><button>Submit decision</button></form>';
+    const form = screen.querySelector('form');
+    form.onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const title = data.get('question').trim();
+      const options = ['first', 'second', 'third'].map(key => data.get(key).trim()).filter(Boolean);
+      if (!title || !data.get('first').trim() || !data.get('second').trim() || options.some(option => option.toLowerCase() === 'bunt') || new Set(options.map(option => option.toLowerCase())).size !== options.length) {
+        status.textContent = 'Enter a question and at least two distinct solutions. A single proposal belongs in a note. Bunt is reserved for the receiver.';
+        return;
+      }
+      const button = form.querySelector('button');
+      button.disabled = true;
+      try {
+        await save({ id: crypto.randomUUID(), kind: 'Decision', title, options, sender: 'Casey Chen', holder: 'Exec', from: 'Casey Chen', owner: 'Exec', state: 'Needs review', createdAt: Date.now(), recommendation: data.get('recommendation').trim() });
+        if (version === renderVersion) {
+          open('workspace');
+          status.textContent = 'Decision submitted. Open Decisions, Decisions to review it.';
+        }
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not submit the decision.';
+        button.disabled = false;
+      }
+    };
+    return;
+  }
+  if (view === 'mobile-my-work') {
+    screen.innerHTML = `<div class="my-work">
+      <button class="back" data-next="alec">‹ Workspaces</button>
+      <header><h1>My Work</h1></header>
+      <button class="work-tile" data-next="decisions" aria-label="Decisions"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="m8 12 3 3 5-6"/></svg></span></button>
+      <button class="work-tile" data-next="dump" aria-label="Docs"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6m-6 4h6"/></svg></span></button>
+      <button class="work-tile call-tile" data-next="call" aria-label="Call Alec"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H4a1 1 0 0 0-1 1c0 9.4 7.6 17 17 17a1 1 0 0 0 1-1v-3l-5-2-2 2a13 13 0 0 1-7-7l2-2-2-5Z"/></svg></span></button>
+    </div>`;
+    screen.querySelectorAll('[data-next]').forEach(button => {
+      button.onclick = () => open(button.dataset.next);
+    });
+    return;
+  }
+  if (view === 'call-setup' || view === 'needs-review') {
+    const items = await records();
+    if (version !== renderVersion) return;
+    if (view === 'needs-review') {
+      screen.innerHTML = '<h1>Needs Review</h1><p>Demo events Alec has brought to your queue.</p>';
+      const queued = items.filter(item => item.kind === 'Call event' && item.state === 'Needs review');
+      if (!queued.length) screen.insertAdjacentHTML('beforeend', '<p>Nothing needs review yet.</p>');
+      for (const item of queued) {
+        const card = document.createElement('article');
+        const title = document.createElement('h2');
+        title.textContent = item.title;
+        card.append(title);
+        const reason = document.createElement('p');
+        reason.textContent = item.routeReason ?? 'No callback rule matched when this event was routed.';
+        card.append(reason);
+        screen.append(card);
+      }
+      return;
+    }
+    const settings = items.find(item => item.id === 'call-settings');
+    screen.innerHTML = '<h1>Call me setup</h1><p>Alec calls for selected events. Other events go to Needs Review. This demo records the route without placing a call.</p><form id="call-rules"><fieldset><legend>Call me when…</legend><label><input type="checkbox" name="flight"> A flight is interrupted</label><label><input type="checkbox" name="meeting"> A meeting is canceled</label><p>A VIP emails me. Choose demo contacts:</p><label><input type="checkbox" name="jordan"> Jordan Lee</label><label><input type="checkbox" name="casey"> Casey Chen</label></fieldset><label>How Alec briefs me<select name="style"><option value="headline">Headline and recommendation</option><option value="context">Context and options</option></select></label><button>Save preferences</button></form><h2>Try a demo event</h2><form id="call-event"><label>Sample event<select name="scenario"><option value="flight">Flight interruption</option><option value="meeting">Meeting cancellation</option><option value="jordan">Email from Jordan Lee</option><option value="casey">Email from Casey Chen</option></select></label><button>Route demo event</button></form>';
+    const rules = screen.querySelector('#call-rules');
+    for (const key of ['flight', 'meeting', 'jordan', 'casey']) {
+      rules.elements.namedItem(key).checked = settings?.selected.includes(key) ?? false;
+    }
+    const style = rules.elements.namedItem('style');
+    style.value = settings?.style ?? 'headline';
+    rules.onsubmit = async event => {
+      event.preventDefault();
+      const data = new FormData(rules);
+      const selected = ['flight', 'meeting', 'jordan', 'casey'].filter(key => data.has(key));
+      try {
+        await save({ id: 'call-settings', kind: 'Call settings', selected, style: style.value });
+        if (version === renderVersion) status.textContent = 'Preferences saved.';
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not save preferences.';
+      }
+    };
+    const sample = screen.querySelector('#call-event');
+    sample.onsubmit = async event => {
+      event.preventDefault();
+      const select = sample.elements.namedItem('scenario');
+      const scenario = select.value;
+      const title = select.selectedOptions[0].textContent;
+      const button = sample.querySelector('button');
+      button.disabled = true;
+      try {
+        const preferences = (await records()).find(item => item.id === 'call-settings');
+        const callback = preferences?.selected.includes(scenario) ?? false;
+        const rule = { flight: 'flight interruptions', meeting: 'meeting cancellations', jordan: 'emails from Jordan Lee', casey: 'emails from Casey Chen' }[scenario];
+        const routeReason = preferences
+          ? 'Your saved Call me preferences ' + (callback ? 'include ' : 'do not include ') + rule + '.'
+          : 'You haven’t saved any Call me preferences yet.';
+        await save({ id: crypto.randomUUID(), kind: 'Call event', title, owner: 'Alec', routeReason, state: callback ? 'Callback selected · demo' : 'Needs review' });
+        if (version === renderVersion) {
+          status.textContent = callback ? 'Would call you. No call placed in this demo. ' + routeReason : 'Added to Needs Review. ' + routeReason;
+        }
+      } catch {
+        if (version === renderVersion) status.textContent = 'Could not route the demo event.';
+      } finally {
+        button.disabled = false;
+      }
+    };
+    return;
+  }
+  if (view === 'call') {
+    screen.innerHTML = '<h1>Call Alec</h1><p>Voice assistant preview. Live calling is unavailable in this demo.</p>';
+    return;
+  }
+  if (view === 'dump') {
+    screen.innerHTML = '<h1>Docs</h1><p>Use a synthetic document for this demo.</p><form><label for="file">Document</label><input id="file" type="file" required><p><button>Drop document</button></p></form>';
+    const form = screen.querySelector('form');
+    form.onsubmit = async event => {
+      event.preventDefault();
+      const file = form.querySelector('input').files[0];
+      const button = form.querySelector('button');
+      status.textContent = '';
+      button.disabled = true;
+      try {
+        if (file.size > 10 * 1024 * 1024) throw new Error('Choose a file up to 10 MB.');
+        const sample = file.type.startsWith('text/') || /\.(txt|csv|md)$/i.test(file.name)
+          ? await file.slice(0, 65536).text() : '';
+        const invoice = /\binvoice\b/i.test(sample);
+        const receipt = /\breceipt\b/i.test(sample);
+        const meeting = /\b(meeting|agenda|minutes|board prep|budget review)\b/i.test(sample);
+        const budget = /\bbudget review\b/i.test(sample);
+        const board = /\bboard prep\b/i.test(sample);
+        const suggestion = meeting
+          ? (budget === board ? 'Meeting clarification' : budget ? 'Budget review' : 'Board prep')
+          : invoice === receipt ? 'Manual review' : invoice ? 'Possible invoice' : 'Possible receipt';
+        const record = { id: crypto.randomUUID(), kind: 'Document', title: file.name, owner: 'Desktop reviewer', state: 'Intake complete', suggestion, file };
+        if (suggestion === 'Meeting clarification' && version === renderVersion) {
+          screen.innerHTML = '<h1>Docs</h1><form><fieldset><legend>Is this for the budget review or board prep?</legend><label><input type="radio" name="meeting" value="Budget review" required> Budget review</label><label><input type="radio" name="meeting" value="Board prep"> Board prep</label></fieldset><button>Continue</button></form>';
+          const question = screen.querySelector('form');
+          question.onsubmit = async event => {
+            event.preventDefault();
+            const submit = question.querySelector('button');
+            submit.disabled = true;
+            try {
+              await save({ ...record, suggestion: new FormData(question).get('meeting') });
+              if (version === renderVersion) {
+                open('dump');
+                showIntakeComplete();
+              }
+            } catch {
+              if (version === renderVersion) status.textContent = 'Could not save the document. Try again.';
+              submit.disabled = false;
+            }
+          };
+          return;
+        }
+        if (suggestion === 'Meeting clarification') return;
+        await save({ ...record, state: suggestion === 'Manual review' ? 'Queued for review' : record.state });
+        if (version === renderVersion) {
+          form.reset();
+          showIntakeComplete();
+        }
+      } catch (error) {
+        if (view === 'dump') status.textContent = error.message || 'Could not save the document.';
+      } finally {
+        button.disabled = false;
+      }
+    };
+    return;
+  }
+  const titles = { decisions: 'Decisions, Decisions', executive: 'ExecOS Executive Mobile', desktop: 'Desktop Review', archives: 'Archives', accountability: 'Manage Alec' };
+  screen.innerHTML = '<h1></h1><p>Shared demo records in this browser.</p>';
+  screen.querySelector('h1').textContent = titles[view];
+  if (view === 'decisions') {
+    screen.insertAdjacentHTML('beforeend', '<p><strong>Enforces a culture of solutions</strong></p><p>Choose a response or Bunt to hand off the decision.</p>');
+  }
+  const items = await records();
+  if (version !== renderVersion) return;
+  if (view === 'accountability') {
+    screen.insertAdjacentHTML('beforeend', '<h2>Alec’s Work</h2>');
+  }
+  const now = new Date();
+  const today = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  const visibleItems = view === 'decisions'
+    ? items.filter(item => item.kind === 'Decision' && !item.retired && (item.holder ?? 'Exec') === role.value && (!item.disposition || item.holder) &&
+        !passedThisReview.has(item.id) && (!item.revisitDate || item.revisitDate <= today)).sort((first, second) => (first.createdAt ?? 0) - (second.createdAt ?? 0)).slice(0, 1)
+    : items.filter(item => view === 'archives'
+        ? item.retired && [item.sender, item.holder, item.from].includes(role.value)
+        : item.kind !== 'Call settings' && !item.retired);
+  if (view === 'decisions' && !visibleItems.length) {
+    screen.insertAdjacentHTML('beforeend', '<p>No more decisions in this review.</p>');
+  }
+  if (view === 'decisions') {
+    const compose = document.createElement('button');
+    compose.textContent = visibleItems.length ? 'Review all later' : 'Create a decision';
+    compose.onclick = () => open(visibleItems.length ? 'decision-compose' : 'create-decision');
+    screen.append(compose);
+  }
+  for (const item of visibleItems) {
+    if ((view === 'executive' || view === 'decisions') && item.kind !== 'Decision') continue;
+    const card = document.createElement('article');
+    const heading = document.createElement('h2');
+    heading.textContent = item.title;
+    const detail = document.createElement('p');
+    detail.textContent = [item.kind, item.state, item.owner, item.suggestion].filter(Boolean).join(' · ');
+    card.append(heading, detail);
+    for (const entry of item.history ?? []) {
+      const line = document.createElement('p');
+      line.textContent = entry.actor + ': ' + entry.text;
+      card.append(line);
+    }
+    const actor = role.value;
+    if (!item.retired && item.kind === 'Decision' && ['decisions', 'accountability'].includes(view) &&
+        [item.sender, item.holder ?? 'Exec', item.from].includes(actor)) {
+      const retire = document.createElement('form');
+      retire.innerHTML = '<label>Retirement note (optional)<input maxlength="1000"></label><button>Retire</button>';
+      retire.onsubmit = async event => {
+        event.preventDefault();
+        const button = retire.querySelector('button');
+        button.disabled = true;
+        try {
+          const note = retire.querySelector('input').value.trim();
+          await save(item, { retired: true, state: 'Retired', history: [...(item.history ?? []), { actor, text: note ? 'Retired · ' + note : 'Retired' }] });
+          if (version === renderVersion) open('archives');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not retire the decision.';
+          button.disabled = false;
+        }
+      };
+      card.append(retire);
+    }
+    if (item.sender || item.recommendation) {
+      const context = document.createElement('p');
+      context.textContent = [item.sender && 'From ' + item.sender, item.recommendation && 'Teammate recommendation: ' + item.recommendation].filter(Boolean).join(' · ');
+      card.append(context);
+    }
+    if (item.note) {
+      const note = document.createElement('p');
+      note.textContent = item.note;
+      card.append(note);
+    }
+    if (item.kind === 'Decision' && view === 'decisions') {
+      const label = document.createElement('label');
+      label.textContent = 'Decision note';
+      const input = document.createElement('textarea');
+      input.maxLength = 1000;
+      input.value = item.note || '';
+      label.append(input);
+      const button = document.createElement('button');
+      button.textContent = 'Save note';
+      button.onclick = async () => {
+        button.disabled = true;
+        try {
+          await save(item, { note: input.value.trim() });
+          open('decisions');
+          status.textContent = 'Decision note saved.';
+        } catch {
+          status.textContent = 'Could not save the note.';
+          button.disabled = false;
+        }
+      };
+      card.append(label, button);
+    }
+    if (view === 'decisions') {
+      card.classList.add('decision-card');
+      const pass = document.createElement('button');
+      pass.textContent = 'Pass for now';
+      const panel = document.createElement('form');
+      panel.hidden = true;
+      panel.innerHTML = '<button type="button">Next review</button><label>Revisit date<input type="date" required></label><label><input type="checkbox" checked> Include sender in demo update</label><button>Save revisit date</button><p>Demo only. No messages are sent.</p>';
+      const date = panel.querySelector('input[type=date]');
+      date.min = today;
+      const nextReview = panel.querySelector('button');
+      const submit = panel.querySelector('button[type=submit], button:not([type])');
+      const reveal = () => {
+        panel.hidden = false;
+        nextReview.focus();
+      };
+      pass.onclick = reveal;
+      nextReview.onclick = () => {
+        passedThisReview.add(item.id);
+        open('decisions');
+      };
+      panel.onsubmit = async event => {
+        event.preventDefault();
+        nextReview.disabled = true;
+        submit.disabled = true;
+        try {
+          await save(item, { revisitDate: date.value, updateSender: panel.querySelector('input[type=checkbox]').checked });
+          passedThisReview.add(item.id);
+          if (version === renderVersion) open('decisions');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the revisit date.';
+          nextReview.disabled = false;
+          submit.disabled = false;
+        }
+      };
+      let start;
+      card.addEventListener('touchstart', event => {
+        start = event.touches.length === 1 && !event.target.closest('button, input, select, textarea, label')
+          ? event.touches[0] : undefined;
+      }, { passive: true });
+      card.addEventListener('touchcancel', () => { start = undefined; });
+      card.addEventListener('touchend', event => {
+        const end = event.changedTouches[0];
+        if (start && start.clientX - end.clientX > 60 && Math.abs(start.clientY - end.clientY) < 35) reveal();
+        start = undefined;
+      }, { passive: true });
+      card.append(pass, panel);
+    }
+    if (item.kind === 'Decision' && view === 'decisions' && !item.disposition) {
+      const form = document.createElement('form');
+      form.innerHTML = '<label>Response<select required><option value="">Choose an option</option><option>Use a one-page briefing</option><option>Use the full briefing</option><option>Bunt</option></select></label><div></div><button>Save response</button><p>Demo only. Saves locally without sending messages or invitations.</p>';
+      const choice = form.querySelector('select');
+      if (item.options) {
+        choice.replaceChildren(new Option('Choose an option', ''), ...item.options.map(option => new Option(option, option)), new Option('Bunt', 'Bunt'));
+      }
+      choice.add(new Option('Reply to sender', 'Reply to sender'));
+      const originalSender = item.from ?? item.sender ?? 'Jordan Lee (demo)';
+      const fields = form.querySelector('div');
+      const replyNote = '<label>Reply note (optional)<textarea maxlength="1000"></textarea></label>';
+      fields.innerHTML = replyNote;
+      const button = form.querySelector('button');
+      choice.onchange = () => {
+        fields.innerHTML = choice.value === 'Bunt'
+          ? '<label>Bunt to<select required><option value="">Choose a handoff</option><option>Pick a date to discuss</option><option>Delegate</option><option>Send back with instructions</option></select></label><section></section>'
+          : replyNote;
+        const action = fields.querySelector('select');
+        if (!action) return;
+        action.onchange = () => {
+          const details = fields.querySelector('section');
+          const note = '<label>Note<textarea maxlength="1000"></textarea></label>';
+          const sender = '<p>Original sender: ' + originalSender + '</p>';
+          switch (action.value) {
+            case 'Pick a date to discuss':
+              details.innerHTML = '<label>Discussion date<input type="date" required></label><p>Copy: ' + originalSender + '</p>' + note;
+              break;
+            case 'Delegate':
+              details.innerHTML = '<label>Demo contact<select required><option value="">Choose a contact</option><option>Casey Chen</option><option>Bob</option><option>Exec</option></select></label>' + note;
+              break;
+            case 'Send back with instructions':
+              details.innerHTML = sender + note.replace('<textarea', '<textarea required');
+              break;
+            default:
+              details.replaceChildren();
+          }
+        };
+      };
+      form.onsubmit = async event => {
+        event.preventDefault();
+        const [action, contact] = fields.querySelectorAll('select');
+        const date = fields.querySelector('input')?.value;
+        const note = fields.querySelector('textarea')?.value.trim();
+        if (action?.value === 'Send back with instructions' && !note) {
+          status.textContent = 'Add instructions for the sender.';
+          return;
+        }
+        const owner = contact?.value || (action?.value ? originalSender : item.owner);
+        if (choice.value !== 'Bunt') {
+          if (choice.value === 'Reply to sender' && !note) {
+            status.textContent = 'Enter a reply.';
+            return;
+          }
+          button.disabled = true;
+          try {
+            await save(item, {
+              holder: originalSender, from: actor, owner: originalSender, revisitDate: null,
+              history: [...(item.history ?? []), { actor, text: [choice.value, note].filter(Boolean).join(' · ') }],
+              disposition: [choice.value, note].filter(Boolean).join(' · '),
+              selectedSolution: choice.value === 'Reply to sender' ? item.selectedSolution : choice.value,
+              responseNote: note,
+              state: 'Reply received'
+            });
+            if (version === renderVersion) {
+              open('decisions');
+              status.textContent = 'Reply saved for the sender in this demo.';
+            }
+          } catch {
+            if (version === renderVersion) status.textContent = 'Could not save the reply.';
+            button.disabled = false;
+          }
+          return;
+        }
+        const disposition = [choice.value, action?.value, date, note].filter(Boolean).join(' · ');
+        if (!window.confirm('Save this demo response?\n\n' + disposition + '\nOwner: ' + owner)) return;
+        button.disabled = true;
+        try {
+          const holder = date ? actor : owner;
+          await save(item, { disposition, holder, from: date ? originalSender : actor, owner: holder, revisitDate: date || null, state: 'Bunted · handoff saved',
+            history: [...(item.history ?? []), { actor, text: disposition }] });
+          if (date) passedThisReview.add(item.id);
+          if (version === renderVersion) open('accountability');
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the response.';
+          button.disabled = false;
+        }
+      };
+      card.append(form);
+    }
+    if (item.disposition) {
+      const outcome = document.createElement('p');
+      outcome.textContent = item.disposition;
+      card.append(outcome);
+    }
+    if (item.reply) {
+      const reply = document.createElement('p');
+      reply.textContent = 'Executive reply: ' + item.reply;
+      card.append(reply);
+    }
+    if (view === 'executive' && !item.reply) {
+      const form = document.createElement('form');
+      const label = document.createElement('label');
+      label.textContent = 'Executive reply';
+      const input = document.createElement('textarea');
+      input.required = true;
+      input.maxLength = 1000;
+      label.append(input);
+      const button = document.createElement('button');
+      button.textContent = 'Save reply for review';
+      form.append(label, button);
+      form.onsubmit = async event => {
+        event.preventDefault();
+        const reply = input.value.trim();
+        if (!reply) {
+          status.textContent = 'Enter a reply before saving.';
+          return;
+        }
+        button.disabled = true;
+        try {
+          await save(item, { reply, state: 'Awaiting assistant review' });
+          if (version === renderVersion) {
+            open('executive');
+            status.textContent = 'Reply saved for review in this browser.';
+          }
+        } catch {
+          if (version === renderVersion) status.textContent = 'Could not save the reply.';
+          button.disabled = false;
+        }
+      };
+      card.append(form);
+    }
+    if (item.file && view === 'desktop') {
+      const button = document.createElement('button');
+      button.textContent = 'Download saved document';
+      button.onclick = () => {
+        const url = URL.createObjectURL(item.file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = item.title;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+      card.append(button);
+    }
+    screen.append(card);
+  }
+}
+open(entryView);
+</script>
+</html>
