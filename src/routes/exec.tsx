@@ -29,7 +29,7 @@ function useClock() {
   if (!now) return "\u00a0";
   const d = now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   const t = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  return `${d} | ${t}`;
+  return `${d}\u2002\u2002${t}`;
 }
 
 function FloridaMark() {

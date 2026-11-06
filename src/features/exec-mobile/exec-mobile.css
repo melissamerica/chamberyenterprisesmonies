@@ -2,8 +2,8 @@
 .xo-root { min-height: 100dvh; background: var(--xo-canvas); color: var(--xo-text); font-family: var(--xo-font-body); display: flex; justify-content: center; }
 .xo-root * { box-sizing: border-box; }
 .xo-phone { width: 100%; max-width: 440px; min-height: 100dvh; display: flex; flex-direction: column; padding: 20px 22px 0; }
-.xo-top { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--xo-text-muted); letter-spacing: .02em; }
-.xo-toggle { display: flex; background: var(--xo-inset); border: 1px solid var(--xo-border); border-radius: 999px; padding: 2px; }
+.xo-top { position: relative; text-align: center; padding-top: 6px; font-size: 13px; color: var(--xo-text-muted); letter-spacing: .02em; }
+.xo-toggle { position: absolute; top: -12px; right: -14px; opacity: .55; display: flex; background: var(--xo-inset); border: 1px solid var(--xo-border); border-radius: 999px; padding: 2px; }
 .xo-toggle button { background: none; border: 0; color: var(--xo-text-muted); font: inherit; font-size: 11px; padding: 4px 10px; border-radius: 999px; cursor: pointer; }
 .xo-toggle button[aria-pressed="true"] { background: var(--xo-elevated); color: var(--xo-text); }
 .xo-brand { text-align: center; margin: 48px 0 44px; }
@@ -11,20 +11,23 @@
 .xo-brand-sub { margin-top: 10px; font-size: 12px; letter-spacing: .5em; color: var(--xo-text-muted); }
 .xo-brand-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .xo-fl { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--xo-border-strong); background: var(--xo-inset); display: grid; place-items: center; }
-.xo-tiles { display: flex; flex-direction: column; gap: 16px; }
+.xo-tiles { display: flex; flex-direction: column; gap: 20px; }
 .xo-tile { position: relative; display: flex; align-items: center; gap: 16px; min-height: 84px; padding: 0 24px; background: var(--xo-surface); border: 1px solid var(--xo-border); border-radius: var(--xo-radius-tile); color: var(--xo-text); font: inherit; font-size: 20px; text-align: left; cursor: pointer; overflow: hidden; transition: background .12s, transform .08s; -webkit-tap-highlight-color: transparent; }
 .xo-tile:active { background: var(--xo-elevated); transform: scale(.985); }
 .xo-tile:focus-visible { outline: 1px solid var(--xo-accent); outline-offset: 2px; }
 .xo-tile-bar { position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: var(--xo-radius-bar); background: var(--xo-primary); }
 .xo-tile:active .xo-tile-bar { background: var(--xo-accent); }
 .xo-tile-icon { width: 26px; height: 26px; color: var(--xo-text-muted); }
-.xo-tile-note { margin-left: auto; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--xo-text-muted); border: 1px solid var(--xo-border); border-radius: 999px; padding: 3px 8px; }
+.xo-tile-note { display: none; margin-left: auto; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--xo-text-muted); border: 1px solid var(--xo-border); border-radius: 999px; padding: 3px 8px; }
 .xo-dock { margin-top: auto; padding: 28px 0 22px; }
 .xo-dock-label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--xo-text-muted); margin-bottom: 10px; }
 .xo-ticker { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; margin: 0 -22px; padding: 0 22px; }
 .xo-ticker::-webkit-scrollbar { display: none; }
 .xo-chip { flex: 0 0 auto; scroll-snap-align: start; background: var(--xo-inset); border: 1px solid var(--xo-border); border-radius: var(--xo-radius-chip); padding: 10px 14px; min-width: 150px; }
 .xo-chip-time { font-size: 11px; color: var(--xo-text-muted); }
-.xo-chip-title { font-size: 14px; margin-top: 3px; white-space: nowrap; }
+.xo-chip-title { font-size: 14px; margin-bottom: 3px; white-space: nowrap; }
 .xo-chip[data-kind="flight"] { border-color: var(--xo-border-strong); }
 .xo-chip[data-kind="flight"] .xo-chip-title::before { content: "✈ "; color: var(--xo-accent); }
+
+.xo-chip { display: flex; flex-direction: column-reverse; }
+.xo-dock { padding: 32px 0 28px; }
