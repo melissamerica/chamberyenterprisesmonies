@@ -39,7 +39,7 @@ export const getMyFirm = createServerFn({ method: "GET" })
     }
     if (!m) return null;
     const firm = m.firms as unknown as { name: string; sso_domain: string | null } | null;
-    return { firmId: m.firm_id, role: m.role as FirmRole, name: firm?.name ?? "", ssoDomain: firm?.sso_domain ?? null };
+    return { firmId: m.firm_id, userId: context.userId, role: m.role as FirmRole, name: firm?.name ?? "", ssoDomain: firm?.sso_domain ?? null };
   });
 
 export const createFirm = createServerFn({ method: "POST" })

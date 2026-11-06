@@ -20,10 +20,8 @@ export function AttachmentUploadReview({ file, warning, executives, trips, onSav
     if (!attachmentContentTypes[file.name.split(".").at(-1)?.toLowerCase() ?? ""]) { setError("Save this file as PDF, an image, Word, Excel, PowerPoint, CSV, or text, then upload it again."); return; }
     lock.current = true; setBusy(true); setError("");
     try {
-      // Existing locally created trips must be saved before linking a durable attachment.
-      const response = await fetch("/api/uploads", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ trips: [{ ...trip, executiveId }] }) });
-      const result = await response.json() as { saved?: boolean; error?: string };
-      if (!response.ok || !result.saved) throw Error(result.error || "The trip could not save. Try again.");
+      // Trip creation is durable; never re-save a potentially stale trip snapshot.
+      if (!trip.updatedAt) throw Error("Reload this firm's saved trips before attaching a file.");
       const form = new FormData(); form.set("file", file); form.set("executiveId", executiveId); form.set("tripId", tripId); form.set("entryId", "0");
       const saved = await fetch("/api/itinerary-attachments", { method: "POST", body: form });
       const data = await saved.json() as { trip?: UploadTrip; error?: string };

@@ -1,6 +1,6 @@
 import { LIVE_CONNECTIONS_ENABLED } from "@/lib/workspace-mode";
 import { env } from "@/server/runtime-env";
-import { uploadDatabase, storedUpload, saveUploadTrips, assertExpenseEditable } from "./upload-storage";
+import { uploadDatabase, storedUpload } from "./upload-storage";
 import { expenseReportData, defaultTemplates, type ExecutiveTemplates } from "./executive-profiles";
 import { buildExpenseWorkbook } from "./travel-exports";
 import { validApprovalEmail } from "./expense-evidence";
@@ -20,6 +20,7 @@ export async function tripApprovals(tripId:string){const result=await uploadData
 export function approvalLocked(status:string){return ["draft","sending","pending","approved","delivery_unknown"].includes(status);}
 export async function createApproval(trip:UploadTrip,templates:ExecutiveTemplates,approverEmail:string,clarification:string){
  if(!validApprovalEmail(approverEmail))throw Error("Enter a valid approver email address.");
+ if(!trip.updatedAt||!trip.executiveId)throw Error("Reload the saved trip before finalizing its expense report.");
  const previous=(await tripApprovals(String(trip.id)))[0];if(previous&&approvalLocked(previous.status))throw Error("This report has already been finalized. Refresh its approval status.");
  const report=expenseReportData(templates,trip);if(!report.items.length||report.hasMissingAmounts)throw Error("Add expenses and complete their amounts before finalizing.");
  for(const item of report.items)if(!(item.expenseDescription??item.title).trim()||!(item.expenseDate??item.date).trim()||item.expenseEvidence?.some(value=>!["receipt","statement"].includes(value.kind)||typeof value.fileId!=="string"))throw Error("Complete the expense descriptions, dates, and evidence selections.");
@@ -38,8 +39,18 @@ export async function createApproval(trip:UploadTrip,templates:ExecutiveTemplate
   const reportHash=await sha256(JSON.stringify({trip,templates,documents:copied.map(doc=>({fileId:doc.fileId,kind:doc.kind,sha256:doc.sha256}))}));
   const snapshot:ApprovalSnapshot={trip:structuredClone(trip),templates,reportHash};const at=new Date().toISOString();
   const xlsx=await buildExpenseWorkbook(templates,trip,{status:"pending",approverEmail,reportHash});const key=`expense-approvals/${id}/report.xlsx`;await bucket.put(key,xlsx);written.push(key);
-  await uploadDatabase().prepare("INSERT INTO expense_approval_requests (id,trip_id,executive_id,approver_email,token_hash,send_token_hash,snapshot_json,documents_json,status,clarification,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)").bind(id,String(trip.id),trip.executiveId,approverEmail.toLowerCase(),await sha256(reviewToken),await sha256(deliveryToken),JSON.stringify(snapshot),JSON.stringify(copied),"draft",clarification,at,at).run();
-  await saveUploadTrips([trip]);
+  // Finalize against the exact persisted trip revision. A changed or missing trip
+  // cannot produce an approval packet for an obsolete expense report.
+  // The original trip is already durable; do not rewrite it just to create a draft.
+  const claimed=await uploadDatabase().prepare(`INSERT INTO expense_approval_requests
+    (id,trip_id,executive_id,approver_email,token_hash,send_token_hash,snapshot_json,documents_json,status,clarification,created_at,updated_at)
+    SELECT ?,?,?,?,?,?,?,?,?,?,?,?
+    FROM executive_upload_trips WHERE trip_id = ? AND executive_id = ? AND updated_at = ?
+    FOR UPDATE
+    RETURNING id`)
+    .bind(id,String(trip.id),trip.executiveId,approverEmail.toLowerCase(),await sha256(reviewToken),await sha256(deliveryToken),JSON.stringify(snapshot),JSON.stringify(copied),"draft",clarification,at,at,
+      String(trip.id),trip.executiveId,trip.updatedAt).all<{id:string}>();
+  if(claimed.results.length!==1)throw Error("The trip changed in another session. Reload and review before finalizing.");
   const record=(await approvalById(id))!;await buildApprovalMessage(record,reviewToken);return {record,reviewToken,deliveryToken};
  }catch(error){await uploadDatabase().prepare("DELETE FROM expense_approval_requests WHERE id = ? AND status = 'draft'").bind(id).run();for(const key of [...written,`expense-approvals/${id}/message.raw`])await bucket.delete(key);throw error;}
 }
@@ -66,19 +77,54 @@ export async function sendApproval(record:ApprovalRecord,deliveryToken:string){
  try{
  const response=await fetch(config.EXPENSE_APPROVAL_EMAIL_WEBHOOK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:config.EXPENSE_APPROVAL_EMAIL_KEY,approvalId:record.id,messageUrl:`${config.EXPENSE_APPROVAL_PORTAL_URL}/message/${deliveryToken}`,test:false}),signal:AbortSignal.timeout(45000)});
  const result=await response.json()as{ok?:boolean;messageId?:string};if(!response.ok||!result.ok||!result.messageId)throw Error("Gmail did not confirm delivery. Check Sent mail before trying again.");
- await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'pending', message_id = ?, updated_at = ? WHERE id = ? AND status = 'sending'").bind(result.messageId,new Date().toISOString(),record.id).run();
- }catch(error){await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'delivery_unknown', updated_at = ? WHERE id = ?").bind(new Date().toISOString(),record.id).run();throw error;}
+ const confirmed=await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'pending', message_id = ?, updated_at = ? WHERE id = ? AND status = 'sending'").bind(result.messageId,new Date().toISOString(),record.id).run();
+ if(confirmed.meta.changes!==1)throw Error("The approval status changed during delivery. Reload its current status.");
+ }catch(error){await uploadDatabase().prepare("UPDATE expense_approval_requests SET status = 'delivery_unknown', updated_at = ? WHERE id = ? AND status = 'sending'").bind(new Date().toISOString(),record.id).run();throw error;}
  return (await approvalById(record.id))!;
 }
 export async function recordDecision(record:ApprovalRecord,decision:"approve"|"return",name:string,notes:string){
  const db=uploadDatabase(),at=new Date().toISOString(),snapshot=JSON.parse(record.snapshot_json)as ApprovalSnapshot;
  if(record.status!=="pending")throw Error("This report is not awaiting a decision. Reload its current status.");
- const signature=decision==="approve"?{status:"approved",signatureName:name,signedAt:at,approverEmail:record.approver_email,reportHash:snapshot.reportHash}:undefined;
- const trip={...snapshot.trip,expenseReport:{...snapshot.trip.expenseReport!,approval:signature}};
- const statements=[];
- if(signature)statements.push(db.prepare("UPDATE executive_upload_trips SET trip_json = jsonb_set(trip_json::jsonb, '{expenseReport,approval}', ?::jsonb, true)::text, updated_at = ? WHERE trip_id = ? AND EXISTS (SELECT 1 FROM expense_approval_requests WHERE id = ? AND status = 'pending')").bind(JSON.stringify(signature),at,String(trip.id),record.id));
- statements.push(db.prepare("UPDATE expense_approval_requests SET status = ?, signature_name = ?, signed_at = ?, notes = ?, updated_at = ? WHERE id = ? AND status = 'pending'").bind(decision==="approve"?"approved":"returned",decision==="approve"?name:null,decision==="approve"?at:null,decision==="return"?notes:null,at,record.id));
- const results=await db.batch(statements);
- if(!results.at(-1)?.meta.changes)throw Error("A decision has already been recorded. Reload the report.");
+ if(decision==="return"){
+  const saved=await db.prepare("UPDATE expense_approval_requests SET status = 'returned', signature_name = NULL, signed_at = NULL, notes = ?, updated_at = ? WHERE id = ? AND status = 'pending'")
+    .bind(notes,at,record.id).run();
+  if(saved.meta.changes!==1)throw Error("A decision has already been recorded. Reload the report.");
+  return (await approvalById(record.id))!;
+ }
+ const reportId=snapshot.trip.expenseReport?.id;
+ if(!reportId)throw Error("This approval has no saved expense report identity.");
+ const signature={status:"approved",signatureName:name,signedAt:at,approverEmail:record.approver_email,reportHash:snapshot.reportHash};
+ // A unique transition marker makes later statements depend on THIS request's
+ // successful pending->approved transition, not another approver's earlier decision.
+ const marker=at.slice(0,-1)+Array.from(crypto.getRandomValues(new Uint8Array(9)),byte=>String(byte%10)).join("")+"Z";
+ const tripRevision=at.slice(0,-1)+Array.from(crypto.getRandomValues(new Uint8Array(9)),byte=>String(byte%10)).join("")+"Z";
+ const statements=[
+  db.prepare("UPDATE expense_approval_requests SET status = 'approved', signature_name = ?, signed_at = ?, notes = NULL, updated_at = ? WHERE id = ? AND status = 'pending'")
+    .bind(name,at,marker,record.id),
+  db.prepare(`UPDATE executive_upload_trips
+    SET trip_json = jsonb_set(trip_json::jsonb, '{expenseReport}',
+      COALESCE(trip_json::jsonb->'expenseReport','{}'::jsonb) || jsonb_build_object('approval', ?::jsonb), true)::text,
+      updated_at = ?
+    WHERE trip_id = ? AND executive_id = ?
+      AND trip_json::jsonb->'expenseReport'->>'id' = ?
+      AND EXISTS (SELECT 1 FROM expense_approval_requests WHERE id = ?
+        AND status = 'approved' AND updated_at = ?)`)
+    .bind(JSON.stringify(signature),tripRevision,record.trip_id,record.executive_id,reportId,record.id,marker),
+  // This assertion intentionally raises on any missing transition, rolling
+  // back BOTH updates via the atomic server-side anya_exec batch.
+  db.prepare(`SELECT 1 / CASE WHEN EXISTS (
+      SELECT 1 FROM expense_approval_requests WHERE id = ? AND status = 'approved' AND updated_at = ?
+    ) AND EXISTS (
+      SELECT 1 FROM executive_upload_trips WHERE trip_id = ? AND executive_id = ?
+        AND updated_at = ? AND trip_json::jsonb #>> '{expenseReport,approval,reportHash}' = ?
+    ) THEN 1 ELSE 0 END AS decision_guard`)
+    .bind(record.id,marker,record.trip_id,record.executive_id,tripRevision,snapshot.reportHash),
+ ];
+ try{await db.batch(statements);}
+ catch(error){
+  if(error instanceof Error&&/division by zero/i.test(error.message))
+   throw Error("The report or trip changed during approval. Nothing was approved; reload its status.");
+  throw error;
+ }
  return (await approvalById(record.id))!;
 }

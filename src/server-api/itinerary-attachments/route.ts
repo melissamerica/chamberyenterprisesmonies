@@ -21,7 +21,13 @@ export async function POST(request:Request){
     stored=await storeUpload(new File([await file.arrayBuffer()],file.name,{type:contentType}),executiveId as string);
     const updated=await saveAttachment(trip,stored,entryId,file.size);
     return NextResponse.json({trip:updated,attachments:[...prior,{id:stored.id,tripId,entryId,name:file.name,contentType,byteCount:file.size,createdAt:new Date().toISOString()}]});
-  }catch(error){if(stored)try{await removeStoredUpload(stored.id);}catch(cleanup){console.error("Attachment cleanup failed",cleanup);}console.error("Attachment save failed",error);return NextResponse.json({error:"The attachment could not save. Your file is still selected; try again."},{status:503});}
+  }catch(error){
+    if(stored)try{await removeStoredUpload(stored.id);}catch(cleanup){console.error("Attachment cleanup failed",cleanup);}
+    const reason=error instanceof Error?error.message:"";
+    const conflict=reason.includes("changed in another session");
+    console.error("Attachment save failed",error);
+    return NextResponse.json({error:conflict?reason:"The attachment could not save. Your file is still selected; try again."},{status:conflict?409:503});
+  }
 }
 export async function PUT(request:Request){
   let body:{id?:string;tripId?:number;entryId?:number;executiveId?:string};try{body=await request.json();}catch{return NextResponse.json({error:"Choose the attachment and its itinerary entry."},{status:400});}
@@ -29,5 +35,10 @@ export async function PUT(request:Request){
   try{const trip=await attachmentTrip(body.tripId!,body.executiveId!);const files=await tripAttachments(body.tripId!,body.executiveId!);
     if(!trip||!files.some(file=>file.id===body.id)||body.entryId!==0&&!trip.items.some(item=>item.id===body.entryId&&item.kind!=="Expense"&&item.itineraryEligible!==false))return NextResponse.json({error:"Choose an attachment and entry from this executive’s itinerary."},{status:400});
     const updated=await reassignAttachment(trip,body.id,body.entryId!,files);return NextResponse.json({trip:updated,attachments:files.map(file=>file.id===body.id?{...file,entryId:body.entryId!}:file)});
-  }catch(error){console.error("Attachment assignment failed",error);return NextResponse.json({error:"The assignment could not save. Try again."},{status:503});}
+  }catch(error){
+    const reason=error instanceof Error?error.message:"";
+    const conflict=reason.includes("changed in another session");
+    console.error("Attachment assignment failed",error);
+    return NextResponse.json({error:conflict?reason:"The assignment could not save. Try again."},{status:conflict?409:503});
+  }
 }

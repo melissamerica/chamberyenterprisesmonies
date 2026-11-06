@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import type { BillingCode } from "@/lib/billing-codes";
 import { BillingCodeImport } from "@/components/billing-code-import";
 
-type CodeDraft = { id: string; code: string; label: string; active: boolean; executiveIds: string[] };
+type CodeDraft = { id: string; code: string; label: string; active: boolean; executiveIds: string[]; expectedUpdatedAt?: string };
 const emptyDraft = (): CodeDraft => ({id: "", code: "", label: "", active: true, executiveIds: []});
 export function BillingCodeLibrary({ onBack, returnToReport = false, executives }: { onBack: () => void; returnToReport?: boolean; executives: Array<{id: string; name: string}> }) {
   const [codes, setCodes] = useState<BillingCode[]>([]);
@@ -36,7 +36,7 @@ export function BillingCodeLibrary({ onBack, returnToReport = false, executives 
     const linked = executives.filter(executive => code.executiveIds?.includes(executive.id));
     const otherCount = (code.executiveIds?.length ?? 0) - linked.length;
     const names = [...linked.map(executive => executive.name), ...(otherCount ? [`${otherCount} other executive${otherCount === 1 ? "" : "s"}`] : [])];
-    return <article key={code.id} className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-slate-200 bg-white p-4"><div className="min-w-0"><p className="break-words font-semibold">{code.code}</p><p className="mt-1 break-words text-sm text-slate-600">{code.label}</p><p className="mt-2 break-words text-sm text-slate-600">{names.length ? `Linked to: ${names.join(", ")}` : "No executives linked"}</p></div><div className="flex gap-2"><Button size="sm" variant="outline" disabled={locked} onClick={() => { setDraft({...code, executiveIds: code.executiveIds ?? []}); setError(""); setNotice(""); }}>Edit / Link executives</Button><Button size="sm" variant="ghost" disabled={locked} onClick={() => void save({ ...code, executiveIds: code.executiveIds ?? [], active: !code.active })}>{code.active ? "Archive" : "Restore"}</Button></div></article>;
+    return <article key={code.id} className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-slate-200 bg-white p-4"><div className="min-w-0"><p className="break-words font-semibold">{code.code}</p><p className="mt-1 break-words text-sm text-slate-600">{code.label}</p><p className="mt-2 break-words text-sm text-slate-600">{names.length ? `Linked to: ${names.join(", ")}` : "No executives linked"}</p></div><div className="flex gap-2"><Button size="sm" variant="outline" disabled={locked} onClick={() => { setDraft({...code, executiveIds: code.executiveIds ?? [], expectedUpdatedAt: code.updatedAt}); setError(""); setNotice(""); }}>Edit / Link executives</Button><Button size="sm" variant="ghost" disabled={locked} onClick={() => void save({ ...code, executiveIds: code.executiveIds ?? [], active: !code.active, expectedUpdatedAt: code.updatedAt })}>{code.active ? "Archive" : "Restore"}</Button></div></article>;
   };
   return <main className="console-page min-h-screen px-5 py-10 sm:px-8 sm:py-16"><div className="mx-auto max-w-4xl">
     <Button variant="link" className="mb-5 px-0" disabled={locked} onClick={onBack}>{returnToReport ? "Back to expense report" : "Home"}</Button>
