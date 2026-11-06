@@ -1,3 +1,4 @@
+import { ExecHome } from "@/features/exec-mobile/ExecHome";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ShieldCheck, Users, KeyRound, Building2 } from "lucide-react";
 import { SiteShell } from "@/components/site/site-layout";
@@ -16,13 +17,16 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Chambery Enterprises — Assistants for executive assistants" },
+      { title: "Tony ExecOS — Executive Mobile" },
       { name: "description", content: "Chambery builds Anya and Alec, enterprise-ready assistants for executive assistants at consulting firms. Eliminate the human error, not the human." },
-      { property: "og:title", content: "Chambery Enterprises" },
+      { property: "og:title", content: "Tony ExecOS — Executive Mobile" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:description", content: "Eliminate the human error, not the human. Anya and Alec for executive assistant teams." },
     ],
   }),
-  component: ChamberyHome,
+  // Draft: home shows ExecOS Mobile; ChamberyHome kept for restoring the marketing page.
+  component: ExecHome,
 });
 
 const pillars = [
