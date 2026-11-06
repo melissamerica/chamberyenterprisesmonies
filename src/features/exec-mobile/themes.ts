@@ -22,7 +22,7 @@ export const graniteMidnightCrimson: ExecTheme = {
     text: "#F8FAFC", textMuted: "#94A3B8",
   },
   fonts: { display: "'Marcellus', Georgia, serif", body: "'Figtree', system-ui, sans-serif" },
-  radius: { tile: "16px", chip: "12px", accentBar: "4px" },
+  radius: { tile: "18px", chip: "12px", accentBar: "4px" },
 };
 
 export const execThemes: Record<string, ExecTheme> = { [graniteMidnightCrimson.id]: graniteMidnightCrimson };
