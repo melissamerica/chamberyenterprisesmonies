@@ -1,0 +1,32 @@
+name: Alec Project Operations V1 (no deployment)
+on:
+  push:
+    branches:
+      - feature/alec-project-operations-v1
+  pull_request:
+    paths:
+      - 'src/features/project-operations/**'
+      - 'src/routes/_authenticated/projects.tsx'
+      - 'src/components/site/firm-bar.tsx'
+      - '.github/workflows/alec-project-operations-ci.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install exact checked-in dependencies
+        run: bun install --frozen-lockfile
+      - name: Generate route definitions and production-compile
+        run: bun run build
+      - name: TypeScript validation
+        run: bunx tsc --noEmit
+      - name: Alec Project Operations tests
+        run: bunx vitest run src/features/project-operations/model.test.ts
