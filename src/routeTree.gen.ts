@@ -15,6 +15,7 @@ import { Route as AlecRouteImport } from './routes/alec'
 import { Route as AnyaRouteImport } from './routes/anya'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ExecRouteImport } from './routes/exec'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
@@ -68,6 +69,11 @@ const AuthRoute = AuthRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExecRoute = ExecRouteImport.update({
+  id: '/exec',
+  path: '/exec',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
@@ -238,6 +245,7 @@ export interface FileRoutesByTo {
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/anya'
     | '/auth'
     | '/contact'
+    | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
@@ -338,6 +348,7 @@ export interface FileRouteTypes {
     | '/anya'
     | '/auth'
     | '/contact'
+    | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
@@ -371,6 +382,7 @@ export interface FileRouteTypes {
     | '/anya'
     | '/auth'
     | '/contact'
+    | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
@@ -405,6 +417,7 @@ export interface RootRouteChildren {
   AnyaRoute: typeof AnyaRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  ExecRoute: typeof ExecRoute
   PricingRoute: typeof PricingRoute
   SecurityRoute: typeof SecurityRoute
   TestRoute: typeof TestRoute
@@ -462,6 +475,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exec': {
+      id: '/exec'
+      path: '/exec'
+      fullPath: '/exec'
+      preLoaderRoute: typeof ExecRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -723,6 +743,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnyaRoute: AnyaRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  ExecRoute: ExecRoute,
   PricingRoute: PricingRoute,
   SecurityRoute: SecurityRoute,
   TestRoute: TestRoute,
