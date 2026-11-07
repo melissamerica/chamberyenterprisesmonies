@@ -1,0 +1,27 @@
+name: Travel Desk prototype checks
+
+on:
+  pull_request:
+    paths:
+      - "mini-tools/travel-expense/**"
+      - ".github/workflows/travel-desk-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install existing project dependencies
+        run: bun install --frozen-lockfile
+      - name: Mini-tool regression tests
+        run: bunx vitest run --config mini-tools/travel-expense/vitest.config.ts
+      - name: Mini-tool TypeScript
+        run: bunx tsc --noEmit -p mini-tools/travel-expense/tsconfig.json
+      - name: Static mini-tool production build
+        run: bunx vite build --config mini-tools/travel-expense/vite.config.ts
