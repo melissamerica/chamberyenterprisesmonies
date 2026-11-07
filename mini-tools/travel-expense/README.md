@@ -12,11 +12,12 @@ Build as a standalone static application:
 
     npx vite build --config mini-tools/travel-expense/vite.config.ts
 
-Output: dist-travel-expense/ (ignored by Git). Serve the output at a site root. The PDF and OCR worker assets use absolute paths inherited from Anya's reader.
+Output: dist/travel-expense/ (ignored by Git). Serve the output at a site root. The PDF and OCR worker assets use absolute paths inherited from Anya's reader.
 
 Tests:
 
-    npx vitest run mini-tools/travel-expense/core.test.ts
+    npx vitest run --config mini-tools/travel-expense/vitest.config.ts
+    npx tsc --noEmit -p mini-tools/travel-expense/tsconfig.json
 
 ## Workflow
 
