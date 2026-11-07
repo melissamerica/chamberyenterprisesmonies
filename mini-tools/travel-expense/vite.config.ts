@@ -10,7 +10,7 @@ export default defineConfig({
   publicDir: fileURLToPath(new URL("../../public", import.meta.url)),
   base: "./",
   build: {
-    outDir: fileURLToPath(new URL("../../dist-travel-expense", import.meta.url)),
+    outDir: fileURLToPath(new URL("../../dist/travel-expense", import.meta.url)),
     emptyOutDir: true,
   },
 });
