@@ -9,8 +9,11 @@
 .xo-brand { text-align: center; margin: 48px 0 44px; }
 .xo-brand-name { font-family: var(--xo-font-display); font-size: 44px; letter-spacing: .04em; line-height: 1; }
 .xo-brand-sub { margin-top: 10px; font-size: 12px; letter-spacing: .5em; color: var(--xo-text-muted); }
-.xo-brand-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
-.xo-fl { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--xo-border-strong); background: var(--xo-inset); display: grid; place-items: center; }
+.xo-brand-row { display: flex; align-items: center; justify-content: center; }
+.xo-wordmark-o { display: inline-grid; place-items: center; width: .76em; height: .76em; margin: 0 .01em; border: 1px solid var(--xo-border-strong); border-radius: 50%; background: var(--xo-inset); vertical-align: .035em; }
+.xo-fl { display: grid; place-items: center; width: 72%; height: 72%; color: var(--xo-text); }
+.xo-fl svg { width: 100%; height: 100%; }
+.xo-generic-wordmark { letter-spacing: .18em; font-size: 36px; }
 .xo-tiles { display: flex; flex-direction: column; gap: 20px; }
 .xo-tile { position: relative; display: flex; align-items: center; gap: 16px; min-height: 84px; padding: 0 24px; background: var(--xo-surface); border: 1px solid var(--xo-border); border-radius: var(--xo-radius-tile); color: var(--xo-text); font: inherit; font-size: 20px; text-align: left; cursor: pointer; overflow: hidden; transition: background .12s, transform .08s; -webkit-tap-highlight-color: transparent; }
 .xo-tile:active { background: var(--xo-elevated); transform: scale(.985); }
@@ -23,11 +26,15 @@
 .xo-dock-label { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--xo-text-muted); margin-bottom: 10px; }
 .xo-ticker { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; margin: 0 -22px; padding: 0 22px; }
 .xo-ticker::-webkit-scrollbar { display: none; }
-.xo-chip { flex: 0 0 auto; scroll-snap-align: start; background: var(--xo-inset); border: 1px solid var(--xo-border); border-radius: var(--xo-radius-chip); padding: 10px 14px; min-width: 150px; }
+.xo-chip { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; scroll-snap-align: start; background: var(--xo-inset); border: 1px solid var(--xo-border); border-radius: var(--xo-radius-chip); padding: 10px 14px; min-width: 180px; }
 .xo-chip-time { font-size: 11px; color: var(--xo-text-muted); }
-.xo-chip-title { font-size: 14px; margin-bottom: 3px; white-space: nowrap; }
+.xo-chip-title { font-size: 14px; line-height: 1.25; white-space: nowrap; }
 .xo-chip[data-kind="flight"] { border-color: var(--xo-border-strong); }
-.xo-chip[data-kind="flight"] .xo-chip-title::before { content: "✈ "; color: var(--xo-accent); }
 
-.xo-chip { display: flex; flex-direction: column-reverse; }
+
+
 .xo-dock { padding: 32px 0 28px; }
+
+.xo-chip-icon { width: 19px; height: 19px; flex-shrink: 0; color: var(--xo-text-muted); }
+.xo-chip-content { min-width: 0; }
+.xo-ticker:focus-visible { outline: 2px solid var(--xo-accent); outline-offset: 3px; }
