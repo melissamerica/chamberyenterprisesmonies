@@ -1,5 +1,8 @@
 # Roadmap — Chambery enterprise SaaS
 
+## Portfolio layout comparison
+- [ ] Show centered, left-aligned and bottom-aligned text on identical black-and-ivory finishes using Chambery’s font; no further page edits before approval.
+
 Built (needs verification):
 - [x] Firm-account/sign-in code added (email, Google, Microsoft); provider settings and cross-firm isolation are not established by this source audit
 - [x] Team roles (owner / admin / editor / viewer) + invites
