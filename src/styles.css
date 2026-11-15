@@ -37,21 +37,14 @@
   --blush: oklch(0.95 0.025 340);
   --hairline: oklch(0.91 0.018 40);
   --shadow-soft: 0 24px 60px -30px color-mix(in oklab, var(--ink) 35%, transparent);
-  --project-anya-light: oklch(0.77 0.085 345);
-  --project-anya-base: oklch(0.53 0.12 345);
-  --project-anya-edge: oklch(0.38 0.08 345);
-  --project-alec-light: oklch(0.82 0.09 135);
-  --project-alec-base: oklch(0.51 0.09 150);
-  --project-alec-edge: oklch(0.35 0.06 150);
-  --project-ask-light: oklch(0.83 0.065 220);
-  --project-ask-base: oklch(0.52 0.085 220);
-  --project-ask-edge: oklch(0.36 0.06 220);
-  --project-bd-light: oklch(0.85 0.1 75);
-  --project-bd-base: oklch(0.55 0.11 65);
-  --project-bd-edge: oklch(0.38 0.075 65);
+  --project-black: oklch(0.22 0.002 90);
+  --project-black-light: oklch(0.27 0.002 90);
+  --project-black-border: oklch(0.36 0.003 90);
+  --project-ivory: oklch(0.95 0.012 85);
+  --project-ivory-light: oklch(0.98 0.008 85);
+  --project-ivory-border: oklch(0.82 0.018 85);
   --project-highlight: oklch(0.99 0.005 75);
-  --project-button-foreground: oklch(0.99 0.005 75);
-  --project-button-shadow: 0 8px 0 var(--project-edge), 0 16px 24px -10px color-mix(in oklab, var(--project-edge) 45%, transparent), inset 0 2px 2px color-mix(in oklab, var(--project-highlight) 65%, transparent), inset 0 -3px 6px color-mix(in oklab, var(--project-edge) 45%, transparent);
+  --project-button-shadow: 0 3px 0 color-mix(in oklab, var(--project-edge) 80%, transparent), 0 10px 18px -12px color-mix(in oklab, var(--project-black) 35%, transparent), inset 0 1px 0 color-mix(in oklab, var(--project-highlight) 18%, transparent);
   --sidebar: #1f2d24;
   --sidebar-foreground: #e5edf4;
   --sidebar-primary: #2f4234;
@@ -312,57 +305,51 @@ button, summary { touch-action: manipulation; }
 }
 
 .portfolio-project-button {
-  --project-light: var(--project-anya-light);
-  --project-base: var(--project-anya-base);
-  --project-edge: var(--project-anya-edge);
+  --project-light: var(--project-black-light);
+  --project-base: var(--project-black);
+  --project-edge: var(--project-black-border);
+  --project-text: var(--project-ivory);
   position: relative;
   isolation: isolate;
   overflow: hidden;
   width: 100%;
   height: auto;
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid var(--project-edge);
-  color: var(--project-button-foreground);
-  background: linear-gradient(155deg, var(--project-light), var(--project-base) 52%, var(--project-edge));
+  color: var(--project-text);
+  font-family: var(--font-display);
+  font-weight: 400;
+  background: linear-gradient(150deg, var(--project-light), var(--project-base) 75%);
   box-shadow: var(--project-button-shadow);
   transition: transform 180ms ease, filter 180ms ease;
 }
-.portfolio-project-button[data-project="alec"] {
-  --project-light: var(--project-alec-light);
-  --project-base: var(--project-alec-base);
-  --project-edge: var(--project-alec-edge);
-}
-.portfolio-project-button[data-project="ask-answer"] {
-  --project-light: var(--project-ask-light);
-  --project-base: var(--project-ask-base);
-  --project-edge: var(--project-ask-edge);
-}
-.portfolio-project-button[data-project="bd-ops"] {
-  --project-light: var(--project-bd-light);
-  --project-base: var(--project-bd-base);
-  --project-edge: var(--project-bd-edge);
+.portfolio-project-button[data-project="alec"], .portfolio-project-button[data-project="ask-answer"] {
+  --project-light: var(--project-ivory-light);
+  --project-base: var(--project-ivory);
+  --project-edge: var(--project-ivory-border);
+  --project-text: var(--project-black);
 }
 .portfolio-project-button::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: repeating-linear-gradient(115deg, transparent 0 2px, color-mix(in oklab, var(--project-highlight) 5%, transparent) 2px 3px);
+  opacity: .22;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath filter='url(%23n)' opacity='.3' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
   pointer-events: none;
 }
 .portfolio-project-button::after {
   content: "";
   position: absolute;
-  inset: 5px 5px 52%;
+  inset: 6px;
   z-index: -1;
-  border-radius: 5px;
-  background: linear-gradient(color-mix(in oklab, var(--project-highlight) 35%, transparent), color-mix(in oklab, var(--project-highlight) 3%, transparent));
+  border-radius: 1px;
+  border: 1px solid color-mix(in oklab, var(--project-text) 12%, transparent);
   pointer-events: none;
 }
-.portfolio-project-button:hover { transform: translateY(-3px); filter: brightness(1.06); }
-.portfolio-project-button:active { transform: translateY(4px); }
-.portfolio-project-button svg { filter: drop-shadow(0 2px 1px var(--project-edge)); }
+.portfolio-project-button:hover { transform: translateY(-2px); filter: brightness(1.03); }
+.portfolio-project-button:active { transform: translateY(1px); }
 @media (prefers-reduced-motion: reduce) {
   .portfolio-project-button { transition: none; }
   .portfolio-project-button:hover, .portfolio-project-button:active { transform: none; }
