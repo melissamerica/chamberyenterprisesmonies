@@ -38,6 +38,7 @@
   --hairline: oklch(0.91 0.018 40);
   --shadow-soft: 0 24px 60px -30px color-mix(in oklab, var(--ink) 35%, transparent);
   --project-black: oklch(0.22 0.002 90);
+  --project-font: "Marcellus", "Optima", Georgia, serif;
   --project-black-light: oklch(0.27 0.002 90);
   --project-black-border: oklch(0.36 0.003 90);
   --project-ivory: oklch(0.95 0.012 85);
@@ -318,7 +319,7 @@ button, summary { touch-action: manipulation; }
   border-radius: 4px;
   border: 1px solid var(--project-edge);
   color: var(--project-text);
-  font-family: var(--font-display);
+  font-family: var(--project-font);
   font-weight: 400;
   background: linear-gradient(150deg, var(--project-light), var(--project-base) 75%);
   box-shadow: var(--project-button-shadow);
