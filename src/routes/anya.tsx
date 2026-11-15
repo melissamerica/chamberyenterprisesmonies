@@ -5,9 +5,9 @@ import { SiteHeader } from "@/components/site/site-layout";
 export const Route = createFileRoute("/anya")({
   head: () => ({
     meta: [
-      { title: "Anya by Chambery — Every trip, thoughtfully organized" },
+      { title: "Executive Assistant EA — Chambery Reveries" },
       { name: "description", content: "Anya turns travel confirmations, receipts and statements into calendars, itineraries and expense reports for executive assistants." },
-      { property: "og:title", content: "Anya by Chambery" },
+      { property: "og:title", content: "Executive Assistant EA" },
       { property: "og:description", content: "Every trip, thoughtfully organized. An EA with an EA is a chief of staff." },
     ],
   }),

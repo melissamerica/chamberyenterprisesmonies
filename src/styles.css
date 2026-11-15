@@ -363,3 +363,30 @@ button, summary { touch-action: manipulation; }
   background: var(--plum);
   margin-left: 0.04em;
 }
+
+.portfolio-intro-projects {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+.portfolio-intro { max-width: 30rem; }
+.portfolio-projects { min-width: 0; }
+.project-alias {
+  display: inline-block;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+  color: #7c7580;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+@media (min-width: 900px) {
+  .portfolio-intro-projects {
+    grid-template-columns: minmax(0, 30rem) minmax(0, 1fr);
+    column-gap: clamp(3rem, 7vw, 7rem);
+  }
+  .portfolio-projects { padding-top: 0.25rem; }
+}

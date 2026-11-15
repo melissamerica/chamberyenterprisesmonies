@@ -14,9 +14,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AlecRouteImport } from './routes/alec'
 import { Route as AnyaRouteImport } from './routes/anya'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -63,21 +60,6 @@ const AnyaRoute = AnyaRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SecurityRoute = SecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestRoute = TestRouteImport.update({
@@ -205,9 +187,6 @@ export interface FileRoutesByFullPath {
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
-  '/contact': typeof ContactRoute
-  '/pricing': typeof PricingRoute
-  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -237,9 +216,6 @@ export interface FileRoutesByTo {
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
-  '/contact': typeof ContactRoute
-  '/pricing': typeof PricingRoute
-  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -271,9 +247,6 @@ export interface FileRoutesById {
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
   '/auth': typeof AuthRoute
-  '/contact': typeof ContactRoute
-  '/pricing': typeof PricingRoute
-  '/security': typeof SecurityRoute
   '/test': typeof TestRoute
   '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -305,9 +278,6 @@ export interface FileRouteTypes {
     | '/alec'
     | '/anya'
     | '/auth'
-    | '/contact'
-    | '/pricing'
-    | '/security'
     | '/test'
     | '/app'
     | '/onboarding'
@@ -337,9 +307,6 @@ export interface FileRouteTypes {
     | '/alec'
     | '/anya'
     | '/auth'
-    | '/contact'
-    | '/pricing'
-    | '/security'
     | '/test'
     | '/app'
     | '/onboarding'
@@ -370,9 +337,6 @@ export interface FileRouteTypes {
     | '/alec'
     | '/anya'
     | '/auth'
-    | '/contact'
-    | '/pricing'
-    | '/security'
     | '/test'
     | '/_authenticated/app'
     | '/_authenticated/onboarding'
@@ -404,9 +368,6 @@ export interface RootRouteChildren {
   AlecRoute: typeof AlecRoute
   AnyaRoute: typeof AnyaRoute
   AuthRoute: typeof AuthRoute
-  ContactRoute: typeof ContactRoute
-  PricingRoute: typeof PricingRoute
-  SecurityRoute: typeof SecurityRoute
   TestRoute: typeof TestRoute
   ApiBillingCodesRoute: typeof ApiBillingCodesRouteWithChildren
   ApiCustomTemplatesRoute: typeof ApiCustomTemplatesRoute
@@ -455,27 +416,6 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/security': {
-      id: '/security'
-      path: '/security'
-      fullPath: '/security'
-      preLoaderRoute: typeof SecurityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test': {
@@ -722,9 +662,6 @@ const rootRouteChildren: RootRouteChildren = {
   AlecRoute: AlecRoute,
   AnyaRoute: AnyaRoute,
   AuthRoute: AuthRoute,
-  ContactRoute: ContactRoute,
-  PricingRoute: PricingRoute,
-  SecurityRoute: SecurityRoute,
   TestRoute: TestRoute,
   ApiBillingCodesRoute: ApiBillingCodesRouteWithChildren,
   ApiCustomTemplatesRoute: ApiCustomTemplatesRoute,

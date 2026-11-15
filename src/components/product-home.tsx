@@ -29,16 +29,16 @@ export function ProductHome() {
   const [output, setOutput] = useState<Output>("Calendar");
   return <div className="anya-product">
     <a className="product-skip" href="#product-main">Skip to content</a>
-    <div className="product-announcement">For the person behind every executive. <span>Meet Anya.</span></div>
+    <div className="product-announcement">For the person behind every executive.</div>
     <header className="product-header"><div className="product-header-inner">
-      <a className="product-brand" href="/anya" aria-label="Anya product home"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a>
+      <a className="product-brand portfolio-product-brand" href="/anya" aria-label="Executive Assistant EA home"><strong>Executive Assistant EA</strong><small className="project-alias">anya.</small></a>
       <nav aria-label="Product navigation"><a href="#automation">How it works</a><a href="#features">Features</a><a href="#memory">Learning & preferences</a></nav>
       <a className="product-test-link" href={testHref}>Open the workspace <ArrowUpRight aria-hidden="true"/></a>
     </div></header>
 
     <main id="product-main">
       <section className="product-hero"><div className="product-container product-hero-grid">
-        <div className="product-hero-copy"><p className="product-eyebrow">YOUR EXECUTIVE ASSISTANT WORKSPACE</p><h1>Every trip,<br/><em>thoughtfully<br/>organized.</em></h1>
+        <div className="product-hero-copy"><p className="product-eyebrow">YOUR EXECUTIVE ASSISTANT WORKSPACE</p><h1>Executive Assistant EA <small className="project-alias">anya.</small></h1>
           <p className="product-hero-subtitle">Itineraries, calendars and expenses. One place to keep the details together.</p>
           <p className="product-hero-description">Turn travel confirmations into the details you used to type by hand. Keep your executive’s formats, preferences and travel paperwork working together.</p>
           <a className="product-primary" href={testHref}>Open the workspace <ArrowRight aria-hidden="true"/></a><p className="product-entry-note">Sign in to open your firm’s workspace.</p>
@@ -84,7 +84,7 @@ export function ProductHome() {
 
       <section className="product-final-cta"><div className="product-container"><div><p className="product-eyebrow">BUILT AROUND REAL EA WORK</p><h2>See the details<br/><em>come together.</em></h2></div><div><a className="product-primary" href={testHref}>Open the workspace <ArrowUpRight/></a><p>Sign in to open your firm’s workspace.</p></div></div></section>
     </main>
-    <footer className="product-footer product-container"><a className="product-brand" href="/anya"><strong>Anya<span>✳</span></strong><span>The EA’s Assistant <i>by Lissa</i></span></a><span>Built for executive assistants.</span><a href={testHref}>Workspace <ArrowUpRight/></a></footer>
+    <footer className="product-footer product-container"><a className="product-brand portfolio-product-brand" href="/anya"><strong>Executive Assistant EA</strong><small className="project-alias">anya.</small></a><span>Built for executive assistants.</span><a href={testHref}>Workspace <ArrowUpRight/></a></footer>
   </div>;
 }
 

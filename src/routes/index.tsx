@@ -31,13 +31,14 @@ function ChamberyHome() {
       <SiteHeader />
       <main className="mx-auto max-w-6xl px-6 pb-24 pt-20 md:pt-28">
         <h1 aria-label="Chambery Reveries">
-          <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
+          <ChamberyWordmark subSizeIncrease={3} className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
-        <div className="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-sage">
+        <div className="portfolio-intro-projects">
+        <div className="portfolio-intro space-y-4 text-lg leading-relaxed text-sage">
           <p>A portfolio in progress, drawing on more than 10 years of executive assistant experience to develop inventive solutions that reduce or eliminate repetitive work, alongside concepts focused on business development and project management.</p>
           <p>These prototypes bring firsthand insight, sharp intuition and original thinking to the demands of executive support. Built by an executive assistant, for executive assistants, they put the person doing the work first—with value that extends across industries, roles and lines of service.</p>
         </div>
-        <nav aria-label="Portfolio projects" className="mt-10 flex max-w-2xl flex-col items-start gap-5">
+        <nav aria-label="Portfolio projects" className="portfolio-projects flex flex-col items-start gap-5">
           <Button asChild variant="link" className="relative h-auto max-w-full justify-start rounded-none p-0 pb-3 font-display text-xl text-ink underline decoration-hairline underline-offset-4 whitespace-normal hover:decoration-ink">
             <Link to="/anya" aria-label="Open Executive Assistant EA project" data-project="anya">
               <span className="leading-snug">Executive Assistant EA</span>
@@ -59,6 +60,7 @@ function ChamberyHome() {
           <span data-project="ask-answer" className="font-display text-xl leading-snug text-sage">Ask.Answer</span>
           <span data-project="bd-ops" className="font-display text-xl leading-snug text-sage">BD Ops <span className="text-sm">based on travel</span></span>
         </nav>
+        </div>
       </main>
     </div>
   );
