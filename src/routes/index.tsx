@@ -37,32 +37,27 @@ function ChamberyHome() {
           <p>A portfolio in progress, drawing on more than 10 years of executive assistant experience to develop inventive solutions that reduce or eliminate repetitive work, alongside concepts focused on business development and project management.</p>
           <p>These prototypes bring firsthand insight, sharp intuition and original thinking to the demands of executive support. Built by an executive assistant, for executive assistants, they put the person doing the work first—with value that extends across industries, roles and lines of service.</p>
         </div>
-        <nav aria-label="Portfolio projects" className="mt-10 grid max-w-4xl grid-cols-2 gap-6 pb-3 md:grid-cols-4">
-          <Button asChild variant="project" className="flex-col p-4 pb-10 whitespace-normal text-center">
+        <nav aria-label="Portfolio projects" className="mt-10 flex max-w-2xl flex-col items-start gap-5">
+          <Button asChild variant="link" className="relative h-auto max-w-full justify-start rounded-none p-0 pb-3 font-display text-xl text-ink underline decoration-hairline underline-offset-4 whitespace-normal hover:decoration-ink">
             <Link to="/anya" aria-label="Open Executive Assistant EA project" data-project="anya">
-              <span className="text-lg leading-snug">Executive Assistant EA</span>
-              <span className="absolute bottom-3 right-3 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
+              <span className="leading-snug">Executive Assistant EA</span>
+              <span className="absolute bottom-0 right-0 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Cat aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">anya.</span>
               </span>
             </Link>
           </Button>
-          <Button asChild variant="project" className="flex-col p-4 pb-10 whitespace-normal text-center">
+          <Button asChild variant="link" className="relative h-auto max-w-full justify-start rounded-none p-0 pb-3 font-display text-xl text-ink underline decoration-hairline underline-offset-4 whitespace-normal hover:decoration-ink">
             <Link to="/alec" aria-label="Open Traveler/Consultant EA project" data-project="alec">
-              <span className="text-lg leading-snug">Traveler/<wbr />Consultant EA</span>
-              <span className="absolute bottom-3 right-3 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
+              <span className="leading-snug">Traveler/<wbr />Consultant EA</span>
+              <span className="absolute bottom-0 right-0 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Dog aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">alec.</span>
               </span>
             </Link>
           </Button>
-          <Button variant="project" disabled data-project="ask-answer" className="p-4 whitespace-normal text-center disabled:opacity-100">
-            <span className="text-lg leading-snug">Ask.Answer</span>
-          </Button>
-          <Button variant="project" disabled data-project="bd-ops" className="flex-col gap-2 p-4 whitespace-normal text-center disabled:opacity-100">
-            <span className="text-lg leading-snug">BD Ops</span>
-            <span className="text-sm leading-snug">based on travel</span>
-          </Button>
+          <span data-project="ask-answer" className="font-display text-xl leading-snug text-sage">Ask.Answer</span>
+          <span data-project="bd-ops" className="font-display text-xl leading-snug text-sage">BD Ops <span className="text-sm">based on travel</span></span>
         </nav>
       </main>
     </div>
