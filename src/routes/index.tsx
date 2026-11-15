@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Chambery Reveries — Projects" },
-      { name: "description", content: "A portfolio in progress, drawing on twenty years of executive assistant experience to reduce repetitive work and explore concepts in business development and project management." },
+      { name: "description", content: "A portfolio in progress, drawing on more than 10 years of executive assistant experience to reduce repetitive work and explore concepts in business development and project management." },
       { property: "og:title", content: "Chambery Reveries" },
-      { property: "og:description", content: "A portfolio in progress, drawing on twenty years of executive assistant experience to reduce repetitive work and explore concepts in business development and project management." },
+      { property: "og:description", content: "A portfolio in progress, drawing on more than 10 years of executive assistant experience to reduce repetitive work and explore concepts in business development and project management." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -32,7 +32,7 @@ function ChamberyHome() {
           <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
         <div className="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-sage">
-          <p>A portfolio in progress, drawing on twenty years of executive assistant experience to develop inventive solutions that reduce or eliminate repetitive work, alongside concepts focused on business development and project management.</p>
+          <p>A portfolio in progress, drawing on more than 10 years of executive assistant experience to develop inventive solutions that reduce or eliminate repetitive work, alongside concepts focused on business development and project management.</p>
           <p>These prototypes bring firsthand insight, sharp intuition and original thinking to the demands of executive support. Built by an executive assistant, for executive assistants, they put the person doing the work first—with value that extends across industries, roles and lines of service.</p>
         </div>
       </main>
