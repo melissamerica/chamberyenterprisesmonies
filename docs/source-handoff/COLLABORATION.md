@@ -1,5 +1,9 @@
 # Anya: source handoff for other coding tools
 
+## Root landing page simplification (November 15, 2026)
+
+The root page now contains the Chambery Enterprises wordmark and open space, without product cards, sales copy or enterprise feature sections. Shared header/footer navigation, existing public route files and the legacy root query redirect remain unchanged. Other product pages and workspace behavior were not edited. All 10 routing tests passed. Local browser checks verified desktop and 398-pixel phone layouts, no phone overflow, retained navigation destinations and a working Anya link. Build telemetry reported build OK. No new deployment was published.
+
 ## Project and source of truth
 
 This is the complete React/TypeScript/Vinext app, not a screenshot or a static replica. All application changes belong in tracked source. The repository includes server endpoints, Cloudflare D1 schema/migrations, R2 file handlers, Word/Excel generators, UI components, dependency lockfile and tests. The original v44 foundation and subsequent reconstruction are documented in RECONSTRUCTION_SETUP.md. Read AGENTS.md before changing behavior.
