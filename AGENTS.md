@@ -20,3 +20,4 @@
 - Use docs/app-action-inventory.md for detailed current action/read/review/write/output paths and docs/project-history.md for provenance; verify relevant source before relying on line references because edits can move them.
 - Maintain source-backed action knowledge with affected behavior changes; distinguish browser writes, server writes, source inspection, executed tests and observed UI so continuity does not depend on chat summaries.
 - Keep root-only presentation changes in src/routes/index.tsx and reuse SiteHeader without SiteFooter so other public pages and navigation are unaffected.
+- Portfolio project links use the shared Button project variant with scoped global CSS tokens; this keeps textured finishes reusable without altering other button styles.
