@@ -13,9 +13,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Chambery Reveries — Projects" },
-      { name: "description", content: "Chambery Reveries. Explore Anya, Alec and the existing Chambery workspace." },
+      { name: "description", content: "A work-in-progress portfolio of prototypes designed to reduce or eliminate repetitive tasks across industries. Built by a seasoned executive assistant, with value across roles and lines of service." },
       { property: "og:title", content: "Chambery Reveries" },
-      { property: "og:description", content: "Chambery Reveries. Anya, Alec and the Chambery workspace." },
+      { property: "og:description", content: "A work-in-progress portfolio of prototypes designed to reduce or eliminate repetitive tasks across industries. Built by a seasoned executive assistant, with value across roles and lines of service." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,9 +31,10 @@ function ChamberyHome() {
         <h1 aria-label="Chambery Reveries">
           <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-sage">
-          Automate the things you hate
-        </p>
+        <div className="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-sage">
+          <p>A work in progress portfolio of prototypes designed to reduce or eliminate repetitive tasks across industries.</p>
+          <p>Intuitively built and designed for executive assistants, by a seasoned executive assistant—with value that extends across industries, job titles and lines of service.</p>
+        </div>
       </main>
     </div>
   );
