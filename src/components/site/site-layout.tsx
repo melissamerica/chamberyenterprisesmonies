@@ -32,7 +32,7 @@ export function SiteFooter() {
           <ChamberyWordmark size="sm" />
           <p className="mt-4 max-w-xs text-sm text-sage">Eliminate the human error, <span className="font-semibold text-plum">not the human.</span></p>
         </div>
-        <FooterCol title="Projects" links={[["/anya", "Anya"], ["/alec", "Alec"]]} />
+        <FooterCol title="Projects" links={[["/anya", "EA Tool for Executive Assistants"], ["/alec", "EA Tool for Travelers/Consultants"]]} />
         <FooterCol title="Account" links={[["/auth", "Sign in"], ["/app", "Workspace"]]} />
       </div>
       <p className="mx-auto max-w-6xl px-6 pb-10 text-xs text-sage">© {new Date().getFullYear()} Chambery Enterprises</p>
