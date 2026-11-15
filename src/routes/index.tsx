@@ -32,8 +32,8 @@ function ChamberyHome() {
           <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
         <div className="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-sage">
-          <p>A work in progress portfolio of prototypes designed to reduce or eliminate repetitive tasks across industries.</p>
-          <p>Intuitively built and designed for executive assistants, by a seasoned executive assistant—with value that extends across industries, job titles and lines of service.</p>
+          <p>A portfolio in progress, exploring practical ways to reduce or eliminate repetitive work.</p>
+          <p>Created by a seasoned executive assistant, these prototypes start with the everyday demands of executive support. Designed to feel intuitive, they put the person doing the work first—with applications across industries, roles and lines of service.</p>
         </div>
       </main>
     </div>
