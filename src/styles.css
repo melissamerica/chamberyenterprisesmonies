@@ -37,6 +37,15 @@
   --blush: oklch(0.95 0.025 340);
   --hairline: oklch(0.91 0.018 40);
   --shadow-soft: 0 24px 60px -30px color-mix(in oklab, var(--ink) 35%, transparent);
+  --project-anya-light: oklch(0.77 0.085 345);
+  --project-anya-base: oklch(0.53 0.12 345);
+  --project-anya-edge: oklch(0.38 0.08 345);
+  --project-alec-light: oklch(0.82 0.09 135);
+  --project-alec-base: oklch(0.51 0.09 150);
+  --project-alec-edge: oklch(0.35 0.06 150);
+  --project-highlight: oklch(0.99 0.005 75);
+  --project-button-foreground: oklch(0.99 0.005 75);
+  --project-button-shadow: 0 8px 0 var(--project-edge), 0 16px 24px -10px color-mix(in oklab, var(--project-edge) 45%, transparent), inset 0 2px 2px color-mix(in oklab, var(--project-highlight) 65%, transparent), inset 0 -3px 6px color-mix(in oklab, var(--project-edge) 45%, transparent);
   --sidebar: #1f2d24;
   --sidebar-foreground: #e5edf4;
   --sidebar-primary: #2f4234;
@@ -294,6 +303,53 @@ button, summary { touch-action: manipulation; }
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--sage);
+}
+
+.portfolio-project-button {
+  --project-light: var(--project-anya-light);
+  --project-base: var(--project-anya-base);
+  --project-edge: var(--project-anya-edge);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid var(--project-edge);
+  color: var(--project-button-foreground);
+  background: linear-gradient(155deg, var(--project-light), var(--project-base) 52%, var(--project-edge));
+  box-shadow: var(--project-button-shadow);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.portfolio-project-button[data-project="alec"] {
+  --project-light: var(--project-alec-light);
+  --project-base: var(--project-alec-base);
+  --project-edge: var(--project-alec-edge);
+}
+.portfolio-project-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient(115deg, transparent 0 2px, color-mix(in oklab, var(--project-highlight) 5%, transparent) 2px 3px);
+  pointer-events: none;
+}
+.portfolio-project-button::after {
+  content: "";
+  position: absolute;
+  inset: 5px 5px 52%;
+  z-index: -1;
+  border-radius: 5px;
+  background: linear-gradient(color-mix(in oklab, var(--project-highlight) 35%, transparent), color-mix(in oklab, var(--project-highlight) 3%, transparent));
+  pointer-events: none;
+}
+.portfolio-project-button:hover { transform: translateY(-3px); filter: brightness(1.06); }
+.portfolio-project-button:active { transform: translateY(4px); }
+.portfolio-project-button svg { filter: drop-shadow(0 2px 1px var(--project-edge)); }
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-project-button { transition: none; }
+  .portfolio-project-button:hover, .portfolio-project-button:active { transform: none; }
 }
 @utility brand-dot {
   display: inline-block;

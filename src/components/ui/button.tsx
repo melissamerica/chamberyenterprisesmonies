@@ -22,6 +22,7 @@ const buttonVariants = cva(
         plum: "rounded-full bg-plum text-primary-foreground shadow-soft hover:bg-plum-deep",
         pill: "rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
         hairline: "rounded-full border border-hairline bg-cream text-ink hover:border-plum hover:text-plum",
+        project: "portfolio-project-button",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

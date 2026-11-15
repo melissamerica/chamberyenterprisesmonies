@@ -1,4 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { Cat, Dog } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site/site-layout";
 import { ChamberyWordmark } from "@/components/site/brand";
 
@@ -35,6 +37,20 @@ function ChamberyHome() {
           <p>A portfolio in progress, drawing on more than 10 years of executive assistant experience to develop inventive solutions that reduce or eliminate repetitive work, alongside concepts focused on business development and project management.</p>
           <p>These prototypes bring firsthand insight, sharp intuition and original thinking to the demands of executive support. Built by an executive assistant, for executive assistants, they put the person doing the work first—with value that extends across industries, roles and lines of service.</p>
         </div>
+        <nav aria-label="Portfolio projects" className="mt-10 grid max-w-md grid-cols-2 gap-6 pb-3">
+          <Button asChild variant="project" className="flex-col gap-4 p-6">
+            <Link to="/anya" aria-label="Open Anya project" data-project="anya">
+              <Cat aria-hidden="true" className="size-16" strokeWidth={1.4} />
+              <span className="font-display text-2xl">anya.</span>
+            </Link>
+          </Button>
+          <Button asChild variant="project" className="flex-col gap-4 p-6">
+            <Link to="/alec" aria-label="Open Alec project" data-project="alec">
+              <Dog aria-hidden="true" className="size-16" strokeWidth={1.4} />
+              <span className="font-display text-2xl">alec.</span>
+            </Link>
+          </Button>
+        </nav>
       </main>
     </div>
   );
