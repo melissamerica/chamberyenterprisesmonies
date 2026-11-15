@@ -32,8 +32,7 @@ function ChamberyHome() {
           <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
         <p className="mt-6 text-lg leading-relaxed text-sage">
-          Eliminate the human error,<br />
-          <span className="font-semibold text-plum">not the human.</span>
+          Automate the things you hate
         </p>
       </main>
     </div>
