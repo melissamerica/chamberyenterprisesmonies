@@ -41,7 +41,7 @@ function ChamberyHome() {
           <Button asChild variant="project" className="flex-col p-4 pb-10 whitespace-normal text-center">
             <Link to="/anya" aria-label="Open Executive Assistant EA project" data-project="anya">
               <span className="text-lg leading-snug">Executive Assistant EA</span>
-              <span className="absolute bottom-3 right-3 flex items-center gap-1.5">
+              <span className="absolute bottom-3 right-3 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Cat aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">anya.</span>
               </span>
@@ -50,7 +50,7 @@ function ChamberyHome() {
           <Button asChild variant="project" className="flex-col p-4 pb-10 whitespace-normal text-center">
             <Link to="/alec" aria-label="Open Traveler/Consultant EA project" data-project="alec">
               <span className="text-lg leading-snug">Traveler/<wbr />Consultant EA</span>
-              <span className="absolute bottom-3 right-3 flex items-center gap-1.5">
+              <span className="absolute bottom-3 right-3 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Dog aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">alec.</span>
               </span>
