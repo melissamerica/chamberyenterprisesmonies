@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { SiteShell } from "@/components/site/site-layout";
+import { SiteHeader } from "@/components/site/site-layout";
 import { ChamberyWordmark } from "@/components/site/brand";
 
 export const Route = createFileRoute("/")({
@@ -25,12 +25,17 @@ export const Route = createFileRoute("/")({
 
 function ChamberyHome() {
   return (
-    <SiteShell>
-      <section className="mx-auto min-h-[65svh] max-w-6xl px-6 pb-24 pt-20 md:pt-28">
+    <div className="min-h-screen bg-cream font-brand text-ink">
+      <SiteHeader />
+      <main className="mx-auto max-w-6xl px-6 pb-24 pt-20 md:pt-28">
         <h1 aria-label="Chambery Enterprises">
           <ChamberyWordmark className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
         </h1>
-      </section>
-    </SiteShell>
+        <p className="mt-6 text-lg leading-relaxed text-sage">
+          Eliminate the human error,<br />
+          <span className="font-semibold text-plum">not the human.</span>
+        </p>
+      </main>
+    </div>
   );
 }

@@ -2,6 +2,8 @@
 
 ## Root landing page simplification (November 15, 2026)
 
+Follow-up: the root reuses SiteHeader only, with the established “Eliminate the human error, not the human.” tagline below the main wordmark and no footer or additional sections. Other pages retain their existing footers. Public route URLs and root query handling are unchanged.
+
 The root page now contains the Chambery Enterprises wordmark and open space, without product cards, sales copy or enterprise feature sections. Shared header/footer navigation, existing public route files and the legacy root query redirect remain unchanged. Other product pages and workspace behavior were not edited. All 10 routing tests passed. Local browser checks verified desktop and 398-pixel phone layouts, no phone overflow, retained navigation destinations and a working Anya link. Build telemetry reported build OK. No new deployment was published.
 
 ## Project and source of truth
