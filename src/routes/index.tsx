@@ -38,8 +38,8 @@ function ChamberyHome() {
         </div>
         <nav aria-label="Portfolio projects" className="portfolio-projects flex flex-col items-start gap-5">
           <Button asChild variant="link" className="relative h-auto max-w-full justify-start rounded-none p-0 pb-3 font-display text-xl text-ink underline decoration-hairline underline-offset-4 whitespace-normal hover:decoration-ink">
-            <Link to="/anya" aria-label="Open Executive Assistant EA project" data-project="anya">
-              <span className="leading-snug">Executive Assistant EA</span>
+            <Link to="/anya" aria-label="Open EA Tool for Executive Assistants project" data-project="anya">
+              <span className="leading-snug">EA Tool for Executive Assistants</span>
               <span className="absolute bottom-0 right-0 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Cat aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">anya.</span>
@@ -47,8 +47,8 @@ function ChamberyHome() {
             </Link>
           </Button>
           <Button asChild variant="link" className="relative h-auto max-w-full justify-start rounded-none p-0 pb-3 font-display text-xl text-ink underline decoration-hairline underline-offset-4 whitespace-normal hover:decoration-ink">
-            <Link to="/alec" aria-label="Open Traveler/Consultant EA project" data-project="alec">
-              <span className="leading-snug">Traveler/<wbr />Consultant EA</span>
+            <Link to="/alec" aria-label="Open EA Tool for Travelers/Consultants project" data-project="alec">
+              <span className="leading-snug">EA Tool for Travelers/<wbr />Consultants</span>
               <span className="absolute bottom-0 right-0 flex origin-bottom-right scale-[0.333333] items-center gap-1.5">
                 <Dog aria-hidden="true" className="size-4" strokeWidth={1.4} />
                 <span className="font-display text-xs">alec.</span>
