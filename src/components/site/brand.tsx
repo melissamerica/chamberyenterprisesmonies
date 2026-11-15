@@ -10,7 +10,7 @@ export function ChamberyWordmark({ size = "md", withSub = true, className }: { s
       </span>
       {withSub && (
         <span className={cn("font-display text-sage", size === "xl" ? "mt-2 text-3xl tracking-[0.35em]" : "mt-1 text-[0.6rem] tracking-[0.42em]")}>
-          ENTERPRISES
+          REVERIES
         </span>
       )}
     </span>
@@ -28,7 +28,7 @@ export function ProductWordmark({ name, tone = "plum", className }: { name: "any
 
 export function HomeLink() {
   return (
-    <Link to="/" aria-label="Chambery Enterprises home">
+    <Link to="/" aria-label="Chambery Reveries home">
       <ChamberyWordmark size="sm" />
     </Link>
   );
