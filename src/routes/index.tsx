@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CalendarDays, FileText, FolderCheck, ReceiptText, Plane, ArrowDown } from "lucide-react";
 import { SiteHeader } from "@/components/site/site-layout";
-import portfolioCss from "./portfolio-home.css?url";
 
 const description = "Melissa Chambery’s portfolio: executive assistant experience applied to practical AI and workflow design. Featuring EA Tool for Executive Assistants, a developing travel preparation tool.";
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>) => search,
-  head: () => ({ links: [{ rel: "stylesheet", href: portfolioCss }], meta: [
+  head: () => ({ meta: [
     { title: "Melissa Chambery | Executive Assistant & AI Workflow Portfolio" },
     { name: "description", content: description },
     { property: "og:title", content: "Melissa Chambery — Chambery Reveries" },
