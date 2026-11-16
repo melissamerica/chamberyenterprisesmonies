@@ -22,7 +22,7 @@ export function FirmBar({ name, role }: { name: string; role: FirmRole }) {
         <span className="rounded-full bg-blush px-2.5 py-0.5 text-xs text-plum-deep">{roleLabels[role]}</span>
       </div>
       <div className="flex items-center gap-4">
-        <Link to="/app" search={{ view: "home" } as never} className="text-sage hover:text-ink">Workspace</Link>
+        <Link to="/workspace" search={{ view: "home" } as never} className="text-sage hover:text-ink">Workspace</Link>
         <Link to="/team" className="inline-flex items-center gap-1.5 text-sage hover:text-ink"><Users className="size-4" />{canManageMembers(role) ? "Team & SSO" : "Team"}</Link>
         <button type="button" onClick={signOut} className="inline-flex items-center gap-1.5 text-sage hover:text-ink"><LogOut className="size-4" />Sign out</button>
       </div>

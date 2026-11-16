@@ -30,7 +30,7 @@ function Onboarding() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  if (firm.data) return <Navigate to="/app" />;
+  if (firm.data) return <Navigate to="/workspace" />;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,7 +38,7 @@ function Onboarding() {
     try {
       await create({ data: { name: String(new FormData(e.currentTarget).get("name")) } });
       await qc.invalidateQueries({ queryKey: ["my-firm"] });
-      navigate({ to: "/app" });
+      navigate({ to: "/workspace" });
     } catch (err) { setError(err instanceof Error ? err.message : "Something went wrong."); }
     finally { setBusy(false); }
   }

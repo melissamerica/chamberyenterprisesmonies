@@ -13,15 +13,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AlecRouteImport } from './routes/alec'
 import { Route as AnyaRouteImport } from './routes/anya'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExecRouteImport } from './routes/exec'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as TestRouteImport } from './routes/test'
-import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
+import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as ApiBillingCodesRouteImport } from './routes/api.billing-codes'
 import { Route as ApiCustomTemplatesRouteImport } from './routes/api.custom-templates'
 import { Route as ApiDecisionQueueRouteImport } from './routes/api.decision-queue'
@@ -61,6 +62,11 @@ const AnyaRoute = AnyaRouteImport.update({
   path: '/anya',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -91,11 +97,6 @@ const TestRoute = TestRouteImport.update({
   path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -104,6 +105,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
 const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
   id: '/team',
   path: '/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiBillingCodesRoute = ApiBillingCodesRouteImport.update({
@@ -210,15 +216,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
-  '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/decision-queue': typeof ApiDecisionQueueRoute
@@ -243,15 +250,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
-  '/app': typeof AuthenticatedAppRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/team': typeof AuthenticatedTeamRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/decision-queue': typeof ApiDecisionQueueRoute
@@ -278,15 +286,16 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/alec': typeof AlecRoute
   '/anya': typeof AnyaRoute
+  '/app': typeof AppRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/exec': typeof ExecRoute
   '/pricing': typeof PricingRoute
   '/security': typeof SecurityRoute
   '/test': typeof TestRoute
-  '/_authenticated/app': typeof AuthenticatedAppRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
   '/api/billing-codes': typeof ApiBillingCodesRouteWithChildren
   '/api/custom-templates': typeof ApiCustomTemplatesRoute
   '/api/decision-queue': typeof ApiDecisionQueueRoute
@@ -313,15 +322,16 @@ export interface FileRouteTypes {
     | '/'
     | '/alec'
     | '/anya'
+    | '/app'
     | '/auth'
     | '/contact'
     | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
-    | '/app'
     | '/onboarding'
     | '/team'
+    | '/workspace'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/decision-queue'
@@ -346,15 +356,16 @@ export interface FileRouteTypes {
     | '/'
     | '/alec'
     | '/anya'
+    | '/app'
     | '/auth'
     | '/contact'
     | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
-    | '/app'
     | '/onboarding'
     | '/team'
+    | '/workspace'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/decision-queue'
@@ -380,15 +391,16 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/alec'
     | '/anya'
+    | '/app'
     | '/auth'
     | '/contact'
     | '/exec'
     | '/pricing'
     | '/security'
     | '/test'
-    | '/_authenticated/app'
     | '/_authenticated/onboarding'
     | '/_authenticated/team'
+    | '/_authenticated/workspace'
     | '/api/billing-codes'
     | '/api/custom-templates'
     | '/api/decision-queue'
@@ -415,6 +427,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AlecRoute: typeof AlecRoute
   AnyaRoute: typeof AnyaRoute
+  AppRoute: typeof AppRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   ExecRoute: typeof ExecRoute
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnyaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -505,13 +525,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app': {
-      id: '/_authenticated/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthenticatedAppRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -524,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/workspace': {
+      id: '/_authenticated/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/billing-codes': {
@@ -663,15 +683,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAppRoute: typeof AuthenticatedAppRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAppRoute: AuthenticatedAppRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -741,6 +761,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AlecRoute: AlecRoute,
   AnyaRoute: AnyaRoute,
+  AppRoute: AppRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   ExecRoute: ExecRoute,

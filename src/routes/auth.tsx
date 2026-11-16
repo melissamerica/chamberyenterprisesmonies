@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { ChamberyWordmark } from "@/components/site/brand";
 
 const safePath = (p?: string) => {
-  if (!p) return "/app";
-  try { const u = new URL(p, "http://x"); return u.origin === "http://x" ? u.pathname + u.search : "/app"; } catch { return "/app"; }
+  if (!p) return "/workspace";
+  try { const u = new URL(p, "http://x"); return u.origin === "http://x" ? u.pathname + u.search : "/workspace"; } catch { return "/workspace"; }
 };
 
 export const Route = createFileRoute("/auth")({

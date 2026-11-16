@@ -4,33 +4,26 @@ import { Button } from "@/components/ui/button";
 import { HomeLink, ChamberyWordmark } from "./brand";
 import { useSession } from "@/hooks/use-session";
 
-const nav = [
-  { to: "/anya", label: "Anya" },
-  { to: "/alec", label: "Alec" },
-  { to: "/security", label: "Security" },
-  { to: "/pricing", label: "Pricing" },
-] as const;
-
-export function SiteHeader() {
+export function SiteHeader({ portfolio = false }: { portfolio?: boolean } = {}) {
   const { session } = useSession();
+  if (portfolio) return (
+    <header className="cr-header cr-wrap">
+      <a href="#main-content" aria-label="Chambery Reveries home">
+        <ChamberyWordmark subSizeIncrease={3} subSizeMultiplier={3} className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
+      </a>
+      <nav aria-label="Portfolio navigation"><a href="#case-study">Case study</a><a href="#contribution">My contribution</a><a href="#selected-work">Selected work</a></nav>
+    </header>
+  );
   return (
     <header className="sticky top-0 z-40 border-b border-hairline bg-cream/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
         <HomeLink />
-        <nav className="hidden items-center gap-8 text-sm text-sage md:flex">
-          {nav.map((n) => (
-            <Link key={n.to} to={n.to} className="transition-colors hover:text-ink" activeProps={{ className: "text-ink" }}>
-              {n.label}
-            </Link>
-          ))}
-        </nav>
         <div className="flex items-center gap-2">
           {session ? (
-            <Button asChild size="sm"><Link to="/app">Open workspace</Link></Button>
+            <Button asChild size="sm"><Link to="/workspace">Open workspace</Link></Button>
           ) : (
             <>
               <Button asChild variant="ghost" size="sm"><Link to="/auth">Sign in</Link></Button>
-              <Button asChild size="sm"><Link to="/contact">Book a demo</Link></Button>
             </>
           )}
         </div>
@@ -42,14 +35,13 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-hairline">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-[2fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-[2fr_1fr_1fr]">
         <div>
           <ChamberyWordmark size="sm" />
           <p className="mt-4 max-w-xs text-sm text-sage">Eliminate the human error, <span className="font-semibold text-plum">not the human.</span></p>
         </div>
-        <FooterCol title="Products" links={[["/anya", "Anya"], ["/alec", "Alec"]]} />
-        <FooterCol title="Company" links={[["/security", "Security"], ["/pricing", "Pricing"], ["/contact", "Contact sales"]]} />
-        <FooterCol title="Account" links={[["/auth", "Sign in"], ["/app", "Workspace"]]} />
+        <FooterCol title="Projects" links={[["/anya", "EA Tool for Executive Assistants"], ["/alec", "EA Tool for Travelers/Consultants"]]} />
+        <FooterCol title="Account" links={[["/auth", "Sign in"], ["/workspace", "Workspace"]]} />
       </div>
       <p className="mx-auto max-w-6xl px-6 pb-10 text-xs text-sage">© {new Date().getFullYear()} Chambery Enterprises</p>
     </footer>
