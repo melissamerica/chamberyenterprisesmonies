@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   head: () => ({ meta: [
     { title: "Melissa Chambery | Executive Assistant & AI Workflow Portfolio" },
     { name: "description", content: description },
-    { property: "og:title", content: "Melissa Chambery — Chambery Reveries" },
+    { property: "og:title", content: "Melissa Chambery | Executive Assistant & AI Workflow Portfolio" },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
@@ -29,8 +29,8 @@ function PortfolioHome() {
     <main id="main-content">
       <section className="cr-hero cr-wrap" aria-labelledby="portfolio-title">
         <div>
-          <p className="cr-eyebrow">Melissa Chambery · Executive Assistant</p>
-          <h1 id="portfolio-title">Practical AI.<br /><em>An EA’s perspective.</em></h1>
+          <p className="cr-eyebrow">Executive Assistant · AI Workflow Portfolio</p>
+          <h1 id="portfolio-title" className="cr-question">How much time does a single flight confirmation cost an EA—<em>after booking?</em></h1>
           <p className="cr-lead">More than ten years in executive support. A firsthand understanding of the details. An interest in making the work simpler.</p>
           <p className="cr-body">I develop tools that apply AI and automation to familiar administrative challenges. This portfolio shares the problems I’ve explored, the workflows I’ve designed, and the judgment behind them.</p>
           <a className="cr-primary-link" href="#case-study">Explore the case study <ArrowDown size={17} aria-hidden="true" /></a>
@@ -47,7 +47,7 @@ function PortfolioHome() {
       <section id="case-study" className="cr-case" aria-labelledby="case-title">
         <div className="cr-wrap">
           <p className="cr-eyebrow">Case study · A single flight confirmation</p>
-          <h2 id="case-title">How much time does a single flight confirmation cost an EA—<em>after booking?</em></h2>
+          <h2 id="case-title">One confirmation.<br /><em>Repeated handling.</em></h2>
           <p className="cr-case-intro">The flight is booked. The same information still needs to go into several places, customized for each one. That repeated handling is the problem I set out to reduce.</p>
           <div className="cr-confirmation-source"><Plane size={22} aria-hidden="true" /><div><strong>One flight confirmation arrives</strong><span>Known traveler · Booking already complete</span></div></div>
           <div className="cr-destinations" aria-label="Four destinations for the same confirmation information">
