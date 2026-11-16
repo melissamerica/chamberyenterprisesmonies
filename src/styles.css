@@ -400,3 +400,13 @@ button, summary { touch-action: manipulation; }
   .cr-selected { padding-bottom: 45px; }
   .cr-footer { align-items: start; }
 }
+
+
+/* Personal portfolio identity */
+.cr-person-name { display: block; font-family: var(--font-display, Marcellus, Georgia, serif); font-size: clamp(32px, 4vw, 48px); line-height: 1.15; letter-spacing: -.035em; color: var(--ink); text-decoration: none; }
+.cr-contact { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 13px; font-size: 14px; }
+.cr-contact a { color: var(--sage); text-decoration: none; overflow-wrap: anywhere; }
+.cr-contact a:hover { color: var(--plum-deep); text-decoration: underline; }
+.cr-portfolio h1.cr-question { font-size: clamp(34px, 4vw, 50px); line-height: 1.14; }
+.cr-question em { display: block; margin-top: 8px; }
+@media (max-width: 600px) { .cr-contact { flex-direction: column; gap: 5px; } }
