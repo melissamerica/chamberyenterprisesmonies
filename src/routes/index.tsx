@@ -30,7 +30,7 @@ function PortfolioHome() {
       <section className="cr-hero cr-wrap" aria-labelledby="portfolio-title">
         <div>
           <p className="cr-eyebrow">Executive Assistant · AI Workflow Portfolio</p>
-          <h1 id="portfolio-title" className="cr-question">How much time does a single flight confirmation cost an EA—<em>after booking?</em></h1>
+          <h1 id="portfolio-title" className="cr-question">How much time does a single flight confirmation cost an EA<em>after booking?</em></h1>
           <p className="cr-lead">More than ten years in executive support. A firsthand understanding of the details. An interest in making the work simpler.</p>
           <p className="cr-body">I develop tools that apply AI and automation to familiar administrative challenges. This portfolio shares the problems I’ve explored, the workflows I’ve designed, and the judgment behind them.</p>
           <a className="cr-primary-link" href="#case-study">Explore the case study <ArrowDown size={17} aria-hidden="true" /></a>
