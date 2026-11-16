@@ -12,7 +12,7 @@ export function SiteHeader({ portfolio = false }: { portfolio?: boolean } = {}) 
         <a className="cr-person-name" href="#main-content">Melissa Chambery</a>
         <div className="cr-contact"><a href="tel:+18506929451">(850) 692-9451</a><a href="mailto:melissa.chambery@gmail.com">melissa.chambery@gmail.com</a></div>
       </div>
-      <nav aria-label="Portfolio navigation"><a href="#case-study">Case study</a><a href="#contribution">My contribution</a><a href="#selected-work">Selected work</a></nav>
+      <nav aria-label="Portfolio navigation"><a href="#case-study">Case study</a><a href="#contribution">My contribution</a><a href="#features">Features</a></nav>
     </header>
   );
   return (
