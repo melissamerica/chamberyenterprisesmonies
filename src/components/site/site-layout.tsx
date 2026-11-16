@@ -8,9 +8,10 @@ export function SiteHeader({ portfolio = false }: { portfolio?: boolean } = {}) 
   const { session } = useSession();
   if (portfolio) return (
     <header className="cr-header cr-wrap">
-      <a href="#main-content" aria-label="Chambery Reveries home">
-        <ChamberyWordmark subSizeIncrease={3} subSizeMultiplier={3} className="[&>span:first-child]:text-5xl [&>span:first-child]:tracking-normal [&>span:last-child]:tracking-normal md:[&>span:first-child]:text-7xl" />
-      </a>
+      <div className="cr-identity">
+        <a className="cr-person-name" href="#main-content">Melissa Chambery</a>
+        <div className="cr-contact"><a href="tel:+18506929451">(850) 692-9451</a><a href="mailto:melissa.chambery@gmail.com">melissa.chambery@gmail.com</a></div>
+      </div>
       <nav aria-label="Portfolio navigation"><a href="#case-study">Case study</a><a href="#contribution">My contribution</a><a href="#selected-work">Selected work</a></nav>
     </header>
   );
