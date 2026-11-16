@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
-export function ChamberyWordmark({ size = "md", withSub = true, className, subSizeIncrease = 0 }: { size?: "sm" | "md" | "xl"; withSub?: boolean; className?: string; subSizeIncrease?: number }) {
+export function ChamberyWordmark({ size = "md", withSub = true, className, subSizeIncrease = 0, subSizeMultiplier = 1 }: { size?: "sm" | "md" | "xl"; withSub?: boolean; className?: string; subSizeIncrease?: number; subSizeMultiplier?: number }) {
   const text = size === "xl" ? "text-7xl md:text-8xl" : size === "md" ? "text-3xl" : "text-2xl";
   return (
     <span className={cn("inline-flex flex-col leading-none text-ink", className)}>
@@ -9,7 +9,7 @@ export function ChamberyWordmark({ size = "md", withSub = true, className, subSi
         Chambery<span className="brand-dot" />
       </span>
       {withSub && (
-        <span style={subSizeIncrease ? { fontSize: `calc(${size === "xl" ? "1.875rem" : "0.6rem"} + ${subSizeIncrease}px)` } : undefined} className={cn("font-display text-sage", size === "xl" ? "mt-2 text-3xl tracking-[0.35em]" : "mt-1 text-[0.6rem] tracking-[0.42em]")}>
+        <span style={subSizeIncrease || subSizeMultiplier !== 1 ? { fontSize: `calc((${size === "xl" ? "1.875rem" : "0.6rem"} + ${subSizeIncrease}px) * ${subSizeMultiplier})` } : undefined} className={cn("font-display text-sage", size === "xl" ? "mt-2 text-3xl tracking-[0.35em]" : "mt-1 text-[0.6rem] tracking-[0.42em]")}>
           REVERIES
         </span>
       )}

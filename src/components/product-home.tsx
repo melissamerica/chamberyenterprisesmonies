@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCheck, ChevronDown, FileCheck2, FileSpreadsheet, FileText, Layers3, MapPin, Paperclip, Plane, ScanLine, Sparkles, UploadCloud } from "lucide-react";
 
-const testHref = "/app?view=home";
+const testHref = "/workspace?view=home";
 type Output = "Calendar" | "Itinerary" | "Expenses";
 
 function OutputPreview({ output }: { output: Output }) {
